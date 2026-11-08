@@ -1,0 +1,43 @@
+.field { padding-block: var(--as-space-16); }
+.field:nth-of-type(even) { background: var(--as-mist); }
+.grid { display: grid; gap: var(--as-space-8); align-items: center; }
+@media (min-width: 64rem) {
+  .grid { grid-template-columns: 1fr 1.1fr; gap: var(--as-space-16); }
+  .flip > :first-child { order: 2; }
+}
+/* Artwork in a film frame with perforated edges */
+.frame {
+  position: relative;
+  padding: 28px 14px;
+  border-radius: var(--as-radius-md);
+  background: #0a0a0a;
+  border: 1px solid var(--as-line);
+  box-shadow: 0 0 60px -24px rgb(94 171 100 / 0.5);
+}
+.frame::before,
+.frame::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  block-size: 10px;
+  background: repeating-linear-gradient(90deg, rgb(255 255 255 / 0.85) 0 16px, transparent 16px 30px);
+}
+.frame::before { inset-block-start: 9px; }
+.frame::after { inset-block-end: 9px; }
+.art { display: block; inline-size: 100%; block-size: auto; border-radius: 4px; background: var(--as-white); }
+@media (prefers-reduced-motion: no-preference) {
+  .art { transition: transform var(--motion-300) var(--ease-out); }
+  .frame:hover .art { transform: translateY(-6px) rotate(-1deg); }
+}
+.summary { font-size: var(--as-text-lead); font-weight: var(--as-w-subtitle); }
+.rolesTitle { font-size: var(--as-text-lead); margin-block-start: var(--as-space-6); }
+.roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--as-space-2) var(--as-space-6);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.roles li { display: inline-flex; align-items: center; gap: var(--as-space-2); }
+.roles li::before { content: ""; inline-size: 10px; block-size: 10px; border-radius: 50%; background: var(--as-gradient-ball); }

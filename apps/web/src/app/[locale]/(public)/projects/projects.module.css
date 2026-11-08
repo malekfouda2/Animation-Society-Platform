@@ -1,0 +1,36 @@
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--as-space-8); }
+.item {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--as-line);
+  border-radius: var(--as-radius-lg);
+  background: var(--as-surface);
+  color: inherit;
+  text-decoration: none;
+}
+.item:hover { border-color: var(--as-line-strong); }
+@media (min-width: 64rem) {
+  .item { grid-template-columns: 1fr 1.2fr; }
+}
+.cover { overflow: hidden; background: var(--as-mist); }
+.coverImg { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; }
+@media (prefers-reduced-motion: no-preference) {
+  .coverImg { transition: transform var(--motion-300) var(--ease-out); }
+  .item:hover .coverImg { transform: scale(1.04); }
+}
+.body { padding: var(--as-space-8); display: flex; flex-direction: column; gap: var(--as-space-2); }
+.title { font-size: var(--as-text-h3); margin: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: var(--as-space-2) var(--as-space-8); margin: var(--as-space-2) 0 0; }
+.meta dt { font-size: var(--as-text-meta); font-weight: var(--as-w-subtitle); color: var(--as-ink-soft); }
+.meta dd { margin: 0; }
+.more { margin-block-start: var(--as-space-4); font-weight: var(--as-w-subtitle); text-decoration: underline; text-decoration-color: var(--as-green); text-decoration-thickness: 2px; text-underline-offset: 0.25em; }
+
+.detailHero { padding-block: 12rem var(--as-space-12); background: radial-gradient(50rem 30rem at 80% 30%, rgb(94 171 100 / 0.2), transparent 70%); }
+.detailGrid { display: grid; gap: var(--as-space-8); align-items: center; }
+@media (min-width: 64rem) {
+  .detailGrid { grid-template-columns: 1fr 1fr; }
+}
+.detailTitle { font-size: var(--as-text-h1); }
+.detailSummary { font-size: var(--as-text-lead); max-inline-size: 48ch; }
+.detailCover { margin: 0; overflow: hidden; border-radius: var(--as-radius-lg); }
+.coverNote { padding: var(--as-space-2) var(--as-space-3); font-size: var(--as-text-meta); font-weight: var(--as-w-note); color: var(--as-ink-soft); background: var(--as-surface); }

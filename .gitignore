@@ -1,0 +1,21 @@
+node_modules/
+dist/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# Original Society brand files from the Drive (large, licence-controlled). Derived web assets live in apps/web/public/brand.
+brand-source/
+
+# Commercial/contract notes and licence-pending fonts stay out of the public repository.
+docs/private/
+apps/web/public/fonts/rns-sanz/
+package-lock 2.json

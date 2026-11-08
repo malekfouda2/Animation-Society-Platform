@@ -1,0 +1,192 @@
+/* Objectives (About page): editorial rows; a brand-gradient sweep lights the row on hover. */
+.objectives {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-block-start: 1px solid var(--as-line-strong);
+}
+.objective {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--as-space-6);
+  padding-block: var(--as-space-6);
+  padding-inline: var(--as-space-2);
+  border-block-end: 1px solid var(--as-line-strong);
+}
+.objective::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, rgb(94 171 100 / 0.22), rgb(236 216 93 / 0.06));
+  transform: scaleX(0);
+  transform-origin: var(--sweep-origin, left);
+  transition: transform var(--motion-300) var(--ease-out);
+}
+:dir(rtl) .objective::before { --sweep-origin: right; background: linear-gradient(270deg, rgb(94 171 100 / 0.22), rgb(236 216 93 / 0.06)); }
+@media (hover: hover) {
+  .objective:hover::before { transform: scaleX(1); }
+}
+.objectiveIcon { inline-size: 72px; block-size: 72px; }
+@media (prefers-reduced-motion: no-preference) {
+  .objectiveIcon { transition: transform var(--motion-300) var(--ease-out); }
+  .objective:hover .objectiveIcon { transform: translateY(-4px) rotate(-4deg); }
+}
+.objectiveTitle { font-size: var(--as-text-h3); margin-block-end: var(--as-space-1); }
+.objectiveBody { color: var(--as-ink-soft); margin: 0; max-inline-size: 60ch; }
+@media (max-width: 47.99rem) {
+  .objective { grid-template-columns: 1fr; gap: var(--as-space-3); }
+  .objectiveIcon { inline-size: 56px; block-size: 56px; }
+}
+
+/* Journey: the bouncing-ball exercise. --p comes from MotionEngine (data-progress="enter"). */
+.journey { --p: 1; position: relative; }
+.wave { display: none; inline-size: 100%; block-size: auto; overflow: visible; margin-block-end: var(--as-space-8); }
+:dir(rtl) .wave { scale: -1 1; }
+.floor { stroke: var(--as-line-strong); stroke-width: 1.5; }
+.ghost { fill: none; stroke: var(--as-ink); stroke-width: 1.2; opacity: 0.18; }
+.waveBase { fill: none; stroke: var(--as-line); stroke-width: 1.5; stroke-dasharray: 4 6; }
+.waveDrawn { fill: none; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--p)); }
+.station { fill: none; stroke: var(--as-yellow); stroke-width: 2; }
+.waveBall {
+  offset-distance: calc(var(--p) * 100%);
+  offset-rotate: 0deg;
+}
+.waveGlow { fill: rgb(236 216 93 / 0.22); } /* soft halo; a drop-shadow filter repainted the SVG every frame */
+@media (min-width: 64rem) {
+  .wave { display: block; }
+}
+.steps {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--as-space-8);
+}
+/* Narrow: the ball drops down a dotted line through the steps. */
+.steps::before {
+  content: "";
+  position: absolute;
+  inset-block: 0.6rem 0.6rem;
+  inset-inline-start: 0.5rem;
+  border-inline-start: 2px dotted var(--as-line-strong);
+}
+.step { position: relative; padding-inline-start: var(--as-space-12); }
+.step::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 0.35rem;
+  inset-inline-start: 0;
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  border-radius: 50%;
+  background: var(--as-gradient-ball);
+  box-shadow: 0 0 0 6px var(--as-canvas);
+}
+@media (min-width: 64rem) {
+  .steps { grid-template-columns: repeat(5, 1fr); gap: var(--as-space-6); text-align: center; }
+  .steps::before, .step::before { display: none; }
+  .step { padding-inline: var(--as-space-2); }
+}
+.stepNo {
+  display: block;
+  font-size: var(--as-text-h3);
+  font-weight: var(--as-w-title);
+  line-height: 1;
+  color: var(--as-yellow);
+  margin-block-end: var(--as-space-2);
+  font-variant-numeric: tabular-nums;
+}
+.stepTitle { font-size: var(--as-text-lead); margin-block-end: var(--as-space-1); }
+.stepBody { margin: 0; color: var(--as-ink-soft); font-size: var(--as-text-secondary); }
+
+/* Membership types */
+.types {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--as-space-4);
+  margin: 0;
+}
+.type {
+  padding: var(--as-space-6);
+  border: 1px solid var(--as-line);
+  border-block-start: 3px solid var(--as-green);
+  border-radius: var(--as-radius-md);
+  background: var(--as-surface);
+}
+.type:nth-child(2) { border-block-start-color: var(--as-green-light); }
+.type:nth-child(3) { border-block-start-color: var(--as-yellow); }
+.type:nth-child(4) { border-block-start-color: var(--as-red); }
+.typeName {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--as-space-2) var(--as-space-3);
+  font-size: var(--as-text-lead);
+  font-weight: var(--as-w-subtitle);
+}
+.typeGranted { font-size: var(--as-text-meta); font-weight: var(--as-w-note); color: var(--as-ink-soft); }
+.typeLabel { margin: var(--as-space-3) 0 0; font-size: var(--as-text-meta); font-weight: var(--as-w-subtitle); color: var(--as-ink-soft); }
+.typeText { margin: var(--as-space-1) 0 0; }
+
+/* Membership deck (home): four cards spread on the table, straightening and lifting on hover. */
+.deck {
+  display: grid;
+  gap: var(--as-space-4);
+  list-style: none;
+  margin: 0;
+  padding: var(--as-space-4) 0;
+}
+@media (min-width: 40rem) {
+  .deck { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--as-space-6); }
+}
+@media (min-width: 64rem) {
+  .deck { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; padding: var(--as-space-12) var(--as-space-6); }
+  .card { margin-inline: -0.5rem; }
+}
+.card {
+  --tilt: calc((var(--k) - 1.5) * 3deg);
+  --cx: 100%;
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: var(--as-space-2);
+  aspect-ratio: 1.586; /* ID-1 card; grows if the text needs more room */
+  padding: var(--as-space-6);
+  border-radius: var(--as-radius-md);
+  color: var(--as-black);
+  background:
+    repeating-radial-gradient(circle at var(--cx) 0, transparent 0 18px, rgb(0 0 0 / 0.09) 18px 19.5px),
+    var(--card-bg, var(--as-green));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.25) inset, 0 24px 48px -24px rgb(0 0 0 / 0.9);
+}
+:dir(rtl) .card { --cx: 0%; }
+.card[data-type="affiliate"] { --card-bg: var(--as-green-light); }
+.card[data-type="honorary"] { --card-bg: var(--as-yellow); }
+.card[data-type="distinguished"] { --card-bg: var(--as-red); }
+@media (min-width: 64rem) {
+  .card { rotate: var(--tilt); translate: 0 calc(max(var(--k) - 1.5, 1.5 - var(--k)) * 0.9rem); }
+  :dir(rtl) .card { rotate: calc(-1 * var(--tilt)); }
+}
+@media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+  .card { transition: rotate var(--motion-300) var(--ease-out), translate var(--motion-300) var(--ease-out); }
+}
+@media (min-width: 64rem) and (hover: hover) {
+  .card:hover { z-index: 1; rotate: 0deg; translate: 0 -1.25rem; }
+  :dir(rtl) .card:hover { rotate: 0deg; }
+}
+.cardSociety { font-size: var(--as-text-meta); font-weight: var(--as-w-subtitle); opacity: 0.8; }
+.cardName { align-self: end; font-size: var(--as-text-h3); font-weight: var(--as-w-title); line-height: var(--as-leading-tight); }
+.cardWho { font-size: var(--as-text-secondary); font-weight: var(--as-w-text); line-height: 1.45; }
+.cardGranted {
+  justify-self: start;
+  margin-block-start: var(--as-space-1);
+  padding-block-start: var(--as-space-2);
+  border-block-start: 1px solid rgb(0 0 0 / 0.3);
+  font-size: var(--as-text-meta);
+  font-weight: var(--as-w-subtitle);
+}

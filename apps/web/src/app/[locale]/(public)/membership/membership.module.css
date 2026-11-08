@@ -1,0 +1,39 @@
+.applyNote {
+  display: inline-block;
+  margin-block-start: var(--as-space-6);
+  padding: var(--as-space-2) var(--as-space-4);
+  border-radius: var(--as-radius-sm);
+  background: var(--as-surface);
+  font-weight: var(--as-w-subtitle);
+}
+.journey { background: var(--as-cream); }
+.faq { display: grid; gap: var(--as-space-2); max-inline-size: 52rem; }
+.faqItem {
+  border: 1px solid var(--as-line);
+  border-radius: var(--as-radius-md);
+  background: var(--as-surface);
+}
+.faqItem summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--as-space-4);
+  min-block-size: 56px;
+  padding: var(--as-space-3) var(--as-space-6);
+  cursor: pointer;
+  font-weight: var(--as-w-subtitle);
+  list-style: none;
+}
+.faqItem summary::-webkit-details-marker { display: none; }
+.faqItem summary::after {
+  content: "";
+  flex: none;
+  inline-size: 14px;
+  block-size: 14px;
+  border-radius: 50%;
+  background: var(--as-gradient-ball);
+  transition: transform var(--motion-200) var(--ease-out);
+}
+.faqItem[open] summary::after { transform: scale(1.4); }
+.faqItem p { margin: 0; padding: 0 var(--as-space-6) var(--as-space-6); color: var(--as-ink-soft); }
+.contact { margin-block-start: var(--as-space-8); }

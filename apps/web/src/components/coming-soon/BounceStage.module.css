@@ -1,0 +1,137 @@
+.figure {
+  margin: 0;
+}
+
+.stage {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  aspect-ratio: 720 / 420;
+  overflow: visible;
+}
+
+.ground {
+  stroke: var(--as-black);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.perforation {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-dasharray: 9 8;
+  stroke-linecap: butt;
+}
+
+.ghostPast,
+.ghostFuture {
+  fill: none;
+  stroke-width: 2;
+}
+.ghostPast {
+  stroke: var(--as-red);
+  opacity: 0.42;
+}
+.ghostFuture {
+  stroke: var(--as-green);
+  opacity: 0.5;
+}
+
+.ball {
+  stroke: var(--as-black);
+  stroke-width: 2.5;
+}
+
+.shadow {
+  fill: var(--as-black);
+  opacity: 0.18;
+}
+
+.chartLine {
+  stroke: var(--as-black);
+  stroke-width: 1.5;
+  opacity: 0.5;
+}
+.tick {
+  stroke: var(--as-ink-soft);
+  stroke-width: 1.5;
+}
+.tickContact {
+  stroke: var(--as-red);
+  stroke-width: 2.5;
+}
+.tickCurrent {
+  stroke: var(--as-black);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.chartLabel {
+  font-family: var(--as-font);
+  font-size: 15px;
+  font-weight: var(--as-w-text);
+  fill: var(--as-ink-soft);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--as-space-3) var(--as-space-4);
+  margin-block-start: var(--as-space-4);
+}
+
+.play {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--as-space-2);
+  min-block-size: 44px;
+  padding-inline: var(--as-space-4);
+  border: 2px solid var(--as-black);
+  border-radius: var(--as-radius-pill);
+  background: var(--as-white);
+  color: var(--as-black);
+  font: inherit;
+  font-weight: var(--as-w-text);
+  cursor: pointer;
+}
+.play:hover:not(:disabled) {
+  background: var(--as-mist);
+}
+.play:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.playIcon {
+  inline-size: 0;
+  block-size: 0;
+  border-block: 6px solid transparent;
+  border-inline-start: 10px solid currentColor;
+}
+
+.sliderLabel {
+  font-weight: var(--as-w-text);
+}
+
+.slider {
+  flex: 1 1 10rem;
+  min-inline-size: 8rem;
+  accent-color: var(--as-black);
+  min-block-size: 44px;
+}
+
+.counter {
+  min-inline-size: 4ch;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--as-w-subtitle);
+}
+
+.caption {
+  margin-block-start: var(--as-space-3);
+  font-size: var(--as-text-secondary);
+  color: var(--as-ink-soft);
+  max-inline-size: 52ch;
+}
+
+.screen { display: block; }
+.panel { display: block; }

@@ -1,0 +1,121 @@
+/* ---------- Animator's cursor ---------- */
+.cursor {
+  position: fixed;
+  z-index: 200;
+  inset-block-start: 0;
+  left: 0; /* physical: positioned by translate from the viewport's left edge in both directions */
+  inline-size: 34px;
+  block-size: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1.5px solid var(--as-white);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.35); /* stays visible over the white paper without a blend mode */
+  pointer-events: none;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity var(--motion-200) var(--ease-out);
+}
+.cursor[data-visible="true"] { opacity: 1; }
+.cursor[data-active="true"] { background: rgb(236 216 93 / 0.25); border-color: var(--as-yellow); }
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .cursor { display: none; }
+}
+
+/* ---------- Intro gate (once per session) ---------- */
+.gate { display: none; }
+:global(html.intro) .gate {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  background: var(--as-black);
+  color: var(--as-white);
+  overflow: hidden;
+}
+:global(html.intro:has(.gate)) { overflow: hidden; }
+.gateCanvas { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }
+.gateGlow {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  inline-size: min(90vw, 46rem);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background:
+    radial-gradient(closest-side, rgb(94 171 100 / 0.22), transparent 70%),
+    radial-gradient(closest-side, rgb(236 216 93 / 0.12), transparent);
+  pointer-events: none;
+}
+.gateCentre {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--as-space-4);
+  padding-inline: var(--as-space-4);
+  text-align: center;
+}
+.gateLogo { inline-size: 200px; block-size: auto; }
+.gateBall {
+  inline-size: 18px;
+  block-size: 18px;
+  border-radius: 50%;
+  background: var(--as-gradient-ball);
+  box-shadow: 0 0 24px rgb(236 216 93 / 0.6);
+}
+.gateTitle {
+  margin: var(--as-space-2) 0 0;
+  font-size: var(--as-text-lead);
+  font-weight: var(--as-w-subtitle);
+  max-inline-size: 28ch;
+}
+.gateActions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--as-space-3); margin-block-start: var(--as-space-2); }
+.gateActions :global(.btn-secondary) { color: var(--as-white); }
+
+/* Logo settles, ball drops in and bounces twice (artwork exception: one-shot, 1.2s). */
+.gate[data-state="open"] .gateLogo { animation: gate-logo 900ms var(--ease-out) both; }
+.gate[data-state="open"] .gateBall { animation: gate-ball 1200ms linear 300ms both; }
+.gate[data-state="open"] .gateTitle,
+.gate[data-state="open"] .gateActions { animation: gate-text var(--motion-300) var(--ease-out) both; animation-delay: 1100ms; }
+.gate[data-state="open"] .gateActions { animation-delay: 1250ms; }
+.gate[data-state="leaving"] { animation: gate-out 700ms var(--ease-in) forwards; }
+.gate[data-state="leaving"] .gateCentre { animation: gate-push 700ms var(--ease-in) forwards; }
+
+@keyframes gate-logo { from { opacity: 0; scale: 0.86; filter: blur(8px); } to { opacity: 1; scale: 1; filter: none; } }
+@keyframes gate-text { from { opacity: 0; translate: 0 12px; } to { opacity: 1; translate: 0 0; } }
+@keyframes gate-ball {
+  0% { opacity: 0; transform: translateY(-160px); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  8% { opacity: 1; }
+  38% { transform: translateY(0) scale(1.35, 0.7); animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1); }
+  60% { transform: translateY(-56px) scale(0.92, 1.1); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  80% { transform: translateY(0) scale(1.2, 0.82); animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1); }
+  90% { transform: translateY(-14px); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes gate-out { 0% { opacity: 1; } 60% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+@keyframes gate-push { to { scale: 1.6; opacity: 0; filter: blur(6px); } }
+
+/* ---------- Scroll-progress ball (wide screens) ---------- */
+.progress {
+  position: fixed;
+  z-index: 30;
+  inset-inline-end: var(--as-space-6);
+  inset-block: 30vh;
+  inline-size: 2px;
+  background: rgb(255 255 255 / 0.14);
+  pointer-events: none;
+}
+.progressBall {
+  position: absolute;
+  left: 50%; /* physical centring on the 2px track */
+  inset-block-start: 0;
+  inline-size: 12px;
+  block-size: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: var(--as-gradient-ball);
+  box-shadow: 0 0 16px rgb(236 216 93 / 0.7);
+  will-change: transform; /* moved by MotionEngine (translate) */
+}
+@media (max-width: 63.99rem), (prefers-reduced-motion: reduce) {
+  .progress { display: none; }
+}

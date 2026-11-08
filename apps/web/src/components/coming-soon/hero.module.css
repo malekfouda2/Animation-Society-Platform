@@ -1,0 +1,108 @@
+/* Home hero: green field (guideline cover) with the lightbox disc and character crescent. */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--as-green);
+  color: var(--as-black);
+  padding-block: 11rem var(--as-space-16);
+}
+@media (min-width: 48rem) {
+  .hero { padding-block: 12rem var(--as-space-24); }
+}
+.grid {
+  display: grid;
+  gap: var(--as-space-12);
+  align-items: center;
+}
+@media (min-width: 64rem) {
+  .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: var(--as-space-8); }
+}
+
+.title {
+  font-size: var(--as-text-display);
+  font-weight: var(--as-w-title);
+  line-height: 1.05;
+  margin-block-end: var(--as-space-6);
+  max-inline-size: 12ch;
+}
+:lang(ar) .title { line-height: 1.2; }
+.body {
+  font-size: var(--as-text-lead);
+  max-inline-size: 34ch;
+  margin-block-end: var(--as-space-8);
+}
+.actions { display: flex; flex-wrap: wrap; gap: var(--as-space-3); }
+.status { margin-block-start: var(--as-space-6); color: var(--as-black); }
+
+/* Scene */
+.scene {
+  --px: 0;
+  --py: 0;
+  --d: 82%; /* disc diameter as a share of the scene width */
+  position: relative;
+  inline-size: 100%;
+  max-inline-size: 40rem;
+  justify-self: center;
+}
+.disc { position: relative; z-index: 2; }
+.screen {
+  display: grid;
+  place-items: center;
+  inline-size: var(--d);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  padding: 9%;
+  border-radius: 50%;
+  background: var(--as-white);
+  box-shadow: 0 2px 24px rgb(0 0 0 / 0.07);
+  transform: translate(calc(var(--px) * -10px), calc(var(--py) * -10px));
+  transition: transform var(--motion-300) var(--ease-out);
+}
+.crescent {
+  position: absolute;
+  z-index: 1;
+  inset-inline: -6%;
+  inset-block-start: 30%;
+  pointer-events: none;
+  transform: translate(calc(var(--px) * 18px), calc(var(--py) * 12px));
+  transition: transform var(--motion-300) var(--ease-out);
+}
+.crescentImg { display: block; inline-size: 100%; block-size: auto; }
+
+/* One orchestrated entrance: disc settles, crescent rises, text follows. */
+@media (prefers-reduced-motion: no-preference) {
+  .screen { animation: disc-in 600ms var(--ease-out) both; }
+  .crescent { animation: crescent-in 700ms var(--ease-out) 150ms both; }
+  .copy > * { animation: copy-in var(--motion-300) var(--ease-out) both; }
+  .copy > :nth-child(2) { animation-delay: 80ms; }
+  .copy > :nth-child(3) { animation-delay: 160ms; }
+  .copy > :nth-child(4) { animation-delay: 240ms; }
+}
+@keyframes disc-in { from { opacity: 0; scale: 0.9; } to { opacity: 1; scale: 1; } }
+@keyframes crescent-in { from { opacity: 0; translate: 0 48px; } to { opacity: 1; translate: 0 0; } }
+@keyframes copy-in { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
+
+/* Controls and caption share one white panel so they stay legible over the artwork. */
+.controls {
+  position: relative;
+  z-index: 3;
+  margin-block-start: 30%;
+  margin-inline: auto;
+  max-inline-size: 30rem;
+  padding: var(--as-space-3) var(--as-space-4) var(--as-space-1);
+  border-radius: var(--as-radius-md);
+  background: var(--as-white);
+  box-shadow: var(--as-shadow-soft);
+}
+
+/* Floating brand dots drift with scroll. */
+.dots {
+  position: absolute;
+  z-index: -1;
+  inset-block-start: 8rem;
+  inset-inline-end: -6rem;
+  inline-size: min(48vw, 38rem);
+  opacity: 0.4;
+  pointer-events: none;
+}

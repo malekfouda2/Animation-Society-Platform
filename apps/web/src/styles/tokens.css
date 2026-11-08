@@ -1,0 +1,136 @@
+/*
+ * Brand tokens from the Society's Visual Identity Guideline v1.00 (docs/BRAND_ASSETS.md).
+ * Palette is limited to the guideline's primary colours, white, and the logo's black ink.
+ * The guideline's unspecified supporting blue/navy are deliberately NOT used (Malek, 3 Nov 2026).
+ */
+:root {
+  /* Guideline primary palette (p.17) */
+  --as-green: #5eab64;
+  --as-green-light: #89c16d;
+  --as-yellow: #ecd85d;
+  --as-red: #e44345;
+  --as-white: #ffffff;
+  --as-black: #000000; /* logo wordmark ink */
+
+  /* Roles */
+  --as-canvas: var(--as-white);
+  --as-ink: var(--as-black);
+  --as-ink-soft: #3d3d3d; /* black at 76%: 11:1 on white */
+  --as-mist: #eef6ea; /* 10% tint of brand green: structural surface */
+  --as-cream: #fbf7dc; /* 18% tint of brand yellow: notes */
+  --as-line: rgb(0 0 0 / 0.1);
+  --as-line-strong: rgb(0 0 0 / 0.22);
+  --as-on-green: var(--as-black); /* black on #5EAB64 = 7.3:1; white would fail */
+  --as-focus: var(--as-black);
+  --as-danger: #b3261e; /* darker red for error text: 6.3:1 on white */
+  --as-surface: var(--as-white); /* raised panels (L1) */
+  --as-accent-bg: var(--as-black); /* primary button */
+  --as-accent-bg-hover: #262626;
+  --as-accent-ink: var(--as-white);
+
+  /* Guideline gradients (p.19) */
+  --as-gradient-ball: linear-gradient(180deg, var(--as-yellow) 0%, var(--as-red) 100%);
+  --as-gradient-arc: linear-gradient(90deg, var(--as-green-light) 0%, var(--as-yellow) 100%);
+  --as-gradient-warm: linear-gradient(90deg, var(--as-red) 0%, var(--as-yellow) 100%);
+
+  /* Typography (guideline pp.21-23). Weights are the guideline's, which exceed the generic
+     UI-skill weight cap by design (Malek: "use the fonts declared in the drive"). */
+  --as-font-ar: var(--font-cairo), "Cairo", sans-serif;
+  --as-font-en: "RNS Sanz", sans-serif;
+  --as-font: var(--as-font-ar);
+  --as-w-title: 900;
+  --as-w-subtitle: 700;
+  --as-w-text: 600;
+  --as-w-note: 400;
+
+  /* Type scale: body 1rem, secondary 0.875rem, meta 0.75rem; headings on a 1.25 scale */
+  --as-text-meta: 0.75rem;
+  --as-text-secondary: 0.875rem;
+  --as-text-body: 1rem;
+  --as-text-lead: 1.25rem;
+  --as-text-h3: 1.5625rem;
+  --as-text-h2: clamp(1.9rem, 1.4rem + 2vw, 2.75rem);
+  --as-text-h1: clamp(2.5rem, 1.5rem + 4.4vw, 4.75rem);
+  --as-text-display: clamp(2.75rem, 1.2rem + 6.4vw, 6.5rem);
+  --as-leading-body: 1.6;
+  --as-leading-tight: 1.2;
+
+  /* Spacing (4/8 rhythm) */
+  --as-space-1: 0.25rem;
+  --as-space-2: 0.5rem;
+  --as-space-3: 0.75rem;
+  --as-space-4: 1rem;
+  --as-space-6: 1.5rem;
+  --as-space-8: 2rem;
+  --as-space-12: 3rem;
+  --as-space-16: 4rem;
+  --as-space-24: 6rem;
+  --as-space-32: 8rem;
+
+  /* Shape and depth */
+  --as-radius-pill: 999px;
+  --as-radius-lg: 28px;
+  --as-radius-md: 16px;
+  --as-radius-sm: 8px;
+  --as-shadow-soft: 0 2px 16px rgb(0 0 0 / 0.07);
+
+  /* Viewports (UI skill tokens) */
+  --vp-narrow: 375px;
+  --vp-medium: 768px;
+  --vp-wide: 1280px;
+
+  /* Motion: chrome uses only the 100-300ms tokens below, transform/opacity, no bounce.
+     Documented artwork exceptions (one-shot, disabled under reduced motion): hero disc entrance
+     600ms and crescent 700ms; contact "sent" ball 700ms with squash-and-stretch; BounceStage plays
+     at 12 fps; scroll-linked drift/journey are tied to scroll position, not time. */
+  --motion-100: 100ms;
+  --motion-150: 150ms;
+  --motion-200: 200ms;
+  --motion-300: 300ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+/*
+ * "Night studio": the public site's dark world (Malek, 5 Nov 2026: mbvision-kw.com as motion/scroll
+ * reference). Canvas is the logo's own black (guideline Visual Elements 2 are black with brand
+ * contour lines); the four brand colours act as light sources. Member/admin areas stay light.
+ * Contrast on #000: white 21:1, ink-soft (74%) 11.6:1, green 7.6:1, yellow 14:1, red 5.3:1.
+ */
+.world,
+.world-tokens { /* .world-tokens: portals (drawer) rendered outside the .world wrapper */
+  --as-canvas: var(--as-black);
+  --as-ink: var(--as-white);
+  --as-ink-soft: rgb(255 255 255 / 0.74);
+  --as-surface: #121212; /* L1 panel: one neutral step above the canvas */
+  --as-mist: rgb(255 255 255 / 0.05);
+  --as-cream: rgb(236 216 93 / 0.1);
+  --as-line: rgb(255 255 255 / 0.12);
+  --as-line-strong: rgb(255 255 255 / 0.26);
+  --as-focus: var(--as-yellow);
+  --as-danger: #ff8f8a; /* light red for error text: 9.6:1 on black */
+  --as-accent-bg: var(--as-green);
+  --as-accent-bg-hover: var(--as-green-light);
+  --as-accent-ink: var(--as-black);
+  --as-glow-green: radial-gradient(closest-side, rgb(94 171 100 / 0.32), transparent);
+  --as-glow-warm: radial-gradient(closest-side, rgb(228 67 69 / 0.26), rgb(236 216 93 / 0.08) 60%, transparent);
+  --as-glow-yellow: radial-gradient(closest-side, rgb(236 216 93 / 0.22), transparent);
+  --as-text-mega: clamp(3.25rem, 1rem + 9vw, 9.5rem);
+  color-scheme: dark;
+  background: var(--as-canvas);
+  color: var(--as-ink);
+}
+
+/* English pages use RNS Sanz with its declared weights; Cairo stays as Arabic fallback. */
+:root:lang(en) {
+  --as-font: var(--as-font-en), var(--as-font-ar);
+  --as-w-title: 800;
+  --as-w-subtitle: 700;
+  --as-w-text: 600;
+  --as-w-note: 500;
+  --as-leading-body: 1.55;
+  --as-leading-tight: 1.1;
+}
+:root:lang(ar) {
+  --as-font: var(--as-font-ar), var(--as-font-en);
+}

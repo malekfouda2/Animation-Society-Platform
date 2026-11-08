@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Temporary original artwork (Animation Society website, 2026). 2D: the ball as a pencil drawing.
+       Colours: brand navy #000000, blue #5EAB64 construction lines, ball gradient red #E44345 to yellow #ECD85D. -->
+  <defs>
+    <linearGradient id="f2d-ball" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ECD85D"/><stop offset="1" stop-color="#E44345"/>
+    </linearGradient>
+  </defs>
+  <!-- blue-pencil construction -->
+  <g stroke="#5EAB64" stroke-width="1.4" opacity=".55">
+    <circle cx="200" cy="148" r="72"/>
+    <path d="M128 148h144M200 76v144"/>
+    <path d="M140 108c30 22 90 22 120 0" stroke-dasharray="3 6"/>
+  </g>
+  <!-- motion arc with spacing ticks -->
+  <path d="M40 236C70 120 96 88 128 96" stroke="#000000" stroke-width="1.6" stroke-dasharray="2 9" opacity=".7"/>
+  <g stroke="#000000" stroke-width="2" opacity=".55">
+    <path d="M52 194l8 3M66 150l8 4M84 118l7 6M104 100l5 7"/>
+  </g>
+  <!-- flat colour pass, offset like an unaligned cel -->
+  <circle cx="206" cy="153" r="66" fill="url(#f2d-ball)" opacity=".9"/>
+  <!-- rough ink: several overlapping strokes -->
+  <g stroke="#000000" stroke-width="3">
+    <path d="M200 77c40-1 72 30 72 71 1 41-32 73-72 73-41 1-73-32-73-73 0-40 32-71 73-71z"/>
+    <path d="M198 80c38 1 69 31 70 70 0 39-30 69-69 70-40 0-71-31-70-71 1-38 31-69 69-69" stroke-width="1.6" opacity=".6"/>
+  </g>
+  <path d="M168 112c10-10 24-15 38-14" stroke="#fff" stroke-width="7" opacity=".85"/>
+  <!-- ground with hand wobble and smudged shadow -->
+  <path d="M32 240c60-3 120 2 180-1s116 2 156 0" stroke="#000000" stroke-width="2.4"/>
+  <path d="M150 238c30-6 70-6 100 0" stroke="#000000" stroke-width="7" opacity=".18"/>
+</svg>

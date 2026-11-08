@@ -1,0 +1,94 @@
+/* Shared chrome: dev banner, language link and the member/admin frame. */
+
+/* Dev-build notice: a slim fixed strip along the bottom so it never collides with the header. */
+.provisional {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 40;
+  margin: 0;
+  padding: var(--as-space-1) var(--as-space-4);
+  background: var(--as-cream);
+  border-block-start: 1px solid var(--as-line);
+  color: var(--as-black);
+  font-size: var(--as-text-meta);
+  font-weight: var(--as-w-note);
+  text-align: center;
+}
+:global(html:has(.world)) .provisional {
+  background: #0d0d0d;
+  border-block-start-color: rgb(236 216 93 / 0.35);
+  color: var(--as-yellow);
+}
+
+.languageSwitch {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  padding-inline: var(--as-space-3);
+  border-radius: var(--as-radius-pill);
+  color: var(--as-black);
+  font-weight: var(--as-w-subtitle);
+  text-decoration: none;
+}
+.languageSwitch:hover { background: rgb(0 0 0 / 0.06); }
+
+/* Member/admin frame: calm and efficient. */
+.app {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+}
+@media (min-width: 48rem) {
+  .app { grid-template-columns: 17rem 1fr; grid-template-rows: 1fr; }
+}
+.sidebar {
+  background: var(--as-mist);
+  border-inline-end: 1px solid var(--as-line);
+  padding: var(--as-space-6);
+}
+.sidebarBrand { display: inline-block; line-height: 0; }
+.sidebarTitle {
+  margin: var(--as-space-6) 0 var(--as-space-2);
+  font-size: var(--as-text-lead);
+  font-weight: var(--as-w-subtitle);
+}
+.sideList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--as-space-2);
+}
+@media (min-width: 48rem) {
+  .sideList { flex-direction: column; }
+}
+.sideItem {
+  padding: var(--as-space-2) var(--as-space-4);
+  border-radius: var(--as-radius-pill);
+  color: var(--as-ink-soft);
+}
+.sideItem[aria-current="page"] {
+  background: var(--as-white);
+  border: 1px solid var(--as-line);
+  color: var(--as-black);
+  font-weight: var(--as-w-subtitle);
+}
+.sidebarLang { margin-block-start: var(--as-space-6); }
+.appMain {
+  padding: var(--as-space-8) var(--as-space-4);
+  min-inline-size: 0;
+  inline-size: 100%;
+  max-inline-size: var(--vp-wide);
+}
+@media (min-width: 48rem) {
+  .appMain { padding: var(--as-space-12); }
+}
+.notice {
+  padding: var(--as-space-3) var(--as-space-4);
+  border-inline-start: 4px solid var(--as-green);
+  background: var(--as-mist);
+  max-inline-size: 48rem;
+}

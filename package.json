@@ -1,0 +1,40 @@
+{
+  "name": "animation-society",
+  "private": true,
+  "description": "Animation Society bilingual website and membership MVP (MERN modular monolith)",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=24.0.0 <25",
+    "npm": ">=11"
+  },
+  "scripts": {
+    "build:contracts": "npm run build -w @as/contracts",
+    "dev": "npm run build:contracts && concurrently -n api,web -c blue,magenta \"npm run dev -w @as/api\" \"npm run dev -w @as/web\"",
+    "dev:api": "npm run build:contracts && npm run dev -w @as/api",
+    "dev:web": "npm run build:contracts && npm run dev -w @as/web",
+    "build": "npm run build:contracts && npm run build -w @as/api && npm run build -w @as/web",
+    "typecheck": "npm run build:contracts && npm run typecheck --workspaces --if-present",
+    "lint": "npm run build:contracts && npm run lint --workspaces --if-present",
+    "test": "npm run build:contracts && npm run test --workspaces --if-present",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "db:up": "docker compose up -d --wait mongo",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f mongo",
+    "test:integration": "npm run build:contracts && MONGODB_URI_TEST=${MONGODB_URI_TEST:-mongodb://127.0.0.1:27017/animation_society_it?replicaSet=rs0&directConnection=true} npm run test:integration -w @as/api"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.19.2",
+    "concurrently": "10.0.6",
+    "eslint": "10.13.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1"
+  },
+  "overrides": {
+    "minimatch": "11.0.4"
+  }
+}

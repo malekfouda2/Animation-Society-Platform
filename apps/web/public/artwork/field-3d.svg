@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <!-- Temporary original artwork (Animation Society website, 2026). 3D: the ball as a lit, wireframed model on a perspective floor. -->
+  <defs>
+    <radialGradient id="f3d-shade" cx=".36" cy=".3" r=".8">
+      <stop offset="0" stop-color="#ECD85D"/><stop offset=".55" stop-color="#E9894E"/><stop offset="1" stop-color="#B8323A"/>
+    </radialGradient>
+    <radialGradient id="f3d-shadow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#000000" stop-opacity=".45"/><stop offset="1" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="f3d-clip"><circle cx="200" cy="148" r="72"/></clipPath>
+  </defs>
+  <!-- perspective floor converging to a vanishing point above the stage -->
+  <g stroke="#5EAB64" stroke-width="1.2" opacity=".45">
+    <path d="M20 300L170 222M90 300L184 222M160 300L196 222M240 300L204 222M310 300L216 222M380 300L230 222"/>
+    <path d="M60 222h280M38 240h324M14 262h372M0 290h400"/>
+  </g>
+  <ellipse cx="200" cy="232" rx="78" ry="14" fill="url(#f3d-shadow)"/>
+  <circle cx="200" cy="148" r="72" fill="url(#f3d-shade)"/>
+  <!-- wireframe: latitude and longitude loops -->
+  <g clip-path="url(#f3d-clip)" stroke="#000000" stroke-width="1.3" opacity=".55">
+    <ellipse cx="200" cy="148" rx="72" ry="18"/>
+    <ellipse cx="200" cy="112" rx="62" ry="15"/>
+    <ellipse cx="200" cy="184" rx="62" ry="15"/>
+    <ellipse cx="200" cy="82" rx="38" ry="9"/>
+    <ellipse cx="200" cy="214" rx="38" ry="9"/>
+    <ellipse cx="200" cy="148" rx="18" ry="72"/>
+    <ellipse cx="200" cy="148" rx="46" ry="72"/>
+    <ellipse cx="200" cy="148" rx="66" ry="72"/>
+  </g>
+  <circle cx="200" cy="148" r="72" stroke="#000000" stroke-width="2.4"/>
+  <ellipse cx="174" cy="114" rx="16" ry="10" fill="#fff" opacity=".6" transform="rotate(-28 174 114)"/>
+  <!-- axis gizmo -->
+  <g stroke-width="3" stroke-linecap="round">
+    <path d="M330 70v-34" stroke="#5EAB64"/><path d="M330 70h32" stroke="#E44345"/><path d="M330 70l-20 16" stroke="#ECD85D"/>
+  </g>
+</svg>

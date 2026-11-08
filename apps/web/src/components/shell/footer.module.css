@@ -1,0 +1,74 @@
+.footer {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-block-start: var(--as-space-16);
+  padding-block: var(--as-space-24) var(--as-space-8);
+  background: var(--as-black);
+  color: var(--as-white);
+  border-block-start: 1px solid rgb(255 255 255 / 0.08);
+}
+.art { z-index: -2; object-fit: cover; opacity: 0.55; inset-block-start: -10% !important; block-size: 120% !important; }
+@media (max-width: 47.99rem) {
+  .art { opacity: 0.25; }
+}
+.glow {
+  position: absolute;
+  z-index: -1;
+  inset-block-start: -20%;
+  inset-inline-start: 50%;
+  inline-size: 70rem;
+  aspect-ratio: 1;
+  translate: -50% 0;
+  background: var(--as-glow-green);
+  pointer-events: none;
+}
+:dir(rtl) .glow { translate: 50% 0; }
+
+.statement { display: grid; justify-items: start; gap: var(--as-space-8); margin-block-end: var(--as-space-24); }
+.big {
+  display: grid;
+  margin: 0;
+  font-size: var(--as-text-mega);
+  font-weight: var(--as-w-title);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+:lang(ar) .big { line-height: 1.25; letter-spacing: 0; }
+.big span:nth-child(2) { color: var(--as-green-light); }
+.big span:nth-child(3) {
+  background: var(--as-gradient-warm);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.inner {
+  display: grid;
+  gap: var(--as-space-8);
+  padding-block-start: var(--as-space-8);
+  border-block-start: 1px solid rgb(255 255 255 / 0.14);
+}
+@media (min-width: 48rem) {
+  .inner { grid-template-columns: 1.4fr repeat(3, 1fr); }
+}
+.brand img { display: block; inline-size: 140px; block-size: auto; }
+.tagline { margin-block: var(--as-space-4) var(--as-space-2); color: rgb(255 255 255 / 0.74); max-inline-size: 30ch; }
+.site { color: var(--as-white); text-decoration-color: var(--as-green); }
+.heading { font-size: var(--as-text-secondary); font-weight: var(--as-w-subtitle); color: var(--as-green-light); margin-block-end: var(--as-space-3); }
+.col ul { list-style: none; margin: 0; padding: 0; display: grid; }
+.col a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 40px;
+  color: rgb(255 255 255 / 0.86);
+  text-decoration: none;
+}
+.col a:hover { color: var(--as-white); text-decoration: underline; text-decoration-color: var(--as-green); }
+.base {
+  margin-block-start: var(--as-space-12);
+  font-size: var(--as-text-meta);
+  font-weight: var(--as-w-note);
+  color: rgb(255 255 255 / 0.6);
+}
+.base p { margin: 0; }

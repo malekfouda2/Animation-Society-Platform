@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Temporary original artwork (Animation Society website, 2026). Hybrid: one ball, half hand-drawn line, half rendered model. -->
+  <defs>
+    <radialGradient id="fhy-shade" cx=".7" cy=".3" r=".85">
+      <stop offset="0" stop-color="#ECD85D"/><stop offset=".55" stop-color="#E9894E"/><stop offset="1" stop-color="#B8323A"/>
+    </radialGradient>
+    <clipPath id="fhy-right"><path d="M200 60L290 60L290 240L138 240Z"/></clipPath>
+    <clipPath id="fhy-left"><path d="M200 60L138 240L120 240L120 60Z"/></clipPath>
+  </defs>
+  <!-- line half: pencil construction + rough ink -->
+  <g clip-path="url(#fhy-left)">
+    <circle cx="200" cy="148" r="72" stroke="#5EAB64" stroke-width="1.2" opacity=".5"/>
+    <path d="M200 77c-41 0-73 31-73 71 0 41 32 73 73 73" stroke="#000000" stroke-width="3"/>
+    <path d="M198 80c-38 1-68 31-69 69 0 38 30 69 69 70" stroke="#000000" stroke-width="1.5" opacity=".55"/>
+    <path d="M160 116c8-12 20-20 34-22" stroke="#000000" stroke-width="1.6" stroke-dasharray="3 5"/>
+  </g>
+  <!-- rendered half -->
+  <g clip-path="url(#fhy-right)">
+    <circle cx="200" cy="148" r="72" fill="url(#fhy-shade)"/>
+    <ellipse cx="200" cy="148" rx="46" ry="72" stroke="#000000" stroke-width="1.2" opacity=".35"/>
+    <ellipse cx="200" cy="148" rx="72" ry="18" stroke="#000000" stroke-width="1.2" opacity=".35"/>
+    <circle cx="200" cy="148" r="72" stroke="#000000" stroke-width="2.4"/>
+  </g>
+  <!-- seam between techniques -->
+  <path d="M206 56L132 246" stroke="#5EAB64" stroke-width="3" stroke-dasharray="8 7"/>
+  <!-- ground: sketched on the left, crisp on the right -->
+  <path d="M30 240c40-2 80 2 120-1" stroke="#000000" stroke-width="2.2"/>
+  <path d="M150 240H372" stroke="#000000" stroke-width="2"/>
+  <ellipse cx="236" cy="240" rx="44" ry="6" fill="#000000" opacity=".2"/>
+</svg>

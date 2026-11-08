@@ -1,0 +1,265 @@
+@import "./tokens.css";
+
+/* RNS Sanz (English brand face). Files are git-ignored until the web licence is confirmed; when they
+   are missing the browser skips them and English uses Cairo. */
+@font-face { font-family: "RNS Sanz"; src: url("/fonts/rns-sanz/RNSSanz-Medium.otf") format("opentype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "RNS Sanz"; src: url("/fonts/rns-sanz/RNSSanz-SemiBold.otf") format("opentype"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "RNS Sanz"; src: url("/fonts/rns-sanz/RNSSanz-Bold.otf") format("opentype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "RNS Sanz"; src: url("/fonts/rns-sanz/RNSSanz-ExtraBold.otf") format("opentype"); font-weight: 800; font-style: normal; font-display: swap; }
+
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  color-scheme: light;
+  scroll-padding-block-start: 6rem; /* anchor targets clear the sticky nav */
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  margin: 0;
+  min-block-size: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--as-canvas);
+  color: var(--as-ink);
+  font-family: var(--as-font);
+  font-weight: var(--as-w-text);
+  font-size: var(--as-text-body);
+  line-height: var(--as-leading-body);
+  overflow-x: clip;
+  padding-block-end: 2.5rem; /* room for the fixed dev-build strip */
+}
+dd { margin-inline-start: 0; }
+
+h1, h2, h3, h4 {
+  line-height: var(--as-leading-tight);
+  margin-block: 0 var(--as-space-4);
+  text-wrap: balance;
+}
+h1 { font-weight: var(--as-w-title); font-size: var(--as-text-h1); }
+h2 { font-weight: var(--as-w-title); font-size: var(--as-text-h2); }
+h3 { font-weight: var(--as-w-subtitle); font-size: var(--as-text-h3); }
+h4 { font-weight: var(--as-w-subtitle); font-size: var(--as-text-lead); }
+:lang(en) :is(h1, h2) { letter-spacing: -0.015em; }
+
+p { margin-block: 0 var(--as-space-4); text-wrap: pretty; }
+small, .note { font-weight: var(--as-w-note); }
+
+a {
+  color: inherit;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
+  text-decoration-color: var(--as-green);
+}
+a:hover { text-decoration-color: currentColor; }
+
+img, svg, video { max-inline-size: 100%; block-size: auto; }
+
+:focus-visible {
+  outline: 3px solid var(--as-focus);
+  outline-offset: 3px;
+  border-radius: var(--as-radius-sm);
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--as-space-4);
+  inset-block-start: -100px;
+  z-index: 100;
+  padding: var(--as-space-2) var(--as-space-4);
+  background: var(--as-black);
+  color: var(--as-white);
+  border-radius: var(--as-radius-sm);
+}
+.skip-link:focus { inset-block-start: var(--as-space-4); }
+
+.visually-hidden {
+  position: absolute !important;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Main content width cap (UI skill: cap the page, not the chrome). */
+.container {
+  inline-size: 100%;
+  max-inline-size: calc(var(--vp-wide) + 2 * var(--as-space-8));
+  margin-inline: auto;
+  padding-inline: var(--as-space-4);
+}
+@media (min-width: 48rem) {
+  .container { padding-inline: var(--as-space-8); }
+}
+
+/* Buttons: one ink accent for primary actions; 44px+ targets. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--as-space-2);
+  min-block-size: 48px;
+  padding-inline: var(--as-space-6);
+  border: 2px solid var(--as-ink);
+  border-radius: var(--as-radius-pill);
+  font: inherit;
+  font-weight: var(--as-w-subtitle);
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--motion-150) var(--ease-out); /* colour changes are instant (UI motion rule) */
+}
+.btn-primary { background: var(--as-accent-bg); color: var(--as-accent-ink); border-color: var(--as-accent-bg); }
+.btn-primary:hover { background: var(--as-accent-bg-hover); border-color: var(--as-accent-bg-hover); }
+.btn-secondary { background: transparent; color: var(--as-ink); border-color: currentColor; }
+.btn-secondary:hover { background: var(--as-mist); }
+.btn-light { background: var(--as-white); color: var(--as-black); border-color: var(--as-white); }
+.btn-light:hover { background: var(--as-cream); }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .btn:hover { transform: translateY(-2px); }
+}
+.btn .arrow { display: inline-block; transition: transform var(--motion-150) var(--ease-out); }
+:dir(rtl) .btn .arrow { transform: scaleX(-1); }
+
+/* Content status notes: honest labels for draft, example and pending material. */
+.status-note {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--as-space-2);
+  margin: 0;
+  font-size: var(--as-text-meta);
+  font-weight: var(--as-w-note);
+  color: var(--as-ink-soft);
+}
+.status-note::before {
+  content: "";
+  inline-size: 0.6rem;
+  block-size: 0.6rem;
+  border-radius: 50%;
+  background: var(--as-gradient-ball);
+  flex: none;
+}
+
+/* Scroll reveal (driven by components/motion/Reveal.tsx). Without JS or with reduced motion,
+   content is simply visible. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity var(--motion-300) var(--ease-out),
+      transform var(--motion-300) var(--ease-out);
+    transition-delay: calc(var(--reveal-i, 0) * 80ms);
+  }
+  .js [data-reveal="in"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Night-studio world: the page itself is black so overscroll never flashes white. */
+html:has(.world), body:has(.world) { background: var(--as-black); }
+/* Film grain over the dark world (static; decorative). */
+.world::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("/brand/grain.png"); /* pre-rendered noise tile (a live SVG noise filter cost paint time) */
+  background-size: 192px;
+  will-change: transform; /* own compositor layer: never repainted while scrolling */
+}
+html.lenis { scroll-behavior: auto; }
+.world ::selection { background: var(--as-yellow); color: var(--as-black); }
+
+/* Parallax layers ([data-speed], driven by components/motion/Parallax.tsx). Static without JS
+   or under reduced motion. */
+[data-speed], [data-depth] { will-change: transform; }
+/* MotionEngine marks sections that are out of view; their decorative CSS loops pause there. */
+main > section[data-offscreen] *:not([data-enter]), main > section[data-offscreen] *::before, main > section[data-offscreen] *::after { animation-play-state: paused !important; }
+
+/* Lenis smooth scroll (from lenis/dist/lenis.css) */
+html.lenis, html.lenis body { block-size: auto; }
+.lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+.lenis [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * Section entrances (MotionEngine sets data-entered once an element scrolls into view).
+ * Compositor-only: every keyframe animates transform and opacity, nothing else, and each plays once.
+ * Artwork exception to the 100-300ms chrome tokens: entrances run 600-1000ms, staggered by
+ * --enter-i × 110ms. Without JS, before MotionEngine starts, or under reduced motion: no waiting
+ * state and no animation, so content is always visible.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-motion="on"] [data-enter]:not([data-entered]) { opacity: 0; }
+  html[data-motion="on"] [data-enter][data-entered=""] {
+    animation: var(--enter-name, enter-rise) var(--enter-dur, 700ms) var(--enter-ease, cubic-bezier(0.16, 1, 0.3, 1)) both;
+    animation-delay: calc(var(--enter-i, 0) * 110ms);
+  }
+}
+[data-enter="power"] { --enter-name: enter-power; --enter-dur: 1000ms; --enter-ease: linear; }
+[data-enter="beam"] { --enter-name: enter-beam; --enter-dur: 900ms; transform-origin: 50% 0; }
+[data-enter="sheet"] { --enter-name: enter-sheet; --enter-dur: 900ms; }
+[data-enter="zoetrope"] { --enter-name: enter-zoetrope; --enter-dur: 900ms; }
+[data-enter="slide"] { --enter-name: enter-slide; --enter-x: -56px; }
+[dir="rtl"] [data-enter="slide"] { --enter-x: 56px; }
+[data-enter="drop"] { --enter-name: enter-drop; --enter-dur: 900ms; }
+[data-enter="deal"] { --enter-name: enter-deal; --enter-dur: 800ms; }
+[data-enter="roll"] { --enter-name: enter-roll; --enter-dur: 1000ms; }
+[data-enter="pop"] { --enter-name: enter-pop; --enter-dur: 600ms; --enter-ease: linear; }
+
+@keyframes enter-rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+/* Projector lamp striking: a quick flicker, then steady. */
+@keyframes enter-power {
+  0% { opacity: 0; transform: scale(0.97); }
+  18% { opacity: 0.7; }
+  26% { opacity: 0.15; }
+  40% { opacity: 0.9; transform: none; }
+  48% { opacity: 0.5; }
+  60%, 100% { opacity: 1; transform: none; }
+}
+@keyframes enter-beam { from { opacity: 0; transform: scaleY(0.25); } to { opacity: 1; transform: none; } }
+/* A sheet of paper slid onto the light table. */
+@keyframes enter-sheet { from { opacity: 0; transform: translateY(90px) rotate(-2.5deg); } to { opacity: 1; transform: none; } }
+@keyframes enter-zoetrope { from { opacity: 0; transform: translateY(60px) scale(0.9); } to { opacity: 1; transform: none; } }
+@keyframes enter-slide { from { opacity: 0; transform: translateX(var(--enter-x, -56px)); } to { opacity: 1; transform: none; } }
+/* Dropped in, with one small settle (the brand's bouncing ball). */
+@keyframes enter-drop {
+  0% { opacity: 0; transform: translateY(-70px) rotate(5deg); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  55% { opacity: 1; transform: translateY(0) rotate(-0.5deg); animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1); }
+  75% { transform: translateY(-10px) rotate(0.5deg); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  100% { opacity: 1; transform: none; }
+}
+/* Membership cards dealt onto the table from below, each turning into place. */
+@keyframes enter-deal { from { opacity: 0; transform: translateY(140px) rotate(var(--deal-r, 8deg)) scale(0.92); } to { opacity: 1; transform: none; } }
+/* End credits rolling up. */
+@keyframes enter-roll { from { opacity: 0; transform: translateY(90px); } to { opacity: 1; transform: none; } }
+/* The ball drops in and squashes once. */
+@keyframes enter-pop {
+  0% { opacity: 0; transform: translateY(-40px); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  50% { opacity: 1; transform: translateY(0) scale(1.4, 0.65); animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1); }
+  75% { transform: translateY(-8px) scale(0.9, 1.1); }
+  100% { opacity: 1; transform: none; }
+}

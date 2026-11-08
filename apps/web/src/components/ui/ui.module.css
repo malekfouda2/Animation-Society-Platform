@@ -1,0 +1,20 @@
+.empty {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--as-space-6);
+  padding: var(--as-space-8);
+  border: 1px dashed var(--as-line-strong);
+  border-radius: var(--as-radius-lg);
+  background: var(--as-surface);
+}
+.emptyTitle {
+  font-size: var(--as-text-lead);
+  margin-block-end: var(--as-space-2);
+}
+.emptyBody {
+  color: var(--as-ink-soft);
+  max-inline-size: 52ch;
+}
+@media (max-width: 47.99rem) {
+  .empty { flex-direction: column; padding: var(--as-space-6); }
+}
