@@ -18,12 +18,14 @@ Signed contract: not supplied.
 ## Stage 1 closure, 8 November 2026
 
 All Stage 1 exit criteria in docs/PLAN.md were met on 2 November; this closes the loose ends.
-- First commit on `main`, on top of the GitHub placeholder commit of https://github.com/malekfouda2/Animation-Society-Platform (public). At Malek's choice, before pushing: the RNS Sanz files moved to git-ignored `apps/web/public/fonts/rns-sanz/` and are loaded with `@font-face` (no `next/font/local`), so clean checkouts build and fall back to Cairo for English; the quotation, contract matters, draft fees and day-by-day schedule moved to git-ignored `docs/private/COMMERCIAL.md`; README rewritten as a project README.
+- First commit on `main` (8a112da), on top of the GitHub placeholder commit of https://github.com/malekfouda2/Animation-Society-Platform (public). At Malek's choice, before pushing: the RNS Sanz files moved to git-ignored `apps/web/public/fonts/rns-sanz/` and are loaded with `@font-face` (no `next/font/local`), so clean checkouts build and fall back to Cairo for English; the quotation, contract matters, draft fees and day-by-day schedule moved to git-ignored `docs/private/COMMERCIAL.md`; README rewritten as a project README.
 - Fresh-clone verification (A01): clean clone → `npm ci` → env from `.env.example` → `npm run check` exit 0 and `npm run test:integration` 3/3. Defect found and fixed: root `lint` now builds `@as/contracts` first; before this, lint failed on every clean checkout and would have failed CI.
 - Stale notes corrected: Drive supplied, design skills installed, Cairo/RNS Sanz replaced Readex Pro (DECISIONS, CLAUDE.md). Acceptance D-A03 and D-A07 updated with 8 November evidence.
 - `package-lock 2.json` (a macOS duplicate from 3 Nov) is untracked and not committed; safe for Malek to delete.
 
-Still open, carried forward (not Stage 1 exit criteria): GitHub CI has never run (needs the push); integration tests are not in CI; A02 covers Chrome only; Malek's design review (D-A03); RNS Sanz licence; membership card template; Society content approvals; hosting (D06).
+- Pushed to GitHub `main` (commit 8a112da). First GitHub Actions CI run succeeded: https://github.com/malekfouda2/Animation-Society-Platform/actions/runs/42500365742
+
+Still open, carried forward (not Stage 1 exit criteria): integration tests are not in CI; A02 covers Chrome only; Malek's design review (D-A03); RNS Sanz licence; membership card template; Society content approvals; hosting (D06).
 
 Next: Malek's design review, then Stage 2 (sessions, verification/reset, roles, admin MFA).
 
