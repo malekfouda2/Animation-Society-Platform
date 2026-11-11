@@ -10,9 +10,7 @@ permissions:
 
 jobs:
   check:
-    # Pinned: ubuntu-latest is Ubuntu 26 (kernel 6.19+), where MongoDB 8.0 refuses to start
-    # ("Linux kernel versions 6.19 and newer has a known incompatibility", run 43046883544).
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       # Synthetic, non-secret values so builds validate configuration.
@@ -31,9 +29,11 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       # Account, session and transaction tests need a real replica set (a standalone server is not enough).
-      - name: Start MongoDB 8.0 single-node replica set
+      # MongoDB 8.0 refuses to start on the runners' Linux 6.19+ kernels (SERVER-121912; runs 43046883544 and
+      # 43047604808, also on ubuntu-24.04). 8.2.12 has no such check. Local development still uses 8.0.
+      - name: Start MongoDB 8.2 single-node replica set
         run: |
-          docker run -d --name mongo -p 127.0.0.1:27017:27017 mongo:8.0 --replSet rs0 --bind_ip_all
+          docker run -d --name mongo -p 127.0.0.1:27017:27017 mongo:8.2.12 --replSet rs0 --bind_ip_all
           for i in $(seq 1 60); do
             if out=$(docker exec mongo mongosh --quiet --eval "try { rs.status().ok } catch (e) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27017'}]}).ok }; quit(db.hello().isWritablePrimary ? 0 : 1)" 2>&1); then
               echo "MongoDB is PRIMARY after $i attempts"
