@@ -10,7 +10,9 @@ permissions:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest is Ubuntu 26 (kernel 6.19+), where MongoDB 8.0 refuses to start
+    # ("Linux kernel versions 6.19 and newer has a known incompatibility", run 43046883544).
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       # Synthetic, non-secret values so builds validate configuration.

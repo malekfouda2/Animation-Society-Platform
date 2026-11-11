@@ -31,6 +31,13 @@ D-A05 (artwork replacement):
 
 Media kept out of git (Malek, 11 Nov 2026): `apps/web/public/video/` (both films and posters, about 34 MB) is git-ignored. DEVELOPMENT.md explains how to put them back on a checkout or server. A fresh clone shows an empty video player until they're copied in.
 
+CI after the push:
+- The first GitHub run of the replica-set integration tests failed (run 43045937376).
+- The MongoDB start step had no failure exit, so it now fails on its own and writes the container log into the run's annotations.
+- That surfaced the cause (run 43046883544): the `ubuntu-latest` runner is now Ubuntu 26, and its Linux kernel 6.19+ makes MongoDB 8.0 refuse to start.
+- CI is now pinned to `ubuntu-24.04`.
+- **Deployment note:** the production server must also run a kernel MongoDB supports, or a MongoDB release that supports 6.19+. Check this when the host is chosen (Stage 7).
+
 Still open (deferred by Malek, to be raised again at each stage boundary):
 - Malek's design review, two rounds (D-A03): this is what closes Stage 2.
 - Society content: vision and mission, board, General Assembly text, policies, partners, news, contact details and inbox (D06), intro-film captions, and approval of draft copy, including the Arabic admin wording.
