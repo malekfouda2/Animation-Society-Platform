@@ -1,13 +1,16 @@
 import type { ContactMessageInput } from "@as/contracts";
+import type { Mailer } from "../email/email.service.js";
 
 export interface ContactStore {
   save(message: Omit<ContactMessageInput, "website">): Promise<{ id: string }>;
 }
 
+export type StoredContactMessage = Omit<ContactMessageInput, "website">;
+
 /** Mailer port. Only a mock exists until the Society's email provider is chosen (DECISIONS D06). */
 export interface ContactMailer {
   readonly mode: "mock" | "sandbox" | "live";
-  notifySociety(id: string): Promise<void>;
+  notifySociety(id: string, message: StoredContactMessage): Promise<void>;
 }
 
 export function mongoContactStore(model: { create(doc: object): Promise<{ id: unknown }> }): ContactStore {
@@ -30,17 +33,22 @@ export function mockMailer(log: (msg: string, fields: object) => void): ContactM
   };
 }
 
-/** Fixed-window in-memory limiter keyed by client address. Single-process only; fine for the MVP. */
-export function createRateLimiter(limit: number, windowMs: number, now: () => number = Date.now) {
-  const hits = new Map<string, { count: number; resetAt: number }>();
-  return (key: string): boolean => {
-    const t = now();
-    const entry = hits.get(key);
-    if (!entry || entry.resetAt <= t) {
-      hits.set(key, { count: 1, resetAt: t + windowMs });
-      return true;
-    }
-    entry.count += 1;
-    return entry.count <= limit;
+/**
+ * Forwards each message to the Society's mailbox through the email outbox (the local inbox in
+ * development). Until the Society names its mailbox (CONTACT_INBOX), messages are stored only.
+ */
+export function outboxContactMailer(mailer: Mailer, inbox: string | null, log: (msg: string, fields: object) => void): ContactMailer {
+  return {
+    mode: mailer.mode,
+    async notifySociety(id, message) {
+      if (!inbox) {
+        log("contact message stored; no Society mailbox is configured (CONTACT_INBOX)", { contactId: id });
+        return;
+      }
+      await mailer.send(inbox, "ar", {
+        template: "contact_received",
+        vars: { name: message.name, email: message.email, subject: message.subject, message: message.message, locale: message.locale },
+      }, { dedupeKey: `contact:${id}` });
+    },
   };
 }

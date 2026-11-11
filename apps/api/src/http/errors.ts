@@ -5,8 +5,13 @@ import { ZodError } from "zod";
 const STATUS_BY_CODE: Readonly<Record<ErrorCode, number>> = {
   validation_failed: 400,
   unauthenticated: 401,
+  invalid_credentials: 401,
+  email_unverified: 403,
+  mfa_required: 403,
+  token_invalid: 400,
   forbidden: 403,
   not_found: 404,
+  conflict: 409,
   rate_limited: 429,
   internal_error: 500,
 };

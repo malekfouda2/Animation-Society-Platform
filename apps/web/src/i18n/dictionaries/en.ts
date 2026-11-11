@@ -1,4 +1,6 @@
 import type { Dictionary } from "../types";
+import { authEn } from "./auth-en";
+import { contentAdminEn } from "./content-admin-en";
 
 // Interface copy drafted by the developer for review (docs/DECISIONS.md D08).
 export const en: Dictionary = {
@@ -27,6 +29,7 @@ export const en: Dictionary = {
     supplied: "From Society materials, awaiting sign-off",
     pending: "Awaiting content from the Society",
   },
+  unavailable: { title: "This list couldn't load", body: "The site couldn't reach its content just now. Reload the page in a moment." },
   nav: {
     home: "Home",
     about: "About",
@@ -64,11 +67,12 @@ export const en: Dictionary = {
     hero: { scroll: "Scroll to begin the journey" },
     video: {
       heading: "Meet the Society",
-      pendingTitle: "The introduction video is on its way",
-      pendingBody: "The Society's official introduction video will play here once it is supplied.",
+      play: "Play the introduction film",
+      caption: "The Society's introduction film",
+      label: "The Animation Society's introduction film",
     },
     about: { heading: "About the Society" },
-    objectives: { heading: "What we work towards", lead: "Five objectives guide the Society's work." },
+    objectives: { heading: "What we work towards", lead: "Four goals guide the Society's work, as set out in its introduction film." },
     fields: {
       heading: "Animation fields",
       lead: "One ball, four ways to make it move.",
@@ -98,6 +102,7 @@ export const en: Dictionary = {
     },
     partners: {
       heading: "Partners",
+      all: "All partners",
       empty: {
         title: "Partners will be listed here",
         body: "Approved partners appear here with their logos and links. Interested in working with the Society? Get in touch.",
@@ -105,6 +110,7 @@ export const en: Dictionary = {
     },
     news: {
       heading: "News and events",
+      all: "All news and events",
       empty: {
         title: "No news or events published yet",
         body: "Updates and upcoming events will appear here as the Society publishes them.",
@@ -127,6 +133,7 @@ export const en: Dictionary = {
     },
     vision: "Vision",
     mission: "Mission",
+    missionPending: "The Society's official mission will be published here once it is approved.",
     visionMissionPending: {
       title: "Official vision and mission coming soon",
       body: "The Society's approved wording will be published here.",
@@ -229,15 +236,49 @@ export const en: Dictionary = {
     lead: "Terms, privacy, membership, payment and card policies.",
     pending: { title: "Awaiting the Society's text", body: "This policy will be published when the Society supplies its approved wording." },
   },
+  auth: authEn,
   member: {
     title: "Member area",
-    placeholder: "Your application, membership status, card and payment history will appear here.",
-    noAuthYet: "Not open yet. Sign-in and applications open in a later stage; no member data exists.",
+    nav: { account: "Account" },
+    signedInAs: "Signed in as",
+    comingNext: "Your application, membership status, card and payment history will appear here once applications open.",
+    profile: { title: "Your details", save: "Save details", saving: "Saving…", saved: "Details saved.", language: "Email language" },
+    password: { title: "Change password", lead: "Your other devices will be signed out.", save: "Change password", saving: "Changing…", saved: "Password changed. Other devices were signed out." },
   },
   admin: {
     title: "Administration",
-    placeholder: "Applications, members, content and exports will be managed here.",
-    noAuthYet: "Not open yet. Staff sign-in, roles and MFA come in a later stage; no records are exposed.",
+    nav: { overview: "Overview", security: "Sign-in security", audit: "Activity log", posts: "News and events", projects: "Projects", partners: "Partners", sections: "Page sections", media: "Media" },
+    roles: { admin: "Administrator", editor: "Content editor", member: "Member" },
+    welcome: "Welcome, {name}",
+    roleLine: "Your role",
+    comingNext: "You can publish news, events, projects and partners now. Applications, members and payments arrive in later stages.",
+    security: {
+      title: "Sign-in security",
+      codesLeft: "Recovery codes left",
+      codesLow: "You're running low. Make a new set.",
+      regenerateLead: "Making new codes cancels the old ones. Enter a code from your authenticator app to confirm.",
+      regenerate: "Make new recovery codes",
+      regenerating: "Making codes…",
+    },
+    audit: { title: "Activity log", lead: "Recent account, security and content actions, newest first.", empty: "No activity recorded yet.", when: "When", action: "Action", actor: "By", target: "Applies to", cli: "Server command", system: "System", actions: {
+        "user.staff_invited": "Staff member invited",
+        "user.role_changed": "Role changed",
+        "user.disabled": "Account disabled",
+        "auth.password_set": "Password chosen",
+        "auth.password_reset": "Password reset",
+        "auth.password_changed": "Password changed",
+        "mfa.enrolled": "Two-step sign-in turned on",
+        "mfa.recovery_code_used": "Recovery code used",
+        "mfa.recovery_codes_regenerated": "New recovery codes made",
+        "mfa.reset": "Two-step sign-in reset",
+        "content.created": "Content created",
+        "content.updated": "Content draft saved",
+        "content.published": "Content published",
+        "content.unpublished": "Content unpublished",
+        "content.deleted": "Content deleted",
+      } },
+    forbidden: { title: "Staff only", body: "This area is for Society staff accounts." },
+    content: contentAdminEn,
     systemStatus: "System status",
     apiHealth: "API process",
     apiReady: "Database (replica set)",
@@ -245,6 +286,7 @@ export const en: Dictionary = {
     statusDown: "Not ready",
     statusUnreachable: "Unreachable",
   },
+  devInbox: { title: "Local inbox", lead: "Development only. Emails the site would send appear here; nothing leaves this computer.", empty: "No emails yet.", to: "To", openLink: "Open link" },
   notFound: { title: "This frame is missing", body: "The page you asked for doesn't exist.", home: "Back to home" },
   footer: {
     explore: "Explore",

@@ -1,0 +1,8 @@
+/* Board as a cast list: round portrait (or the name's first letter), name, role. */
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--as-space-6) var(--as-space-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr)); }
+.compact { grid-template-columns: repeat(auto-fill, minmax(min(100%, 8.5rem), 1fr)); gap: var(--as-space-4); }
+.member { display: grid; justify-items: start; gap: var(--as-space-1); }
+.portrait, .initial { inline-size: 5rem; block-size: 5rem; border-radius: 50%; object-fit: cover; margin-block-end: var(--as-space-2); }
+.initial { display: grid; place-items: center; background: var(--as-gradient-ball); color: var(--as-black); font-size: var(--as-text-h3); font-weight: var(--as-w-title); }
+.name { font-weight: var(--as-w-subtitle); font-size: var(--as-text-body); line-height: 1.3; }
+.role { color: var(--as-ink-soft); font-size: var(--as-text-secondary); }

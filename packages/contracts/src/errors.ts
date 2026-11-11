@@ -4,8 +4,13 @@ import { z } from "zod";
 export const ERROR_CODES = [
   "validation_failed",
   "unauthenticated",
+  "invalid_credentials",
+  "email_unverified",
+  "mfa_required",
+  "token_invalid",
   "forbidden",
   "not_found",
+  "conflict",
   "rate_limited",
   "internal_error",
 ] as const;

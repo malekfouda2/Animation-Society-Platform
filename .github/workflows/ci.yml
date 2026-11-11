@@ -28,4 +28,13 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      # Account, session and transaction tests need a real replica set (a standalone server is not enough).
+      - name: Start MongoDB 8.0 single-node replica set
+        run: |
+          docker run -d --name mongo -p 127.0.0.1:27017:27017 mongo:8.0 --replSet rs0 --bind_ip_all
+          for i in $(seq 1 60); do
+            docker exec mongo mongosh --quiet --eval "try { rs.status().ok } catch (e) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27017'}]}).ok }; quit(db.hello().isWritablePrimary ? 0 : 1)" && break
+            sleep 2
+          done
+      - run: npm run test:integration
       - run: npm run build

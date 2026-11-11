@@ -1,7 +1,7 @@
 # Project progress
 
 Status: Stage 1 done. Design checkpoint redone as a full "night studio" redesign after Malek named mbvision-kw.com as the design reference (5 Nov 2026); homepage sections below the hero redesigned individually on 8 Nov 2026. Awaiting Malek's design review.
-Current stage: Stage 1 closed (8 Nov 2026). Design checkpoint pending Malek's review. Stage 2 (identity and publishing) not started.
+Current stage: Stage 2 (identity and publishing). Tasks 1–3, the media follow-up and the artwork replacement check (D-A05) done (10–11 Nov 2026) and committed on 11 Nov 2026 without the introduction films. Engineering exit criteria met in development; Stage 2 closes after Malek's design review (D-A03).
 Approved kickoff date: not supplied.
 Signed contract: not supplied.
 
@@ -14,6 +14,319 @@ Signed contract: not supplied.
 - Society Drive supplied and inventoried (docs/BRAND_ASSETS.md); guideline logo, palette, Cairo and RNS Sanz, Visual Elements and icons applied (3–4 November).
 - frontend-design and VectorLab UI/UX skills installed and used for all interface work since 4 November.
 - Public site: 12 homepage sections and inner pages, contact form slice, night-studio redesign, per-section homepage designs, scroll performance pass and section entrances (4–8 November).
+
+## Stage 2 close-out: artwork replacement check and commit, 11 November 2026
+
+Asked for: run D-A05 and commit/push, without committing media.
+
+D-A05 (artwork replacement):
+- Swapped `field2d` by editing only its `ARTWORK` entry (src, width, height, Arabic and English alt) to a synthetic 1200×800 WebP. It was 3:2 rather than 4:3 on purpose, with a marker in each corner.
+- Production build, headless Chrome, `/en`, `/ar`, `/en/fields`, `/ar/fields` at 390 and 1280 (script: scratchpad `tools/swap-journey.mjs`):
+  - the new file loaded in every place the old one did, and the old file was no longer requested;
+  - all four corner markers were visible, so nothing was cropped;
+  - the new alt text appeared on the `/fields` stage image in both languages; decorative copies kept empty alt;
+  - lang/dir were correct, with no horizontal overflow.
+- **Defect found and fixed:** the `/fields` stage (`fields.module.css .art`) stretched any drawing that isn't 4:3. It now uses `object-fit: contain`. No other layout code changed.
+- The original artwork was restored and the test file deleted. The guide's step 4 now covers `/fields` and records the test.
+
+Media kept out of git (Malek, 11 Nov 2026): `apps/web/public/video/` (both films and posters, about 34 MB) is git-ignored. DEVELOPMENT.md explains how to put them back on a checkout or server. A fresh clone shows an empty video player until they're copied in.
+
+Still open (deferred by Malek, to be raised again at each stage boundary):
+- Malek's design review, two rounds (D-A03): this is what closes Stage 2.
+- Society content: vision and mission, board, General Assembly text, policies, partners, news, contact details and inbox (D06), intro-film captions, and approval of draft copy, including the Arabic admin wording.
+- Safari, Firefox, real-device and screen-reader passes (Stage 6).
+- A schedule for `media prune` (worker or server job).
+- Editor extras: draft preview, staff list search and filter, scheduled publishing.
+- How the films reach production, now that they aren't in the repo.
+- Stage 3 needs D01–D03 (plans and application fields).
+
+## Stage 2 follow-up: media library, clean-up and cropping, 11 November 2026
+
+Asked for: delete unused uploads; a library to reuse images; cropping.
+
+Built:
+- **Contracts:**
+  - `cropSchema`: fractions, kept inside the picture, minimum 2%. Image references now carry `crop`, which defaults to the whole picture.
+  - `mediaListSchema`, and `referencedMediaIds`, which reads stored data of any age.
+- **API:**
+  - Usage is counted across drafts and published copies.
+  - `GET /admin/media`: library, newest first, 60 per page, `filter=unused`.
+  - `DELETE /admin/media/:id`: staff, same-origin; 409 if the image is in use; deletes the record and the file; logged in the activity log.
+  - `cli/media.ts prune [--dry-run] [--older-than-hours N]`: deletes unused uploads past a 24 h grace period, and keeps any picked up since the scan.
+- **Web:**
+  - **Media page** (`/admin/media`, Pattern 1): upload, all or unused, usage per image, delete unused with an inline confirmation that focuses "Keep it".
+  - **Editor image fields:**
+    - "Choose from library" opens a picker in a native modal dialog; picking resets the crop and description for a different image.
+    - "Crop" (shows Whole image or Cropped) opens the crop tool: drag the frame or its corners; shapes free, 1:1, 4:3, 16:9, 3:4; arrow keys move the frame, Shift with arrow keys resizes; live pixel size.
+  - **Public pages:**
+    - A cropped image renders as an SVG viewBox with `role="img"` and the description: cover for pictures, contain for logos.
+    - Uncropped images stay plain `<img>`.
+    - The partner logo is now limited to its cel.
+
+Checks (actually run):
+- `npm run check`: exit 0 (contracts 8, API 25, web 12 tests, build).
+- `npm run test:integration`: 33/33. The new test covers:
+  - library usage counts (a draft counts);
+  - the unused filter;
+  - an in-use image refused (409);
+  - delete without Origin refused, and an Origin-checked delete that removes the file;
+  - a crop outside the picture refused;
+  - prune picks only unused uploads older than 24 h.
+- `npm run media -w @as/api -- prune --dry-run` on the dev database: 0 candidates.
+- Chrome (production build) as a synthetic editor:
+  - two synthetic images uploaded on the Media page;
+  - a partner picked one from the library, cropped it to a square and moved/resized the frame by keyboard (392 × 392 px), then published;
+  - the public page drew the cropped logo with its description;
+  - the Media page showed "Used in 1 entry" and "Not used"; the unused image was deleted after confirming;
+  - Arabic Media page and the crop dialog at 390 px; no overflow at 1280 or 390.
+- Two visual faults were found and fixed:
+  - the cropped square logo overflowed its partner card;
+  - the crop corners were clipped at the picture edge (the dimming is now its own clipped layer).
+- The synthetic data was removed afterwards.
+
+Known limits:
+- A cropped image still downloads the whole file (at most 2400 px).
+- Prune isn't scheduled yet; it needs the Stage 5 worker or the host's cron.
+- Deleting races with a save that picks the same image at the same moment. The content save then reports the image as missing, and nothing is corrupted.
+- Checked in Chrome only.
+
+## Stage 2, task 3: media uploads and editable page sections, 11 November 2026
+
+Scope: staff upload images for posts, projects, partners and board members, and edit the fixed page sections; both follow the draft and publish rules of task 2.
+
+Built:
+- **Contracts:**
+  - New content kind `section`. Its draft schema is a union discriminated by `section` across eleven fixed keys; the `publishIssues` rules cover each one.
+  - `mediaRefSchema` (`id`, `alt` in both languages, `width`, `height`). Defaults let older entries read as "no image".
+  - `mediaIds`, `emptySection`, upload limits and types.
+- **API:**
+  - `features/media`: `mediaAssets` collection plus files in `MEDIA_DIR`.
+  - Upload checks:
+    - `POST /admin/media` takes the raw body; staff with the second factor only; same-origin; 60 uploads per 10 minutes per account.
+    - The declared type must match the real format; a 40 MP decode limit; 16 px minimum.
+    - Every file is re-encoded to WebP (EXIF orientation applied, metadata dropped), written atomically, and logged in the activity log.
+  - `GET /media/:id`: public only while a published entry uses the image (5 min cache); otherwise staff only (`no-store`); 404 for everyone else.
+  - The content service now checks that referenced images exist. Section keys must match their content, a section's address can't change, and sections can't be deleted.
+  - The seed command now also publishes the hero, About, vision, goals and General Assembly sections. The text is identical to the previous web constants (22/22 strings checked), with the same notes.
+  - New dependency: `sharp` 0.35.5 (npm audit: 0 vulnerabilities).
+- **Web:**
+  - Admin "Page sections" list (Pattern 1): all eleven, written or not, with status and where each shows.
+  - Section editors per section, including a board member list (add/remove; name and role in both languages; portrait).
+  - Image field in the editor: upload/replace/remove, preview, description in both languages. The file input stays keyboard-reachable. Client checks run first, then the server's reasons are shown.
+  - Public pages:
+    - About, homepage, policies and the coming-soon preview read sections through `lib/site-sections.ts` (one cached fetch per request).
+    - Unpublished sections show "awaiting content", and status notes come from each section's setting.
+    - The board renders as a cast list, with portraits or initials.
+    - Project pictures replace the illustrative cover; partner logos sit on the cels; post images head the article.
+    - Published copies are read through the shared schema, so older entries get the new defaults.
+  - `content/society.ts` keeps only the Society's fixed facts; `content/policies.ts` only the policy titles.
+
+Checks (actually run):
+- `npm run check`: exit 0 (contracts 7, API 25, web 12 tests, build).
+- `npm run test:integration`: 32/32. The new `media.int.test.ts` covers:
+  - fake, SVG, mislabeled and tiny files refused; metadata stripped;
+  - a draft's image hidden, public once published, hidden again after unpublishing;
+  - a missing image refused; path-like IDs 404;
+  - section key rules, board publish rules, the public sections list, no deleting sections.
+- The test clock now starts at the real time. With the fixed date of 10 Nov, the test client had begun dropping cookies whose expiry was already past.
+- Chrome (production build) as a CLI-invited synthetic editor:
+  - the sections list; the Arabic About editor;
+  - a board with two synthetic members and a synthetic portrait: publish blocked on the missing Arabic role, then published;
+  - a partner with a synthetic logo: its image returned 404 to an anonymous request as a draft and 200 after publishing;
+  - public partners, About board (Arabic) and homepage governance; policies; phone views of the sections list and board editor.
+  - No horizontal overflow at 1280 or 390.
+  - The synthetic accounts, entries, images and files were removed afterwards. The seeded sections remain published in the dev database.
+
+Not done or known gaps:
+- Unused uploads, library reuse and cropping: done in the follow-up above.
+- Production needs persistent storage for `MEDIA_DIR`, included in backups (Stage 6 restore test).
+- Policies and board members await the Society's text and names; nothing was invented.
+- Membership and field content stay in code. Plans and pricing belong to Stage 3 settings; the four animation fields are fixed site structure.
+- Checked in Chrome only. Arabic admin wording is a developer draft.
+
+Stage 2 exit criteria (PLAN): bilingual content persisted, drafts protected, editors publish but can't reach members, payments or roles (A08 evidence), public templates checked at 390/768/1280, and demo email only to the local inbox. All are met in development. Still needed to close: Malek's design review (D-A03, two rounds), and the D-A05 artwork-replacement check.
+
+Next: after Malek's review, Stage 3 (applications and review). It needs the plan settings and application fields decided (D01–D03).
+
+## Stage 2, task 2: bilingual content publishing, 11 November 2026
+
+Scope: staff publish news and events, projects and partners in Arabic and English, with drafts kept private. The public pages read published content from the API. Editors can't reach member, payment or role data. Contact-form messages now go through the email outbox. Media uploads and the fixed page sections (About, vision, board, policies) are task 3.
+
+Built:
+- **Contracts** (`packages/contracts/src/content.ts`):
+  - draft schemas per kind (strict, length limits, https-only links, ISO dates, slug rules);
+  - `publishIssues` (every public text in both languages);
+  - `emptyDraft`, `paragraphs`, and the admin and public entry shapes.
+  - New error code `conflict` (409).
+- **API** (`apps/api/src/features/content`):
+  - `contentEntries` collection: draft, published copy, `dirty`, `version`; unique per kind and slug.
+  - Service: list, get, create, update, publish, unpublish and delete. Each write is one transaction with an activity-log event (`content.*`, recording kind, slug and title).
+  - Optimistic concurrency on `version`. The slug is locked after the first publish. Delete is allowed only when the entry isn't published.
+  - Public routes `GET /content/:kind` and `GET /content/:kind/:slug` return published copies only.
+  - Staff routes `/admin/content/:kind…` require admin or editor with the second factor passed, and the same-origin check.
+  - The activity log shows content titles.
+- **Seed and contact:**
+  - `cli/content.ts seed` publishes the one supplied project (the Motion Analysis Challenges initiative, moved out of the web code). It skips if the entry is already there and adds no news, events or partners.
+  - Contact messages go through the outbox (`contact_received` template) to `CONTACT_INBOX`. New env var; development uses a synthetic `society-inbox@example.test`.
+- **Web:**
+  - Admin nav: News and events, Projects, Partners.
+  - List pages (Pattern 1): table frame with title in both languages, address, status lamp plus word, last saved; empty state with a create action.
+  - Editor (Pattern 3, `components/admin/ContentEditor.tsx`):
+    - Arabic and English inputs side by side, each in its own direction;
+    - blur-first validation, buttons never disabled;
+    - Publish saves first, then lists the missing language fields;
+    - a status strip (Not published, Published, Unpublished changes) and a link to the live page;
+    - a version-conflict message, and an inline delete confirmation that names the entry and focuses "Keep it";
+    - a cover picker drawing on the artwork manifest;
+    - the sticky action bar clears the development banner.
+  - Public pages (projects, news, partners, homepage poster and end credits) read from `lib/public-content.ts` without cookies or caching.
+    - Detail pages are now rendered on request (no static params).
+    - The homepage is now dynamic too.
+    - If the API can't be reached, list pages show a "couldn't load" state.
+  - Partners are lettered on cels until logos can be uploaded. Static `content/news.ts`, `partners.ts` and `initiatives.ts` were removed.
+  - Dictionaries: `content-admin-en.ts` and `content-admin-ar.ts`. The Arabic is a developer draft.
+
+Checks (actually run):
+- `npm run check`: exit 0. Lint, typecheck, unit tests (contracts 6, API 25, web 12) and build.
+- `npm run test:integration`: 29/29 against the replica set. The new `content.int.test.ts` (7 tests) covers:
+  - access: anonymous 401, member 403, staff without the second factor `mfa_required`, cross-origin 403;
+  - drafts private, both languages required, republish needed, stale save 409, slug locked or taken, unsafe link and extra field rejected;
+  - delete only when unpublished, the full audit trail, editor still refused the audit log;
+  - contact message to the outbox.
+- Chrome (headless, production build) as a synthetic editor invited by the CLI:
+  - empty list; slug and URL blur errors; publish blocked with the Arabic fields marked; published;
+  - the post on /en and /ar news, detail and homepage credits;
+  - edit then "Unpublished changes" while the public title stays the old one;
+  - partner published, shown, unpublished, delete confirmation, deleted;
+  - Arabic project list, editor and cover picker; audit refused for the editor; contact message reaching the local inbox;
+  - phone (390) and tablet (768) views.
+  - No horizontal overflow at 1280, 768 or 390.
+  - Two fixes came out of the review: the heading now switches to "Edit" once a new entry is saved, and the Publish button is hidden when there's nothing new to publish.
+  - The synthetic accounts, entries and emails were then removed from the dev database.
+- A later screenshot run stalled under low memory (the local servers were stopped by the system). A follow-up probe showed the pages responding normally after scrolling. The Arabic news list, partner grid and project detail were captured at the desktop width only in the first run.
+
+Not done or known gaps:
+- No uploads: partner logos and project or post images (task 3). The fixed page sections are still in code (task 3).
+- No preview of a draft as the public page; editors see the form and the live page.
+- No search or filter on the staff lists. Lists show the newest 200 entries.
+- No scheduled publishing, and no revision history beyond the activity log.
+- The Society mailbox for contact messages has not been supplied (D06), and the Arabic content-admin wording is a developer draft.
+- Checked in Chrome only.
+
+Next task (Stage 2, task 3): media uploads and editable page sections. Done 11 November 2026 (see above).
+
+## Stage 2, task 1: accounts, sessions and staff two-step sign-in, 10 November 2026
+
+Scope: the identity part of Stage 2 that protected publishing depends on (PLAN Stage 2: "secure sessions, verification/reset, role checks and administrator MFA before protected admin publishing"). Content publishing is task 2.
+
+Acceptance criteria for this task:
+- members can sign up, confirm their email, sign in and out, reset a forgotten password and edit their profile, in Arabic and English;
+- links expire and work once;
+- sessions are server-side, revocable and expire;
+- staff accounts exist only by operator invitation, must enrol an authenticator and pass it at every sign-in, and have single-use recovery codes;
+- role checks run on the server.
+
+Built:
+- **API** (`apps/api/src/features/auth`, `audit`, `email`, `admin`, `cli/staff.ts`):
+  - Argon2id passwords (`@node-rs/argon2` 2.2.2, OWASP parameters). Minimum 12 characters, no composition rules.
+  - Opaque 256-bit session cookie (`HttpOnly`, `SameSite=Lax`, `__Host-` prefixed and `Secure` in production). Only its SHA-256 is stored in `sessions`. Absolute, idle and half-finished-MFA expiry are checked on every request. The token rotates after the second factor and after a password change.
+  - Every state-changing `/auth` and `/account` request must carry the site's Origin.
+  - Single-use, expiring `authTokens`: email confirmation 24 h, reset 1 h, staff invitation 48 h. A new link retires older ones.
+  - Same answer for known and unknown emails at sign-up, reset and sign-in. An unknown email burns the same hashing time.
+  - TOTP for staff (`otplib` 13.5.0), with the secret sealed by AES-256-GCM under `MFA_ENCRYPTION_KEY` (outside the database). Replayed codes are refused with an atomic time-step guard.
+  - Ten single-use recovery codes, stored hashed. The session is revoked after 5 wrong codes.
+  - Re-authentication endpoint and `requireRecentAuth` guard, ready for later sensitive actions.
+  - In-memory rate limits per IP and per email.
+  - Append-only `auditEvents` for password set/reset/change, MFA enrolment, recovery-code use and regeneration, staff invite, role change, MFA reset and disable.
+  - Email outbox written inside the same transaction. Bilingual plain-text templates, drafts pending Society review. Development-only local inbox route.
+  - Staff CLI (`invite`, `reset-mfa`, `disable`). No public or seed route creates staff.
+  - `GET /admin/overview` (admin and editor) and `GET /admin/audit` (admin only).
+- **Web**:
+  - Account screens in a separate `(auth)` group: sign-in, register, verify-email, forgot-password, reset-password (also staff invitation), two-factor, two-factor/setup and dev/inbox. They use the night-studio desk with one sheet of animation paper on its peg bar.
+  - Forms use blur-first validation, never disable submit, and map server errors to translated messages.
+  - Reset and confirmation tokens are removed from the address bar on load.
+  - The member area (profile and language, password change) and staff area (overview, sign-in security with recovery codes, administrator-only activity log) check the session on the server and redirect. The API still authorises every call.
+  - Member and staff navigation are real links now.
+- **CI**: integration tests now run in GitHub Actions against a MongoDB 8.0 replica set container. This workflow change has not run on GitHub yet.
+
+Checks (10 Nov):
+- `npm run check` exit 0: contracts 3, API 25 unit, web 12, build.
+- `npm run test:integration`: 22/22 against the local replica set. Cases:
+  - registration and confirmation, with links single-use and expiring after 24 h;
+  - duplicate sign-up handled without enumeration;
+  - identical errors for a wrong password and an unknown email;
+  - cross-origin requests refused;
+  - sign-out revokes the session on the server, and the old cookie is refused;
+  - 14-day member idle expiry;
+  - reset expires after 1 h, works once and revokes every session;
+  - mass-assigning a role is rejected;
+  - a password change ends the other sessions;
+  - a member is refused staff routes;
+  - staff enrolment is required, and the token rotates;
+  - a replayed code is refused;
+  - recovery codes work once;
+  - 5 wrong codes revoke the session;
+  - 10-minute pending and 30-minute idle staff expiry;
+  - an editor is refused the audit log;
+  - the audit log has no secrets.
+- Browser journey (production build, headless Chrome, scripted). English member: register, blur error, confirmation link from the local inbox, wrong password, sign-in, member page, "Staff only" on /admin, sign-out, redirect to sign-in. Arabic admin, from the CLI invitation:
+  - set password;
+  - enrolment with a QR code, a wrong code, then the real code;
+  - ten recovery codes;
+  - overview, security and activity log;
+  - signing in again asks for the code.
+  
+  Also checked: phone width 390 for sign-in, register, forgot-password, the inbox and the admin overview; no page scrolls sideways at 1280 or 390. Blur validation was confirmed with real key events: the error appears on Tab and clears on focus.
+
+Decisions taken (recorded in DECISIONS.md, all reversible):
+- email must be confirmed before signing in;
+- two-step sign-in for editors as well as admins;
+- session lifetimes;
+- sessions written in-house per ARCHITECTURE (no session library);
+- staff only by CLI invitation.
+
+Not done or known gaps:
+- Rate limits are per process (in memory).
+- No email change flow; email stays fixed.
+- The local inbox stands in for an email provider (D06).
+- The Arabic account and email wording is a developer draft.
+- The language switch on the reset page drops an unused token, so the link must be opened again.
+- Member and staff screens were checked in Chrome only.
+- Sessions are not listed for users to end one by one.
+
+Next task (Stage 2, task 2): bilingual content publishing. Done 11 November 2026 (see above).
+
+## Inner pages and phone layouts, 9 November 2026
+
+Malek: the inner pages looked basic and generated, and the phone view of every section was plain. Each inner page now has its own animation-studio device (frontend-design and VectorLab skills applied; reduced motion leaves every device static):
+- Shared page hero (`components/sections/PageHero.tsx`): the camera field guide (twelve nested fields, a lit camera frame holding a brand shape) that trucks in as the hero scrolls away. New MotionEngine progress mode `leave`. The Drive crops no longer appear in inner heroes.
+- About: a storyboard. Numbered panels with pencil sketches (`components/art/Sketches.tsx`), notes on ruled lines, the vision as a pull quote, the voting rule as yellow tape, goals as four thumbnail panels (a swipe strip on phones). `Objectives.tsx` and `MembershipTypes.tsx` removed (unused).
+- Fields: one chapter per technique, each on its own set: 2D light table with onion skins, 3D viewport with grid floor and axis gizmo, stop-motion tabletop moving on twos, hybrid split between paper and grid. Roles as a crew sheet; jump nav as four drawing cels.
+- Membership: each type as a card front (who it's for) with its back (what it includes) under a magnetic stripe; plans and benefits as blank tickets; journey; questions as a ruled list where the ball drops in when an answer opens.
+- Projects: production slates (clapperboard with the field and status chalked in, a status lamp) beside the cover in a viewfinder; the detail page's slate claps shut on load and the body reads like a script page.
+- News: an exposure sheet; filters are its column tabs; when empty, blank rows with a ball ticking down at 12 fps behind a taped note.
+- Partners: acetate cels with peg holes; blank fanned cels until partners are approved.
+- Contact: the form on a sheet of paper on the peg bar of a drawing disc that turns with scroll; other channels beside it.
+- Policies: a production binder: coloured index tabs, punched pages, blank script lines with an "awaiting the Society's text" stamp, one shared contact prompt instead of five.
+- 404: a film strip of the bouncing ball with the contact frame missing, inside the night-studio world.
+- Homepage on phones: goals as one continuous zoetrope film strip swiped sideways; fields as a swipeable row of drawing sheets on the light table; membership cards stack like a deck as you scroll (sticky); footer links in two columns.
+- Checks: `npm run check` exit 0. Screenshots at 1440 (en/ar) and 390 (en/ar) for home and every inner page, the project detail and the 404. Two phone overflows found and fixed (Arabic membership card pairs 470px, policies tabs 905px); all pages now report `scrollWidth = 390`.
+- Not done: member and admin shells (they arrive with Stages 2–5); no real-device, Safari or Firefox pass.
+
+## Introduction films, vision and goals, 8–9 November 2026
+
+Malek's answers after the Drive recheck (DECISIONS.md, 8 Nov): use the latest vision and goals in the Drive; Arabic film on /ar and English film on /en, hosted with the site; fees and registration details to follow; deck icons not used.
+- Films re-encoded for the web (83 MB → 18.7 MB and 75 MB → 16.5 MB, 720p H.264, fast start) into `apps/web/public/video/` with logo-end-card posters, plus a `VIDEOS` manifest entry. New `components/media/IntroFilm.tsx`: the homepage countdown leader now runs over the poster, then a play button appears; preload none, native controls after first play, pauses when off-screen. The screen is now 16:9.
+- Vision (English film; Arabic developer translation marked draft) and four goals (English film's set; Arabic film's verbatim wording) replace the brief's five objectives. Goals have no body text. Mission shows "will be published once approved". The zoetrope radius is now computed from the goal count (it was fixed for five).
+- Checks: `npm run check` exit 0. Screenshots at ar 1440, en 390 and en/about 1280. Playback tested with real click events in headless Chrome: Arabic plays (2.3 s after 3 s), English starts, focus moves to the video, it pauses when scrolled away, and the next page request serves the video with `206 Partial Content`. No page overflow.
+- Open: English film captions (A25); fees (D02); registration line; film rights confirmation (third-party clips).
+
+## Drive recheck, 8 November 2026
+
+Request (Malek): stay in Stage 1; recheck the Society Drive for new material and anything missed before.
+- With Malek's approval the Drive was downloaded to git-ignored `brand-source/drive-full/` (615 MB, 620 files), excluding the member-introduction posts and the payment vouchers. Read with poppler (PDF text/renders), a Swift AVFoundation script (video metadata and frames) and PowerPoint (deck exported to PDF).
+- New: Arabic and English Society introduction films (2022), a *Captain Munch* film poster. Missed earlier: 2023 membership fees in Instagram stories (my 3 Nov note "no prices in the Drive" was wrong; corrected), official registration facts (founded 2021, registration 2189, Ministry of Culture licence), the 2024 report's 2023–2027 challenge schedule, prizes and impact figures, 108 vector icons in the presentation deck, frame-rate explainer posts, the business-card update to base the membership card on. 13 JPEGs and 3 PDFs are damaged in the Drive itself.
+- Full write-up: docs/BRAND_ASSETS.md "Recheck of the Drive, 8 November 2026". Nothing was applied to the site yet; vision/mission/goals, fees, the video and the icons all need the Society's confirmation or a licence check first.
 
 ## Stage 1 closure, 8 November 2026
 

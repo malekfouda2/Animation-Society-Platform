@@ -1,21 +1,118 @@
-.tabs { display: flex; flex-wrap: wrap; gap: var(--as-space-2); margin-block-end: var(--as-space-8); }
+/* News: an exposure sheet. Ruled rows, a frame column, and filters as the sheet's column tabs. */
+.section { padding-block: var(--as-space-8) var(--as-space-24); }
+.sheet {
+  position: relative;
+  border: 2px solid var(--as-line-strong);
+  border-radius: var(--as-radius-md);
+  background: var(--as-surface);
+  overflow: hidden;
+}
+.tabs {
+  display: flex;
+  border-block-end: 2px solid var(--as-line-strong);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
 .tab {
+  flex: 1 0 auto;
   display: inline-flex;
   align-items: center;
-  min-block-size: 44px;
-  padding-inline: var(--as-space-4);
-  border: 2px solid var(--as-ink);
-  border-radius: var(--as-radius-pill);
+  justify-content: center;
+  min-block-size: 3.25rem;
+  padding-inline: var(--as-space-6);
   font-weight: var(--as-w-subtitle);
   text-decoration: none;
+  color: var(--as-ink-soft);
 }
-.tab[aria-current="page"] { background: var(--as-ink); color: var(--as-canvas); }
-.list { list-style: none; margin: 0; padding: 0; border-block-start: 1px solid var(--as-line-strong); }
-.item { padding-block: var(--as-space-6); border-block-end: 1px solid var(--as-line-strong); }
-.label { font-size: var(--as-text-meta); font-weight: var(--as-w-subtitle); color: var(--as-ink-soft); margin-inline-end: var(--as-space-3); }
-.date { font-size: var(--as-text-meta); color: var(--as-ink-soft); }
-.title { font-size: var(--as-text-h3); margin-block: var(--as-space-2); }
-.detailHero { padding-block: 12rem var(--as-space-12); background: radial-gradient(50rem 30rem at 80% 30%, rgb(236 216 93 / 0.14), transparent 70%); }
-.facts { display: flex; flex-wrap: wrap; gap: var(--as-space-8); margin: 0; }
+.tab + .tab { border-inline-start: 1px solid var(--as-line-strong); }
+.tab:hover { color: var(--as-ink); background: var(--as-mist); }
+.tab[aria-current="page"] { color: var(--as-black); background: var(--as-yellow); }
+
+/* Rows: [frame (date) | kind | action] */
+.list { list-style: none; margin: 0; padding: 0; }
+.item {
+  display: grid;
+  grid-template-columns: 9rem 6rem minmax(0, 1fr);
+  gap: var(--as-space-6);
+  padding: var(--as-space-6);
+  border-block-end: 1px solid var(--as-line);
+}
+.frame { font-weight: var(--as-w-title); font-variant-numeric: tabular-nums; color: var(--as-yellow); }
+.label { font-size: var(--as-text-secondary); font-weight: var(--as-w-subtitle); color: var(--as-ink-soft); }
+.label[data-kind="event"] { color: var(--as-green-light); }
+.title { font-size: var(--as-text-h3); margin-block-end: var(--as-space-2); }
+.action p { margin: 0; color: var(--as-ink-soft); }
+@media (max-width: 47.99rem) {
+  .item { grid-template-columns: 1fr auto; padding: var(--as-space-4); }
+  .action { grid-column: 1 / -1; }
+}
+
+/* Blank sheet: ruled rows with three columns, a ball ticking down on ones, the note on top. */
+.blank { position: relative; display: grid; min-block-size: 30rem; }
+.rows { position: absolute; inset: 0; display: grid; grid-auto-rows: 1fr; }
+.row {
+  display: grid;
+  grid-template-columns: 4rem 1fr 3fr;
+  border-block-end: 1px solid var(--as-line);
+}
+.row i { border-inline-end: 1px solid var(--as-line); }
+.row:nth-child(4n) { border-block-end-color: var(--as-line-strong); }
+.tick {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 1.25rem;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  margin-block-start: calc((30rem / 14 - 1.5rem) / 2);
+  border-radius: 50%;
+  background: var(--as-gradient-ball);
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* Down the frame column one row per frame (12 fps), then back to the top. */
+  .tick { animation: tick 1.17s steps(14, jump-none) infinite; }
+  @keyframes tick { from { transform: translateY(0); } to { transform: translateY(calc(30rem / 14 * 13)); } }
+}
+.note {
+  position: relative;
+  align-self: center;
+  justify-self: center;
+  max-inline-size: 30rem;
+  margin: var(--as-space-12) var(--as-space-4);
+  padding: var(--as-space-8);
+  background: var(--as-yellow);
+  color: var(--as-black);
+  rotate: -1.5deg;
+  box-shadow: 0 24px 40px -20px rgb(0 0 0 / 0.9);
+}
+:dir(rtl) .note { rotate: 1.5deg; }
+.note::before {
+  /* A strip of tape holding the note. */
+  content: "";
+  position: absolute;
+  inset-block-start: -0.75rem;
+  inset-inline-start: 50%;
+  inline-size: 5rem;
+  block-size: 1.5rem;
+  translate: -50% 0;
+  background: rgb(255 255 255 / 0.55);
+  rotate: 3deg;
+}
+:dir(rtl) .note::before { translate: 50% 0; }
+.noteTitle { font-size: var(--as-text-h3); line-height: 1.2; margin-block-end: var(--as-space-3); }
+.noteBody { margin-block-end: var(--as-space-6); }
+.note :global(.btn-secondary) { color: var(--as-black); border-color: var(--as-black); }
+.note :global(.btn-secondary:hover) { background: rgb(0 0 0 / 0.08); }
+
+/* Detail */
+.detailHero { padding-block: 10rem var(--as-space-12); border-block-end: 1px solid var(--as-line); }
+.detailKind { display: inline-block; margin-block-end: var(--as-space-4); font-weight: var(--as-w-subtitle); color: var(--as-green-light); }
+.detailTitle { font-size: var(--as-text-h1); line-height: 1.05; max-inline-size: 20ch; margin-block-end: var(--as-space-8); }
+.facts { display: flex; flex-wrap: wrap; gap: 0; margin: 0; border: 2px solid var(--as-line-strong); inline-size: fit-content; max-inline-size: 100%; }
+.facts > div { padding: var(--as-space-3) var(--as-space-6); }
+.facts > div + div { border-inline-start: 2px solid var(--as-line-strong); }
 .facts dt { font-size: var(--as-text-meta); font-weight: var(--as-w-subtitle); color: var(--as-ink-soft); }
-.facts dd { margin: 0; }
+.facts dd { margin: 0; font-weight: var(--as-w-subtitle); }
+
+/* An uploaded picture at the head of an article (sized on upload; space reserved by width/height). */
+.figure { margin: 0 0 var(--as-space-6); }
+.figureImg { display: block; inline-size: 100%; block-size: auto; border-radius: var(--as-radius-md); }

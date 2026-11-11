@@ -1,7 +1,8 @@
 import { contactMessageSchema, type ContactMessageInput } from "@as/contracts";
 import { Router } from "express";
 import { HttpError } from "../../http/errors.js";
-import { createRateLimiter, type ContactMailer, type ContactStore } from "./contact.service.js";
+import { createRateLimiter } from "../../http/rate-limit.js";
+import type { ContactMailer, ContactStore } from "./contact.service.js";
 
 export interface ContactDeps {
   store: ContactStore;
@@ -30,7 +31,7 @@ export function contactRouter({ store, mailer, publicOrigin, rateLimit = { limit
     }
     const { website: _ignored, ...message } = input;
     const { id } = await store.save(message);
-    await mailer.notifySociety(id);
+    await mailer.notifySociety(id, message);
     res.status(202).json({ status: "accepted" });
   });
 

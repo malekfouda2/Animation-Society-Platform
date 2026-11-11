@@ -7,6 +7,7 @@ const valid = {
   PUBLIC_ORIGIN: "http://localhost:3100",
   PAYMENT_MODE: "mock",
   EMAIL_MODE: "mock",
+  MFA_ENCRYPTION_KEY: Buffer.alloc(32, 7).toString("base64"),
 };
 
 describe("loadEnv", () => {
@@ -24,7 +25,7 @@ describe("loadEnv", () => {
       run();
     } catch (err) {
       const problems = (err as EnvValidationError).problems.join("\n");
-      for (const key of ["MONGODB_URI", "PUBLIC_ORIGIN", "PAYMENT_MODE", "EMAIL_MODE"]) {
+      for (const key of ["MONGODB_URI", "PUBLIC_ORIGIN", "PAYMENT_MODE", "EMAIL_MODE", "MFA_ENCRYPTION_KEY"]) {
         expect(problems).toContain(key);
       }
     }
@@ -61,6 +62,26 @@ describe("loadEnv", () => {
       expect.unreachable();
     } catch (err) {
       expect((err as Error).message).not.toContain("s3cr3t");
+    }
+  });
+});
+
+describe("MFA_ENCRYPTION_KEY", () => {
+  const base = {
+    NODE_ENV: "development",
+    MONGODB_URI: "mongodb://127.0.0.1:27017/test?replicaSet=rs0",
+    PUBLIC_ORIGIN: "http://localhost:3100",
+    PAYMENT_MODE: "mock",
+    EMAIL_MODE: "mock",
+  };
+  it("rejects a key that is not 32 bytes, without echoing it", () => {
+    try {
+      loadEnv({ ...base, MFA_ENCRYPTION_KEY: "c2hvcnQ=" });
+      expect.unreachable();
+    } catch (err) {
+      const problems = (err as EnvValidationError).problems.join("\n");
+      expect(problems).toContain("MFA_ENCRYPTION_KEY");
+      expect(problems).not.toContain("c2hvcnQ=");
     }
   });
 });

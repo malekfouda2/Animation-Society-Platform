@@ -211,3 +211,21 @@ export const LOGO = {
 
 /** Brand guideline p.13: never render the logo narrower than 130 CSS px. */
 export const LOGO_MIN_WIDTH = 130;
+
+/**
+ * Locally hosted videos (Malek, 8 Nov 2026: host the films with the site, Arabic film on /ar, English
+ * on /en). Web versions are re-encoded from the Drive originals: H.264 High, 1280×720, ~2 Mbps,
+ * faststart, AAC 128 kbps where the source has audio. Replace by dropping new files at the same
+ * paths (or editing these entries); see docs/ARTWORK_REPLACEMENT.md.
+ */
+export const VIDEOS = {
+  intro: {
+    ar: { src: "/video/intro-ar.mp4", poster: "/video/intro-ar-poster.webp", seconds: 73, hasAudio: false },
+    en: { src: "/video/intro-en.mp4", poster: "/video/intro-en-poster.webp", seconds: 64, hasAudio: true },
+    width: 1280,
+    height: 720,
+    status: "supplied",
+    provenance:
+      "Society Drive root: PROMO_VID_FINAL_AR.mp4 (Mar 2022, no audio track) and Promo Vid.mp4 (Jul 2022), added by Murengezi4. Contains third-party animation clips. Posters are the films' logo end cards.",
+  },
+} as const;

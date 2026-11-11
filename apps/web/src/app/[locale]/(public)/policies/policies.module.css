@@ -1,0 +1,78 @@
+/* Policies: a production binder. Index tabs in the brand colours, punched pages, blank script lines. */
+.binder { padding-block: var(--as-space-8) var(--as-space-24); }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--as-space-8); align-items: start; }
+@media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--as-space-12); } }
+
+.tabs ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--as-space-2); }
+@media (min-width: 64rem) { .tabs { position: sticky; inset-block-start: 6rem; } }
+.tab {
+  --tab: var(--as-green);
+  display: flex;
+  align-items: center;
+  min-block-size: 3rem;
+  padding-inline: var(--as-space-4);
+  border-radius: 0 var(--as-radius-sm) var(--as-radius-sm) 0;
+  border-inline-start: 6px solid var(--tab);
+  background: var(--as-surface);
+  font-weight: var(--as-w-subtitle);
+  text-decoration: none;
+  transition: transform var(--motion-200) var(--ease-out), background-color var(--motion-200) var(--ease-out);
+}
+:dir(rtl) .tab { border-radius: var(--as-radius-sm) 0 0 var(--as-radius-sm); }
+li:nth-child(2) > .tab { --tab: var(--as-green-light); }
+li:nth-child(3) > .tab { --tab: var(--as-yellow); }
+li:nth-child(4) > .tab { --tab: var(--as-red); }
+li:nth-child(5) > .tab { --tab: var(--as-white); }
+.tab:hover { background: color-mix(in srgb, var(--tab) 22%, var(--as-surface)); transform: translateX(6px); }
+:dir(rtl) .tab:hover { transform: translateX(-6px); }
+.ask { margin-block-start: var(--as-space-8); padding-block-start: var(--as-space-6); border-block-start: 1px solid var(--as-line); color: var(--as-ink-soft); }
+.ask p { margin-block-end: var(--as-space-4); max-inline-size: 36ch; }
+@media (max-width: 63.99rem) {
+  .tabs ul { display: flex; overflow-x: auto; scrollbar-width: none; gap: var(--as-space-2); padding-block-end: var(--as-space-2); }
+  .tabs li { flex: none; }
+  .tab { border-inline-start: 0; border-block-start: 5px solid var(--tab); border-radius: 0 0 var(--as-radius-sm) var(--as-radius-sm); white-space: nowrap; }
+  :dir(rtl) .tab { border-radius: 0 0 var(--as-radius-sm) var(--as-radius-sm); }
+  .tab:hover, :dir(rtl) .tab:hover { transform: none; }
+  .ask { display: none; }
+}
+
+/* Pages: light paper with three punched holes on the inline start. */
+.pages { display: grid; gap: var(--as-space-8); }
+.page {
+  --as-ink: var(--as-black);
+  --as-ink-soft: #3d3d3d;
+  position: relative;
+  padding: var(--as-space-8) var(--as-space-8) var(--as-space-8) 4.5rem;
+  border-radius: 4px;
+  background: #f7f5ec;
+  color: var(--as-black);
+  scroll-margin-block-start: 6rem;
+  box-shadow: 0 30px 60px -36px rgb(0 0 0 / 0.95);
+}
+:dir(rtl) .page { padding: var(--as-space-8) 4.5rem var(--as-space-8) var(--as-space-8); }
+.page:nth-child(even) { rotate: 0.4deg; }
+.page:nth-child(odd) { rotate: -0.3deg; }
+.holes { position: absolute; inset-block: 0; inset-inline-start: 1.5rem; display: flex; flex-direction: column; justify-content: space-evenly; }
+.holes i { display: block; inline-size: 1.1rem; block-size: 1.1rem; border-radius: 50%; background: var(--as-canvas, #000); box-shadow: inset 0 2px 3px rgb(0 0 0 / 0.6); }
+.pageTitle { font-size: var(--as-text-h3); margin-block-end: var(--as-space-6); color: var(--as-black); }
+.lines { display: grid; gap: 0.9rem; margin-block-end: var(--as-space-6); }
+.lines i { display: block; block-size: 0.55rem; border-radius: 4px; background: rgb(0 0 0 / 0.08); }
+.stamp {
+  display: inline-block;
+  margin: 0;
+  padding: var(--as-space-2) var(--as-space-4);
+  border: 3px solid #b3261e;
+  border-radius: 6px;
+  color: #b3261e;
+  font-weight: var(--as-w-title);
+  rotate: -4deg;
+}
+:dir(rtl) .stamp { rotate: 4deg; }
+.prose { max-inline-size: 68ch; }
+.prose p { margin-block-end: var(--as-space-4); }
+@media (max-width: 47.99rem) {
+  .page { padding: var(--as-space-6) var(--as-space-4) var(--as-space-6) 3.25rem; }
+  :dir(rtl) .page { padding: var(--as-space-6) 3.25rem var(--as-space-6) var(--as-space-4); }
+  .holes { inset-inline-start: 1rem; }
+  .holes i { inline-size: 0.9rem; block-size: 0.9rem; }
+}

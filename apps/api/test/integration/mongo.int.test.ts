@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { connectDatabase, type Database } from "../../src/db/mongo.js";
+import { testUri } from "./helpers.js";
 
 /**
  * Runs against a real replica set (npm run db:up). Uses an isolated throwaway database.
  * Opt-in via MONGODB_URI_TEST so unit tests never need Docker.
  */
-const uri = process.env["MONGODB_URI_TEST"];
+const uri = testUri("animation_society_it");
 
 describe.skipIf(!uri)("MongoDB replica set (integration)", () => {
   let db: Database;

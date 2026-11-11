@@ -1,8 +1,14 @@
 import { createApp } from "./app.js";
 import { EnvValidationError, loadEnv } from "./config/env.js";
 import { connectDatabase } from "./db/mongo.js";
+import { createAuthService } from "./features/auth/auth.service.js";
+import { createSecretBox } from "./features/auth/secrets.js";
 import { ContactMessage } from "./features/contact/contact.model.js";
-import { mockMailer, mongoContactStore } from "./features/contact/contact.service.js";
+import { createMailer, localInboxTransport } from "./features/email/email.service.js";
+import { mongoContactStore, outboxContactMailer } from "./features/contact/contact.service.js";
+import { createContentService } from "./features/content/content.service.js";
+import { createMediaService } from "./features/media/media.service.js";
+import { resolve } from "node:path";
 import { createLogger } from "./logger.js";
 
 async function main(): Promise<void> {
@@ -30,15 +36,27 @@ async function main(): Promise<void> {
     logger.fatal({ emailMode: env.EMAIL_MODE }, "no email adapter is implemented for this EMAIL_MODE yet");
     process.exit(1);
   }
+  const mailer = createMailer(localInboxTransport);
+  const media = createMediaService({ dir: resolve(env.MEDIA_DIR) });
+  const secure = env.NODE_ENV === "production";
   const app = createApp({
     logger,
     databaseStatus: () => database.status(),
     trustProxy: env.NODE_ENV === "production",
     contact: {
       store: mongoContactStore(ContactMessage),
-      mailer: mockMailer((msg, fields) => { logger.info(fields, msg); }),
+      mailer: outboxContactMailer(mailer, env.CONTACT_INBOX, (msg, fields) => { logger.info(fields, msg); }),
       publicOrigin: env.PUBLIC_ORIGIN,
     },
+    auth: {
+      service: createAuthService({ mailer, secretBox: createSecretBox(env.MFA_ENCRYPTION_KEY), publicOrigin: env.PUBLIC_ORIGIN }),
+      cookies: { secure },
+      publicOrigin: env.PUBLIC_ORIGIN,
+    },
+    content: { service: createContentService({ media }), publicOrigin: env.PUBLIC_ORIGIN },
+    media: { service: media, publicOrigin: env.PUBLIC_ORIGIN },
+    // The local inbox exposes sign-in links: mock email only (enforced above), never in production.
+    devInbox: env.NODE_ENV !== "production",
   });
   const server = app.listen(env.API_PORT, env.API_HOST, () => {
     logger.info({ host: env.API_HOST, port: env.API_PORT }, "api listening");

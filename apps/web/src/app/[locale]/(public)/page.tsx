@@ -1,21 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Arc, Balls, Blob, Contours, Planet } from "@/components/art/Shapes";
+import { IntroFilm } from "@/components/media/IntroFilm";
 import { Journey } from "@/components/sections/Journey";
+import { BoardList } from "@/components/sections/BoardList";
 import { MembershipDeck } from "@/components/sections/MembershipDeck";
 import { Art } from "@/components/ui/Art";
 import { BrandIcon } from "@/components/ui/BrandIcon";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { MediaImage } from "@/components/ui/MediaImage";
 import { StatusNote } from "@/components/ui/StatusNote";
-import { ARTWORK } from "@/config/artwork";
+import { ARTWORK, VIDEOS } from "@/config/artwork";
 import { FIELDS } from "@/content/fields";
-import { INITIATIVES } from "@/content/initiatives";
 import { MEMBERSHIP_INTRO } from "@/content/membership";
-import { NEWS } from "@/content/news";
-import { PARTNERS } from "@/content/partners";
-import { ABOUT, BOARD, GENERAL_ASSEMBLY, HERO, OBJECTIVES, OBJECTIVES_META } from "@/content/society";
 import { getDictionary } from "@/i18n";
 import { resolveLocale } from "@/i18n/locale-params";
+import { coverKey, publishedList } from "@/lib/public-content";
+import { siteSections } from "@/lib/site-sections";
 import styles from "./home.module.css";
 
 /*
@@ -41,11 +42,22 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const locale = await resolveLocale(params);
   const dict = getDictionary(locale);
   const h = dict.home;
-  const featured = INITIATIVES[0];
+  // Published content from the API; if it can't be reached the sections show their empty state.
+  const [projects, partnerList, postList, { ABOUT, BOARD, GENERAL_ASSEMBLY, HERO, OBJECTIVES, OBJECTIVES_META }] = await Promise.all([
+    publishedList("project"),
+    publishedList("partner"),
+    publishedList("post"),
+    siteSections(),
+  ]);
+  const featured = projects.ok ? projects.items[0] : undefined;
+  const partners = partnerList.ok ? partnerList.items : [];
+  const posts = postList.ok ? postList.items.slice(0, 3) : [];
+  const dateFmt = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA-u-ca-gregory-nu-latn" : "en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
   const fieldName = (slug: string) => FIELDS.find((f) => f.slug === slug)?.name[locale] ?? slug;
   const introWords = ABOUT.intro[locale].split(" ");
   const digits = new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en");
   const countdown = [3, 2, 1].map((n) => digits.format(n));
+  const film = VIDEOS.intro[locale];
 
   return (
     <>
@@ -86,8 +98,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </a>
       </section>
 
-      {/* 2. Video: a cinema screen. The film countdown leader runs 3-2-1 as you scroll, then the
-          honest pending message appears (no fake play button). */}
+      {/* 2. Video: a cinema screen. The film countdown leader runs 3-2-1 over the poster as you scroll,
+          then the Society's introduction film (Arabic on /ar, English on /en) is ready to play. */}
       <section className={styles.video} aria-labelledby="video-title" data-progress="">
         <div className={styles.beam} aria-hidden="true" data-enter="beam">
           <span className={styles.beamDust} data-speed="-0.12" />
@@ -95,6 +107,15 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <div className="container">
           <h2 id="video-title" className={styles.videoTitle} data-enter="rise">{h.video.heading}</h2>
           <div className={styles.screen} data-enter="power" style={{ ["--enter-i" as string]: 2 }}>
+            <IntroFilm
+              src={film.src}
+              poster={film.poster}
+              width={VIDEOS.intro.width}
+              height={VIDEOS.intro.height}
+              label={h.video.label}
+              playLabel={h.video.play}
+              caption={h.video.caption}
+            />
             <div className={styles.leader} aria-hidden="true">
               <span className={styles.leaderSweep} />
               <span className={styles.leaderRing} />
@@ -104,10 +125,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 <span key={n} className={styles.leaderNum} style={{ ["--k" as string]: k }}>{n}</span>
               ))}
             </div>
-            <div className={styles.screenMessage}>
-              <p className={styles.screenTitle}>{h.video.pendingTitle}</p>
-              <p className={styles.screenBody}>{h.video.pendingBody}</p>
-            </div>
+
           </div>
         </div>
       </section>
@@ -167,7 +185,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   <div className={styles.slotFace}>
                     <BrandIcon name={o.icon} size={64} className={styles.slotIcon} />
                     <h3 className={styles.slotTitle}>{o.title[locale]}</h3>
-                    <p className={styles.slotBody}>{o.body[locale]}</p>
                   </div>
                   <span className={`${styles.slits} ${styles.slitsLow}`} aria-hidden="true" />
                 </li>
@@ -259,14 +276,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             <article className={styles.marquee}>
               <Link href={`/${locale}/projects/${featured.slug}`} className={styles.poster}>
                 <span className={styles.posterArt}>
-                  <Art name={featured.cover} locale={locale} className={styles.posterImg} sizes="(min-width: 64rem) 30rem, 100vw" />
+                  {featured.data.image.id ? (
+                    <MediaImage media={featured.data.image} locale={locale} className={styles.posterImg} />
+                  ) : (
+                    <Art name={coverKey(featured.data.cover)} locale={locale} className={styles.posterImg} sizes="(min-width: 64rem) 30rem, 100vw" />
+                  )}
                 </span>
                 <span className={styles.posterBody}>
-                  <span className={styles.posterTitle}>{featured.title[locale]}</span>
-                  <span className={styles.posterSummary}>{featured.summary[locale]}</span>
+                  <span className={styles.posterTitle}>{featured.data.title[locale]}</span>
+                  <span className={styles.posterSummary}>{featured.data.summary[locale]}</span>
                   <span className={styles.billing}>
-                    <span>{dict.projectsPage.field}: {fieldName(featured.field)}</span>
-                    <span>{dict.projectsPage.progress}: {featured.progress.label[locale]}</span>
+                    <span>{dict.projectsPage.field}: {fieldName(featured.data.field)}</span>
+                    <span>{dict.projectsPage.progress}: {featured.data.progressLabel[locale]}</span>
                   </span>
                   <span className={styles.posterMore}>{dict.actions.viewDetails}</span>
                 </span>
@@ -294,12 +315,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             <div data-enter="rise">
               <h3 className={styles.govHead}>{h.governance.assembly}</h3>
               <p className={styles.govBody}>{GENERAL_ASSEMBLY.body[locale]}</p>
-              <p className={styles.rule}>{GENERAL_ASSEMBLY.votingNote[locale]}</p>
+              {GENERAL_ASSEMBLY.votingNote[locale] ? <p className={styles.rule}>{GENERAL_ASSEMBLY.votingNote[locale]}</p> : null}
               <div className={styles.rowActions}>
                 <Link href={`/${locale}/about#general-assembly`} className="btn btn-secondary">
                   {h.governance.readMore}
                 </Link>
-                <StatusNote status="draft" dict={dict} />
+                <StatusNote status={GENERAL_ASSEMBLY.status} dict={dict} />
               </div>
             </div>
             <div className={styles.board} data-enter="rise" style={{ ["--enter-i" as string]: 1 }}>
@@ -310,7 +331,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   <p className={styles.govBody}>{h.governance.boardEmpty.body}</p>
                   <Link href={`/${locale}/about#board`} className={styles.textLink}>{h.governance.readMore}</Link>
                 </>
-              ) : null}
+              ) : (
+                <>
+                  <BoardList members={BOARD.members} locale={locale} compact />
+                  <StatusNote status={BOARD.status} dict={dict} />
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -321,24 +347,47 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <div className={`container ${styles.roll}`}>
           <div className={styles.creditBlock} data-enter="roll">
             <h2 className={styles.creditRole}>{h.partners.heading}</h2>
-            {PARTNERS.length === 0 ? (
+            {partners.length === 0 ? (
               <>
                 <p className={styles.creditName}>{h.partners.empty.title}</p>
                 <p className={styles.creditNote}>{h.partners.empty.body}</p>
                 <Link href={`/${locale}/contact`} className="btn btn-secondary">{dict.actions.contact}</Link>
               </>
-            ) : null}
+            ) : (
+              <>
+                <ul className={styles.creditList}>
+                  {partners.map(({ slug, data }) => (
+                    <li key={slug}>
+                      <a href={data.url} rel="noopener noreferrer" target="_blank" className={styles.creditName}>{data.title[locale]}</a>
+                    </li>
+                  ))}
+                </ul>
+                <Link href={`/${locale}/partners`} className="btn btn-secondary">{h.partners.all}</Link>
+              </>
+            )}
           </div>
           <span className={styles.creditBall} aria-hidden="true" data-enter="pop" />
           <div className={styles.creditBlock} data-enter="roll">
             <h2 className={styles.creditRole}>{h.news.heading}</h2>
-            {NEWS.length === 0 ? (
+            {posts.length === 0 ? (
               <>
                 <p className={styles.creditName}>{h.news.empty.title}</p>
                 <p className={styles.creditNote}>{h.news.empty.body}</p>
                 <Link href={`/${locale}/projects`} className="btn btn-secondary">{dict.actions.allProjects}</Link>
               </>
-            ) : null}
+            ) : (
+              <>
+                <ul className={styles.creditList}>
+                  {posts.map(({ slug, data }) => (
+                    <li key={slug}>
+                      <time dateTime={data.date} className={styles.creditNote}>{dateFmt.format(new Date(`${data.date}T12:00:00Z`))}</time>
+                      <Link href={`/${locale}/news/${slug}`} className={styles.creditName}>{data.title[locale]}</Link>
+                    </li>
+                  ))}
+                </ul>
+                <Link href={`/${locale}/news`} className="btn btn-secondary">{h.news.all}</Link>
+              </>
+            )}
           </div>
         </div>
       </section>

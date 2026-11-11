@@ -3,7 +3,7 @@ import Link from "next/link";
 import { StatusNote } from "@/components/ui/StatusNote";
 import { Art } from "@/components/ui/Art";
 import { ARTWORK } from "@/config/artwork";
-import { HERO } from "@/content/society";
+import { siteSections } from "@/lib/site-sections";
 import type { Dictionary } from "@/i18n/types";
 import { BounceStage } from "./BounceStage";
 import { HeroScene } from "./HeroScene";
@@ -14,7 +14,8 @@ import hero from "./hero.module.css";
  * Kept intact for the coming-soon landing page (Malek, 5 Nov 2026). Preview: /{locale}/preview/coming-soon.
  * Swap the copy and actions here when the coming-soon content is supplied.
  */
-export function ComingSoonHero({ locale, dict }: { locale: Locale; dict: Dictionary }) {
+export async function ComingSoonHero({ locale, dict }: { locale: Locale; dict: Dictionary }) {
+  const { HERO } = await siteSections();
   return (
     <section className={hero.hero} aria-labelledby="coming-soon-title">
       <div className={`container ${hero.grid}`}>

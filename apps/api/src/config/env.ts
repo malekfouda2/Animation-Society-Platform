@@ -18,6 +18,19 @@ const envSchema = z
     LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
     PAYMENT_MODE: integrationMode,
     EMAIL_MODE: integrationMode,
+    /** Directory for uploaded images (persistent storage in production; never inside the web app's public folder). */
+    MEDIA_DIR: z.string().min(1).default("var/media"),
+    /** Society mailbox that receives contact-form messages. Unset: messages are stored only (D06). */
+    CONTACT_INBOX: z.union([z.literal(""), z.email()]).default("").transform((v) => (v === "" ? null : v.toLowerCase())),
+    /**
+     * 32-byte key (base64) that encrypts staff authenticator secrets. Kept outside the database so a
+     * database copy alone cannot generate codes. Generate with: openssl rand -base64 32
+     */
+    MFA_ENCRYPTION_KEY: z
+      .string()
+      .refine((v) => /^[A-Za-z0-9+/]{43}=$/.test(v) && Buffer.from(v, "base64").length === 32, {
+        message: "must be 32 random bytes encoded as base64 (openssl rand -base64 32)",
+      }),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== "production") return;

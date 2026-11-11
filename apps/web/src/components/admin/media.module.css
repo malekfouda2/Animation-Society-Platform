@@ -1,0 +1,71 @@
+/* Media library, picker and crop tool. Calm admin surfaces; thumbnails carry the weight. */
+
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--as-space-3); margin-block-end: var(--as-space-4); }
+.spacer { flex: 1; }
+.filters { display: flex; gap: var(--as-space-2); }
+.filter {
+  display: inline-flex; align-items: center; min-block-size: 44px; padding-inline: var(--as-space-4);
+  border: 1px solid var(--as-line); border-radius: var(--as-radius-pill); color: var(--as-ink-soft); text-decoration: none;
+}
+.filter[aria-current="page"] { background: var(--as-white); border-color: var(--as-black); color: var(--as-black); font-weight: var(--as-w-subtitle); }
+.fileInput { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; overflow: hidden; }
+.fileInput:focus-visible + .fileButton { outline: 3px solid var(--as-black); outline-offset: 2px; }
+.fileButton { cursor: pointer; }
+.message { margin: 0 0 var(--as-space-4); font-weight: var(--as-w-subtitle); font-size: var(--as-text-secondary); }
+.message[data-tone="ok"] { color: #2e6b33; }
+.message[data-tone="error"] { color: var(--as-danger); }
+.note { margin-block-start: var(--as-space-6); color: var(--as-ink-soft); font-size: var(--as-text-secondary); }
+
+.grid { list-style: none; margin: 0 0 var(--as-space-4); padding: 0; display: grid; gap: var(--as-space-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr)); }
+.card { display: grid; align-content: start; gap: var(--as-space-1); padding: var(--as-space-3); border: 1px solid var(--as-line); border-radius: var(--as-radius-sm); background: var(--as-white); }
+.thumb { inline-size: 100%; block-size: 8rem; object-fit: contain; background: var(--as-mist); border-radius: 6px; margin-block-end: var(--as-space-1); }
+.meta { color: var(--as-ink-soft); font-size: var(--as-text-meta); }
+.usage { font-size: var(--as-text-secondary); font-weight: var(--as-w-subtitle); }
+.usage::before { content: ""; display: inline-block; inline-size: 0.5rem; block-size: 0.5rem; margin-inline-end: var(--as-space-2); border-radius: 50%; border: 2px solid var(--as-ink-soft); }
+.usage[data-used]::before { background: var(--as-green); border-color: var(--as-green); }
+.pick {
+  display: grid; gap: var(--as-space-1); inline-size: 100%; padding: var(--as-space-2); text-align: start;
+  border: 1px solid var(--as-line); border-radius: var(--as-radius-sm); background: var(--as-white); color: inherit; font: inherit; cursor: pointer;
+}
+.pick:hover { border-color: var(--as-black); }
+.pick:focus-visible { outline: 3px solid var(--as-black); outline-offset: 2px; }
+.empty { display: grid; gap: var(--as-space-2); padding: var(--as-space-8) var(--as-space-6); border: 1px solid var(--as-line); background: var(--as-white); }
+.empty h2 { margin: 0; font-size: var(--as-text-h3); }
+.empty p { margin: 0; color: var(--as-ink-soft); }
+.danger { color: var(--as-danger); border-color: currentColor; background: transparent; justify-self: start; }
+.danger:hover { background: rgb(179 38 30 / 0.08); }
+.confirm { display: grid; gap: var(--as-space-2); padding: var(--as-space-3); border-inline-start: 4px solid var(--as-danger); background: rgb(179 38 30 / 0.06); }
+.confirm p { margin: 0; font-size: var(--as-text-secondary); }
+.confirmTitle { font-weight: var(--as-w-subtitle); }
+.confirmRow { display: flex; flex-wrap: wrap; gap: var(--as-space-2); }
+
+/* Dialogs (native <dialog>: focus is kept inside, Escape closes). */
+.dialog {
+  inline-size: min(100% - 2rem, 56rem); max-block-size: calc(100dvh - 2rem); padding: var(--as-space-6);
+  border: 1px solid var(--as-line); border-radius: var(--as-radius-md); background: var(--as-white); color: var(--as-black);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.06);
+}
+.dialog::backdrop { background: rgb(0 0 0 / 0.55); }
+.picker { inline-size: min(100% - 2rem, 64rem); }
+.dialogHead h2 { margin: 0 0 var(--as-space-2); font-size: var(--as-text-h3); }
+.dialogHead p { margin: 0 0 var(--as-space-4); color: var(--as-ink-soft); max-inline-size: 60ch; }
+.dialogActions { display: flex; flex-wrap: wrap; gap: var(--as-space-3); margin-block-start: var(--as-space-4); }
+
+/* Crop stage: the picture with a frame; outside the frame is dimmed. */
+.cropTools { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--as-space-3); margin-block-end: var(--as-space-3); }
+.shapeField { display: grid; gap: var(--as-space-1); font-weight: var(--as-w-subtitle); }
+.shapeField select { min-block-size: 44px; padding-inline: var(--as-space-3); border: 1px solid rgb(0 0 0 / 0.3); border-radius: var(--as-radius-sm); font: inherit; background: var(--as-white); }
+.cropSize { margin: 0; color: var(--as-ink-soft); font-size: var(--as-text-secondary); font-variant-numeric: tabular-nums; }
+.stageWrap { display: grid; place-items: center; background: #1a1a1a; border-radius: var(--as-radius-sm); padding: var(--as-space-3); }
+.stage { position: relative; max-inline-size: 100%; max-block-size: 60dvh; touch-action: none; user-select: none; }
+.stageImg { display: block; inline-size: 100%; block-size: 100%; pointer-events: none; }
+.shade { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.hole { position: absolute; box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.55); }
+.frame { position: absolute; padding: 0; border: 0; background: transparent; cursor: move; outline: 2px solid var(--as-white); }
+.frame:focus-visible { outline: 3px solid var(--as-yellow); }
+.handle { position: absolute; inline-size: 22px; block-size: 22px; background: var(--as-white); border: 2px solid var(--as-black); border-radius: 50%; }
+.handle[data-h="nw"] { left: -11px; top: -11px; cursor: nwse-resize; }
+.handle[data-h="ne"] { right: -11px; top: -11px; cursor: nesw-resize; }
+.handle[data-h="sw"] { left: -11px; bottom: -11px; cursor: nesw-resize; }
+.handle[data-h="se"] { right: -11px; bottom: -11px; cursor: nwse-resize; }
+.cropKeys { margin: var(--as-space-2) 0 0; color: var(--as-ink-soft); font-size: var(--as-text-meta); }

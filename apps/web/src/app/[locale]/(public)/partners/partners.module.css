@@ -1,0 +1,80 @@
+/* Partners: clear acetate cels with peg holes and a glossy edge. */
+.section { padding-block: var(--as-space-8) var(--as-space-24); }
+.cel {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  border: 1.5px solid rgb(255 255 255 / 0.35);
+  border-radius: 10px;
+  background:
+    linear-gradient(115deg, transparent 30%, rgb(255 255 255 / 0.14) 38%, transparent 46%, transparent 70%, rgb(255 255 255 / 0.07) 76%, transparent 82%),
+    rgb(255 255 255 / 0.04);
+}
+.pegs {
+  position: absolute;
+  inset-block-start: 6%;
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  display: flex;
+  gap: 1.4rem;
+}
+:dir(rtl) .pegs { translate: 50% 0; }
+.pegs i { display: block; inline-size: 1.2rem; block-size: 0.55rem; border-radius: 999px; background: var(--as-canvas); border: 1px solid rgb(255 255 255 / 0.4); }
+.pegs i:nth-child(2) { inline-size: 0.65rem; block-size: 0.65rem; border-radius: 50%; }
+
+/* Empty: three blank cels fanned on the table; the front one carries a painted ball. */
+.empty { display: grid; gap: var(--as-space-12); align-items: center; }
+@media (min-width: 64rem) { .empty { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: var(--as-space-16); } }
+.stack { position: relative; display: grid; padding: var(--as-space-8) var(--as-space-12); }
+.stack .cel { grid-area: 1 / 1; rotate: calc((var(--k) - 1) * 7deg); translate: calc((var(--k) - 1) * 6%) calc((1 - var(--k)) * 4%); }
+:dir(rtl) .stack .cel { rotate: calc((1 - var(--k)) * 7deg); translate: calc((1 - var(--k)) * 6%) calc((1 - var(--k)) * 4%); }
+.stack .cel:nth-child(3)::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 38%;
+  inset-inline-start: 40%;
+  inline-size: 20%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--as-gradient-ball);
+  opacity: 0.9;
+}
+.stack .cel:nth-child(2)::after {
+  /* The ball's previous drawing, ghosted on the cel beneath. */
+  content: "";
+  position: absolute;
+  inset-block-start: 22%;
+  inset-inline-start: 28%;
+  inline-size: 20%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px dashed rgb(255 255 255 / 0.4);
+}
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .stack .cel { transition: rotate var(--motion-300) var(--ease-out), translate var(--motion-300) var(--ease-out); }
+  .stack:hover .cel { rotate: calc((var(--k) - 1) * 12deg); translate: calc((var(--k) - 1) * 14%) calc((1 - var(--k)) * 6%); }
+}
+.title { font-size: var(--as-text-h2); line-height: 1.1; margin-block-end: var(--as-space-4); }
+.body { font-size: var(--as-text-lead); color: var(--as-ink-soft); max-inline-size: 40ch; margin-block-end: var(--as-space-8); }
+@media (max-width: 47.99rem) {
+  .stack { padding: var(--as-space-6) var(--as-space-8); }
+}
+
+/* Populated: each partner lettered on a cel (logos replace the lettering once uploads exist). */
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--as-space-6);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+}
+.logoCel { display: grid; place-items: center; align-content: center; gap: var(--as-space-3); padding: var(--as-space-8); color: var(--as-ink); text-decoration: none; text-align: center; transition: border-color var(--motion-200) var(--ease-out), transform var(--motion-200) var(--ease-out); }
+.logoCel:hover { border-color: var(--as-yellow); transform: translateY(-4px) rotate(-1deg); }
+.logo { display: block; max-inline-size: 70%; max-block-size: 4.5rem; block-size: auto; inline-size: auto; object-fit: contain; }
+.nameplate { font-size: var(--as-text-h3); font-weight: var(--as-w-title); line-height: 1.2; overflow-wrap: anywhere; }
+.visit { color: var(--as-ink-soft); font-size: var(--as-text-secondary); text-decoration: underline; text-underline-offset: 0.25em; }
+.logoCel:focus-visible { outline: 3px solid var(--as-yellow); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  .logoCel, .logoCel:hover { transition: none; transform: none; }
+}

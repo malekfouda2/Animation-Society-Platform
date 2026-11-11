@@ -176,16 +176,16 @@
   position: relative;
   display: grid;
   place-items: center;
-  aspect-ratio: 2.39 / 1; /* scope: the cinema frame */
+  aspect-ratio: 16 / 9; /* the film's own frame */
   overflow: hidden;
   border-radius: 6px;
-  background: radial-gradient(ellipse 70% 80% at 50% 45%, #27261f, #0c0c0b 75%);
+  background: #0c0c0b;
   box-shadow:
     0 0 0 1px rgb(255 255 255 / 0.1),
     0 60px 140px -50px rgb(236 216 93 / 0.35);
 }
-@media (max-width: 63.99rem) { .screen { aspect-ratio: 16 / 10; } }
-@media (max-width: 47.99rem) { .screen { aspect-ratio: 4 / 5; } }
+/* Once the film has started, the countdown leader is gone for good. */
+.screen:has([data-started="true"]) .leader { display: none; }
 
 /* --q runs the countdown while the screen comes fully into view (p 0.7 → 0.92); p reaches 1
    once the whole section is on screen, and the message appears then. */
@@ -198,6 +198,16 @@
   left: 50%;
   aspect-ratio: 1;
   translate: -50% 0;
+  z-index: 1;
+  pointer-events: none;
+}
+/* Dark wash over the poster while the countdown runs; lifts as the film is revealed. */
+.leader::before {
+  content: "";
+  position: absolute;
+  inset: -100vmax;
+  background: #0c0c0b;
+  opacity: clamp(0, calc((0.95 - var(--p)) * 20), 1);
 }
 .leaderSweep {
   position: absolute;
@@ -211,7 +221,7 @@
   inset: 0;
   border: 2px solid rgb(255 255 255 / 0.5);
   border-radius: 50%;
-  opacity: calc(0.14 + 0.86 * clamp(0, calc((0.95 - var(--p)) * 20), 1));
+  opacity: clamp(0, calc((0.95 - var(--p)) * 20), 1);
 }
 .leaderRingInner { inset: 14%; border-width: 1.5px; }
 .leaderCross {
@@ -236,19 +246,6 @@
     clamp(0, calc((var(--k) + 1 - var(--q) * 3) * 40), 1)
   );
 }
-.screenMessage {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  justify-items: center;
-  gap: var(--as-space-2);
-  padding: var(--as-space-6);
-  text-align: center;
-  opacity: clamp(0, calc((var(--p) - 0.93) * 16), 1);
-}
-.screenTitle { margin: 0; font-size: var(--as-text-h3); font-weight: var(--as-w-title); text-shadow: 0 2px 20px #000; }
-.screenBody { margin: 0; color: var(--as-ink-soft); max-inline-size: 40ch; text-shadow: 0 2px 16px #000; }
-
 /* ---------- 3. About: animation paper on a light table ---------- */
 .about { --p: 1; padding-block: var(--as-space-16) var(--as-space-24); }
 .aboutRings {
@@ -396,10 +393,10 @@
     block-size: 100vh;
     overflow: hidden;
   }
-  :global(html[data-motion="on"]) .objectivesHead { margin-block-end: var(--as-space-4); }
+  :global(html[data-motion="on"]) .objectivesHead { margin-block-end: var(--as-space-12); }
   :global(html[data-motion="on"]) .zoetrope {
     --w: 25rem;
-    --r: calc(var(--w) * 0.688); /* apothem of a pentagon with side --w */
+    --r: calc(var(--w) / (2 * tan(180deg / var(--count)))); /* apothem of the drum's polygon: one face per goal */
     --step: calc(360deg / var(--count));
     --dir: 1;
     display: grid;
@@ -426,7 +423,7 @@
     display: block;
     position: absolute;
     left: 50%;
-    inline-size: calc(var(--w) * 1.36);
+    inline-size: calc(var(--r) * 2.6);
     block-size: 5.5rem;
     border-radius: 50%;
     translate: -50% -50%;
@@ -438,7 +435,7 @@
   }
   :global(html[data-motion="on"]) .drumShadow {
     top: 100%;
-    inline-size: calc(var(--w) * 1.8);
+    inline-size: calc(var(--r) * 3.4);
     block-size: 7rem;
     background: radial-gradient(closest-side, rgb(94 171 100 / 0.28), transparent);
   }
@@ -754,3 +751,89 @@
 .creditName { margin: 0; font-size: var(--as-text-h2); font-weight: var(--as-w-title); line-height: var(--as-leading-tight); }
 .creditNote { margin: 0 0 var(--as-space-3); color: var(--as-ink-soft); max-inline-size: 46ch; }
 .creditBall { inline-size: 10px; block-size: 10px; border-radius: 50%; background: var(--as-gradient-ball); }
+/* Published credits: names roll like a film's closing titles; each one links on. */
+.creditList { list-style: none; margin: 0 0 var(--as-space-3); padding: 0; display: grid; gap: var(--as-space-4); text-align: center; }
+.creditList li { display: grid; gap: var(--as-space-1); }
+.creditList .creditName { font-size: var(--as-text-h3); color: var(--as-ink); text-decoration: none; }
+.creditList .creditName:hover, .creditList .creditName:focus-visible { text-decoration: underline; text-underline-offset: 0.2em; }
+.creditList .creditNote { margin: 0; font-size: var(--as-text-secondary); }
+
+/* ---------- Phone (under 48rem): each device gets its own touch form, not a squeezed desktop. ---------- */
+@media (max-width: 47.99rem) {
+  /* Goals: one continuous strip of zoetrope film, swiped sideways frame by frame. */
+  .zoetrope { padding-inline: 0; }
+  .drum {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 80%;
+    gap: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--as-space-4);
+    padding-inline: var(--as-space-4);
+    scrollbar-width: none;
+  }
+  .slot { scroll-snap-align: start; border-radius: 0; box-shadow: inset -1px 0 0 var(--as-line), inset 0 1px 0 var(--as-line), inset 0 -1px 0 var(--as-line); }
+  .slot:first-child { border-start-start-radius: 6px; border-end-start-radius: 6px; }
+  .slot:last-child { border-start-end-radius: 6px; border-end-end-radius: 6px; }
+  .slotFace { align-content: start; padding: var(--as-space-6); min-block-size: 17rem; }
+  .slotTitle { font-size: var(--as-text-lead); line-height: 1.45; }
+  .objectivesFoot { margin-block-start: var(--as-space-6); }
+
+  /* Fields: four drawing sheets fanned on the desk, swiped sideways; the name sits under each sheet. */
+  .techList {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 78%;
+    gap: var(--as-space-4);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    margin-inline: calc(-1 * var(--as-space-4));
+    padding: var(--as-space-6) var(--as-space-4) var(--as-space-4);
+    scroll-padding-inline: var(--as-space-4);
+    border-block-start: 0;
+    scrollbar-width: none;
+  }
+  .tech { border-block-end: 0; scroll-snap-align: start; }
+  .tech::after { display: none; }
+  .techLink { grid-template-columns: 1fr; gap: var(--as-space-2); padding-block: 0; }
+  .techThumb {
+    position: relative;
+    grid-column: 1;
+    grid-row: 1;
+    inline-size: 100%;
+    aspect-ratio: 4 / 3.2;
+    display: grid;
+    place-items: center;
+    padding: 2.25rem 1.25rem 1rem;
+    margin-block-end: var(--as-space-3);
+    border-radius: 4px;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 23px, rgb(94 171 100 / 0.16) 23px 24px),
+      #fffdf1;
+    box-shadow: 0 0 60px -16px rgb(236 216 93 / 0.35), 0 22px 40px -24px rgb(0 0 0 / 0.9);
+    rotate: -1.2deg;
+  }
+  .tech:nth-child(even) .techThumb { rotate: 1.4deg; }
+  .techThumb::before {
+    /* Peg holes */
+    content: "";
+    position: absolute;
+    inset-block-start: 0.8rem;
+    inset-inline-start: 50%;
+    translate: -50% 0;
+    inline-size: 6.5rem;
+    block-size: 0.55rem;
+    background:
+      radial-gradient(circle, #000 0.28rem, transparent 0.3rem) center / 0.6rem 0.6rem no-repeat,
+      linear-gradient(#000, #000) left center / 1.6rem 100% no-repeat,
+      linear-gradient(#000, #000) right center / 1.6rem 100% no-repeat;
+    border-radius: 999px;
+  }
+  :dir(rtl) .techThumb::before { translate: 50% 0; }
+  .techThumb img { inline-size: 92%; }
+  .techName { grid-row: 2; font-size: 1.6rem; color: var(--as-white); }
+  .techSummary { grid-row: 3; font-size: var(--as-text-secondary); }
+}

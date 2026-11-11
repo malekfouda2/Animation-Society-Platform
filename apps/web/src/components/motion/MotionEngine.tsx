@@ -12,6 +12,8 @@ import { useEffect } from "react";
  * - [data-scroll-ball]: the page-progress ball, moved directly.
  * - [data-progress]: gets --p = how far the element has travelled through the viewport (0..1),
  *   used by pinned/scrubbed sections (zoetrope, countdown, word reveal, journey, chamber).
+ *   Modes: "" (through the viewport), "enter" (arriving), "pin" (pinned stage), "leave" (a page
+ *   hero being scrolled away: the inner-page camera truck-in).
  * - main > section[data-offscreen]: set while a section is out of view so its CSS loops pause.
  * - [data-enter="rise|power|beam|sheet|zoetrope|slide|drop|deal|roll|pop"]: one-shot entrance. The
  *   element waits invisible until it scrolls into view, then gets data-entered and plays a CSS
@@ -113,6 +115,7 @@ export function MotionEngine() {
         let p: number;
         if (t.mode === "enter") p = (vh - top) / (vh * 0.65);
         else if (t.mode === "pin") p = -top / Math.max(1, t.height - vh);
+        else if (t.mode === "leave") p = -top / t.height; // 0 at rest at the top, 1 once scrolled past
         else p = (vh - top) / t.height;
         const v = Math.min(1, Math.max(0, p)).toFixed(3);
         if (v !== t.last) { t.el.style.setProperty("--p", v); t.last = v; }

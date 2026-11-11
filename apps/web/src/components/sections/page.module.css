@@ -1,85 +1,83 @@
+/*
+ * Inner-page hero: the camera field guide (PageHero.tsx). The guide sits at the inline end; its lit
+ * camera field holds a brand subject. --p (MotionEngine data-progress="leave") trucks the camera in
+ * as the hero scrolls away. Without JS or under reduced motion the guide is static.
+ */
 .hero {
+  --tone: var(--as-yellow);
   position: relative;
   isolation: isolate;
   overflow: clip;
   display: grid;
   align-items: end;
-  min-block-size: min(78svh, 46rem);
-  padding-block: 10rem var(--as-space-16);
+  min-block-size: min(86svh, 50rem);
+  padding-block: 9rem var(--as-space-16);
 }
-.green { --hero-glow: radial-gradient(46rem 32rem at 75% 40%, rgb(94 171 100 / 0.3), transparent 70%); }
-.mist { --hero-glow: radial-gradient(46rem 32rem at 75% 40%, rgb(137 193 109 / 0.18), transparent 70%), radial-gradient(30rem 24rem at 20% 90%, rgb(236 216 93 / 0.1), transparent 70%); }
-.cream { --hero-glow: radial-gradient(46rem 32rem at 75% 40%, rgb(228 67 69 / 0.22), transparent 70%), radial-gradient(30rem 24rem at 30% 80%, rgb(236 216 93 / 0.12), transparent 70%); }
+.green { --tone: var(--as-green-light); }
+.mist { --tone: var(--as-yellow); }
+.cream { --tone: var(--as-red); }
 .heroLayers { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
-.heroLayers::before { content: ""; position: absolute; inset: 0; background: var(--hero-glow); }
-:dir(rtl) .heroLayers::before { scale: -1 1; }
-.heroRings { position: absolute; inset-block-start: -10%; inset-inline-end: -12%; inline-size: min(90vw, 52rem); block-size: auto; opacity: 0.45; }
-.heroShape { position: absolute; inset-block-start: 22%; inset-inline-end: 12%; inline-size: clamp(9rem, 22vw, 20rem); block-size: auto; }
-.heroBalls { position: absolute; inset-block-start: 14%; inset-inline-end: 38%; inline-size: clamp(7rem, 14vw, 12rem); block-size: auto; opacity: 0.85; }
-.heroArt {
+.heroLayers::after {
+  /* Fade the guide into the canvas behind the title so the copy always reads. */
+  content: "";
   position: absolute;
-  inset-block-end: -14%;
-  inset-inline-end: -6%;
-  inline-size: min(52vw, 38rem);
-  block-size: auto;
-  opacity: 0.8;
-  /* Feather the rectangular Drive crops so they float in the dark instead of ending in hard edges. */
-  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent);
-  mask-image: radial-gradient(closest-side, #000 55%, transparent);
+  inset: 0;
+  background:
+    linear-gradient(to top, var(--as-canvas) 4%, transparent 46%),
+    linear-gradient(to var(--fade-dir, right), var(--as-canvas) 6%, transparent 58%);
 }
+:dir(rtl) .heroLayers::after { --fade-dir: left; }
+.truck {
+  position: absolute;
+  inset-block-start: 4%;
+  inset-inline-end: -8%;
+  inline-size: min(118vw, 84rem);
+  aspect-ratio: 16 / 9;
+  transform-origin: 50% 50%;
+}
+.guide { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; overflow: visible; }
+.guideLines { fill: none; stroke: rgb(255 255 255 / 0.13); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+.guideLines line { stroke-dasharray: 3 9; }
+.guideNumbers { fill: rgb(255 255 255 / 0.32); font: 600 15px var(--as-font-en); }
+.camera { fill: none; stroke: var(--tone); stroke-width: 4; stroke-linecap: round; }
+.camera circle { fill: var(--tone); stroke: none; }
+.subject {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  inline-size: 30%;
+  translate: -50% -50%;
+}
+:dir(rtl) .subject { translate: 50% -50%; }
+.subjectShape { display: block; inline-size: 100%; block-size: auto; }
+.heroCopy { position: relative; }
 @media (max-width: 47.99rem) {
-  .heroArt { opacity: 0.35; inline-size: 80vw; }
-  .heroShape { opacity: 0.5; inset-inline-end: -10%; }
-  .heroBalls { inset-inline-end: 6%; opacity: 0.5; }
+  .hero { min-block-size: auto; padding-block: 7.5rem var(--as-space-12); align-items: start; }
+  .truck { position: relative; inset: auto; inline-size: 150vw; margin-inline-start: -25vw; margin-block-end: -12vw; }
+  .heroLayers { position: relative; z-index: 0; inset: auto; margin-block-start: -2rem; }
+  .heroLayers::after { background: linear-gradient(to top, var(--as-canvas) 2%, transparent 40%); }
+  .hero { display: flex; flex-direction: column; }
+  .heroCopy { margin-block-end: 0; }
 }
-.title { font-size: var(--as-text-display); max-inline-size: 14ch; letter-spacing: -0.02em; }
-:lang(ar) .title { letter-spacing: 0; line-height: 1.25; }
-.lead { font-size: var(--as-text-lead); max-inline-size: 48ch; margin: 0; color: var(--as-ink-soft); }
+.title { font-size: var(--as-text-display); max-inline-size: 13ch; letter-spacing: -0.03em; line-height: 0.98; margin-block-end: var(--as-space-6); }
+:lang(ar) .title { letter-spacing: 0; line-height: 1.2; }
+.lead { font-size: var(--as-text-lead); max-inline-size: 44ch; margin: 0; color: var(--as-ink-soft); }
 @media (prefers-reduced-motion: no-preference) {
-  :global(html.js:not(.intro)) .title { animation: rise 600ms var(--ease-out) both; }
-  :global(html.js:not(.intro)) .lead { animation: rise var(--motion-300) var(--ease-out) 150ms both; }
-  @keyframes rise { from { opacity: 0; transform: translateY(24px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
-  @keyframes spin { to { rotate: 360deg; } }
-  .heroRings { animation: spin 160s linear infinite; }
+  .truck { transform: scale(calc(1 + var(--p, 0) * 0.45)) rotate(calc(var(--p, 0) * -3deg)); will-change: transform; }
+  :global(html.js:not(.intro)) .title { animation: rise 700ms var(--ease-out) both; }
+  :global(html.js:not(.intro)) .lead { animation: rise 700ms var(--ease-out) 120ms both; }
+  :global(html.js:not(.intro)) .camera { animation: frame-in 900ms var(--ease-out) 200ms both; }
+  :global(html.js:not(.intro)) .guideLines { animation: guide-in 1200ms var(--ease-out) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+  @keyframes frame-in { from { opacity: 0; transform: scale(1.6); } to { opacity: 1; transform: none; } }
+  @keyframes guide-in { from { opacity: 0; } to { opacity: 1; } }
+  .camera { transform-box: view-box; transform-origin: 50% 50%; }
 }
 
-/* Shared inner-page layout */
+/* Shared inner-page helpers */
 .section { padding-block: var(--as-space-16); }
-.section + .section { border-block-start: 1px solid var(--as-line); }
 .prose { max-inline-size: 68ch; font-size: var(--as-text-lead); }
 .prose p { margin-block-end: var(--as-space-4); }
-.toc {
-  position: sticky;
-  inset-block-start: 0;
-  z-index: 40;
-  background: rgb(0 0 0 / 0.88);
-  border-block-end: 1px solid var(--as-line);
-}
-.tocList {
-  display: flex;
-  gap: var(--as-space-2);
-  overflow-x: auto;
-  list-style: none;
-  margin-block: 0;
-  margin-inline: auto;
-  padding-block: var(--as-space-2);
-  scrollbar-width: none;
-}
-.tocList a {
-  display: inline-flex;
-  align-items: center;
-  min-block-size: 44px;
-  padding-inline: var(--as-space-4);
-  border-radius: var(--as-radius-pill);
-  white-space: nowrap;
-  text-decoration: none;
-  font-weight: var(--as-w-subtitle);
-}
-.tocList a:hover { background: var(--as-mist); }
-.twoCol { display: grid; gap: var(--as-space-8); }
-@media (min-width: 64rem) {
-  .twoCol { grid-template-columns: 1fr 1fr; }
-}
-.callout { padding: var(--as-space-4); border-inline-start: 4px solid var(--as-red); background: var(--as-cream); max-inline-size: 60ch; }
 .note { margin-block-start: var(--as-space-6); }
 .back { display: inline-flex; margin-block-start: var(--as-space-6); font-weight: var(--as-w-subtitle); }
+.muted { color: var(--as-ink-soft); }

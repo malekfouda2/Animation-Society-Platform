@@ -1,8 +1,8 @@
-import type { Locale } from "@as/contracts";
+import { POLICY_KEYS, type Locale } from "@as/contracts";
 import Image from "next/image";
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
-import { POLICIES } from "@/content/policies";
+import { POLICY_TITLES } from "@/content/policies";
 import { SOCIETY } from "@/content/society";
 import type { Dictionary } from "@/i18n/types";
 import styles from "./footer.module.css";
@@ -53,8 +53,8 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
         <nav aria-label={dict.footer.policies} className={styles.col}>
           <h2 className={styles.heading}>{dict.footer.policies}</h2>
           <ul>
-            {POLICIES.map((p) => (
-              <li key={p.slug}><Link href={`/${locale}/policies#${p.slug}`}>{p.title[locale]}</Link></li>
+            {POLICY_KEYS.map((slug) => (
+              <li key={slug}><Link href={`/${locale}/policies#${slug}`}>{POLICY_TITLES[slug][locale]}</Link></li>
             ))}
           </ul>
         </nav>

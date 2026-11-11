@@ -24,7 +24,9 @@ Also code-drawn and decorative (no manifest entry; edit in place):
 1. Export the new artwork, keeping its subject inside a 4:3 frame. SVG is preferred; for raster, use WebP or AVIF at least 800×600.
 2. Overwrite the file in `apps/web/public/artwork/`, or add a new file and change `src` in `ARTWORK`.
 3. Update `width`, `height`, the Arabic and English `alt`, `status` and `provenance` in `ARTWORK`.
-4. Check the home page at 390 px and at desktop width in both `/ar` and `/en`. The frame uses `object-fit: contain`, so nothing is cropped; check that the subject is still readable at about 300 px wide.
+4. Check the home page and `/fields` at 390 px and at desktop width in both `/ar` and `/en`. Every frame keeps the drawing's own shape (`object-fit: contain` or automatic height), so a drawing that isn't 4:3 is letterboxed, never cropped or stretched; check that the subject is still readable at about 300 px wide.
+
+This procedure was tested on 11 November 2026 (ACCEPTANCE D-A05) with a 3:2 WebP in place of `field-2d.svg`. The test found and fixed a stretched stage on `/fields`.
 
 The hover hop moves the whole image 8 px up. Artwork shouldn't touch the top edge.
 
@@ -99,3 +101,26 @@ All are code (CSS/SVG in `apps/web/src/app/[locale]/(public)/page.tsx`, `home.mo
 - Membership cards (types): colours and ring pattern only; no logo (guideline minimum width 130px).
 - Marquee poster frame (Projects) using the initiative's manifest cover.
 - Assembly hemicycle (Governance): seat count is decorative and carries no data.
+
+## Inner-page devices (added 9 November 2026)
+
+All code (CSS/SVG), decorative and `aria-hidden`, guideline colours only. Status: temporary, developer-made, needs the Society's review.
+- Camera field guide hero (`components/sections/PageHero.tsx`, `page.module.css`): the subject is an existing brand shape (`Planet`, `Blob`, `Balls`).
+- Storyboard sketches (`components/art/Sketches.tsx`): bounce, horizon, table, chamber. Replace a sketch by editing its SVG function or pointing the About panel at an image.
+- Field sets (`fields/fields.module.css`): paper, viewport, tabletop and split sets behind the existing `field*` drawings.
+- Membership card fronts and backs, ticket stubs, project slates and viewfinder marks, exposure sheet, acetate cels, drawing disc and peg bar, policy binder, 404 film strip: all CSS in each page's module.
+
+## Introduction films (added 8 November 2026)
+
+Manifest: `VIDEOS.intro` in `apps/web/src/config/artwork.ts`. Files in `apps/web/public/video/`:
+
+| File | Source | Notes |
+| --- | --- | --- |
+| `intro-ar.mp4` (18.7 MB) | Drive `PROMO_VID_FINAL_AR.mp4` (83 MB, Mar 2022) | 73 s, no audio track |
+| `intro-en.mp4` (16.5 MB) | Drive `Promo Vid.mp4` (75 MB, Jul 2022) | 64 s, with audio |
+| `intro-ar-poster.webp`, `intro-en-poster.webp` | Each film's logo end card | 1280×720 |
+
+Web versions: H.264 High, 1280×720, about 2 Mbps, 24 fps, keyframe every 2 s, AAC 128 kbps, index at the front (fast start). They were made with a small AVFoundation script, because ffmpeg isn't installed; any encoder with those settings works. To replace a film: export at those settings, drop it at the same path (or point the manifest at a new file), update `seconds` and `hasAudio`, and refresh the poster.
+
+Behaviour (`components/media/IntroFilm.tsx`): nothing loads until the visitor presses play (`preload="none"` with a poster); then native controls take over, and the film pauses when scrolled out of view. Status: supplied by the Society, not yet signed off. The films contain third-party animation clips (including *Captain Munch*), and the English film has no captions yet (ACCEPTANCE A25).
+

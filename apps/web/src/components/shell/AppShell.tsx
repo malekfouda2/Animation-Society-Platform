@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import type { Dictionary } from "@/i18n/types";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { SideNav } from "./SideNav";
 import styles from "./shell.module.css";
 
 interface Props {
@@ -11,12 +12,14 @@ interface Props {
   dict: Dictionary;
   title: string;
   navLabel: string;
-  items: { label: string; current?: boolean }[];
+  items: { label: string; href?: string; section?: boolean }[];
+  /** Account line and sign-out, shown under the navigation. */
+  account?: ReactNode;
   children: ReactNode;
 }
 
-/** Shared member/admin frame: calm and efficient, sharing the brand navy. Items are inert until their stages ship. */
-export function AppShell({ locale, dict, title, navLabel, items, children }: Props) {
+/** Shared member/admin frame: calm and efficient. Items without an href are not built yet. */
+export function AppShell({ locale, dict, title, navLabel, items, account, children }: Props) {
   return (
     <div className={styles.app}>
       <aside className={styles.sidebar}>
@@ -24,15 +27,8 @@ export function AppShell({ locale, dict, title, navLabel, items, children }: Pro
           <BrandLogo alt="" width={132} />
         </Link>
         <p className={styles.sidebarTitle}>{title}</p>
-        <nav aria-label={navLabel}>
-          <ul className={styles.sideList}>
-            {items.map((item) => (
-              <li key={item.label} className={styles.sideItem} aria-current={item.current ? "page" : undefined}>
-                {item.label}
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <SideNav label={navLabel} items={items} />
+        {account ? <div className={styles.sidebarAccount}>{account}</div> : null}
         <p className={styles.sidebarLang}>
           <LanguageSwitcher locale={locale} label={dict.a11y.switchLanguage} targetName={dict.language.switchTo} />
         </p>

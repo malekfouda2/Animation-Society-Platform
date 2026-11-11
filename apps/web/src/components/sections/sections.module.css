@@ -1,47 +1,3 @@
-/* Objectives (About page): editorial rows; a brand-gradient sweep lights the row on hover. */
-.objectives {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-block-start: 1px solid var(--as-line-strong);
-}
-.objective {
-  position: relative;
-  isolation: isolate;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: var(--as-space-6);
-  padding-block: var(--as-space-6);
-  padding-inline: var(--as-space-2);
-  border-block-end: 1px solid var(--as-line-strong);
-}
-.objective::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(90deg, rgb(94 171 100 / 0.22), rgb(236 216 93 / 0.06));
-  transform: scaleX(0);
-  transform-origin: var(--sweep-origin, left);
-  transition: transform var(--motion-300) var(--ease-out);
-}
-:dir(rtl) .objective::before { --sweep-origin: right; background: linear-gradient(270deg, rgb(94 171 100 / 0.22), rgb(236 216 93 / 0.06)); }
-@media (hover: hover) {
-  .objective:hover::before { transform: scaleX(1); }
-}
-.objectiveIcon { inline-size: 72px; block-size: 72px; }
-@media (prefers-reduced-motion: no-preference) {
-  .objectiveIcon { transition: transform var(--motion-300) var(--ease-out); }
-  .objective:hover .objectiveIcon { transform: translateY(-4px) rotate(-4deg); }
-}
-.objectiveTitle { font-size: var(--as-text-h3); margin-block-end: var(--as-space-1); }
-.objectiveBody { color: var(--as-ink-soft); margin: 0; max-inline-size: 60ch; }
-@media (max-width: 47.99rem) {
-  .objective { grid-template-columns: 1fr; gap: var(--as-space-3); }
-  .objectiveIcon { inline-size: 56px; block-size: 56px; }
-}
-
 /* Journey: the bouncing-ball exercise. --p comes from MotionEngine (data-progress="enter"). */
 .journey { --p: 1; position: relative; }
 .wave { display: none; inline-size: 100%; block-size: auto; overflow: visible; margin-block-end: var(--as-space-8); }
@@ -104,35 +60,6 @@
 .stepTitle { font-size: var(--as-text-lead); margin-block-end: var(--as-space-1); }
 .stepBody { margin: 0; color: var(--as-ink-soft); font-size: var(--as-text-secondary); }
 
-/* Membership types */
-.types {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-  gap: var(--as-space-4);
-  margin: 0;
-}
-.type {
-  padding: var(--as-space-6);
-  border: 1px solid var(--as-line);
-  border-block-start: 3px solid var(--as-green);
-  border-radius: var(--as-radius-md);
-  background: var(--as-surface);
-}
-.type:nth-child(2) { border-block-start-color: var(--as-green-light); }
-.type:nth-child(3) { border-block-start-color: var(--as-yellow); }
-.type:nth-child(4) { border-block-start-color: var(--as-red); }
-.typeName {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--as-space-2) var(--as-space-3);
-  font-size: var(--as-text-lead);
-  font-weight: var(--as-w-subtitle);
-}
-.typeGranted { font-size: var(--as-text-meta); font-weight: var(--as-w-note); color: var(--as-ink-soft); }
-.typeLabel { margin: var(--as-space-3) 0 0; font-size: var(--as-text-meta); font-weight: var(--as-w-subtitle); color: var(--as-ink-soft); }
-.typeText { margin: var(--as-space-1) 0 0; }
-
 /* Membership deck (home): four cards spread on the table, straightening and lifting on hover. */
 .deck {
   display: grid;
@@ -189,4 +116,17 @@
   border-block-start: 1px solid rgb(0 0 0 / 0.3);
   font-size: var(--as-text-meta);
   font-weight: var(--as-w-subtitle);
+}
+
+/* Phone: the membership cards stack up like a deck as you scroll, each one sliding over the last. */
+@media (max-width: 39.99rem) {
+  .deck { gap: var(--as-space-6); padding-block-end: var(--as-space-8); }
+  .card {
+    position: sticky;
+    inset-block-start: calc(5.5rem + var(--k) * 1.1rem);
+    aspect-ratio: auto;
+    min-block-size: 13.5rem;
+    rotate: calc((var(--k) - 1.5) * 1.2deg);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.25) inset, 0 -18px 40px -18px rgb(0 0 0 / 0.95);
+  }
 }

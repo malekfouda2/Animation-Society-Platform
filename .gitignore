@@ -19,3 +19,10 @@ brand-source/
 docs/private/
 apps/web/public/fonts/rns-sanz/
 package-lock 2.json
+
+# Uploaded media in development (production keeps MEDIA_DIR on persistent storage outside the repo).
+apps/api/var/
+
+# Introduction films and posters (≈34 MB, third-party clips): kept out of the public repo by Malek's instruction
+# (11 Nov 2026). Put them in place by hand; see docs/DEVELOPMENT.md "Introduction films".
+apps/web/public/video/

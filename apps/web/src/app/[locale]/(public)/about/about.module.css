@@ -1,0 +1,220 @@
+/*
+ * About: a storyboard. Panels are 16:9 frames with a pencil sketch and a big panel number; notes
+ * sit on ruled paper lines beside them. Panels stay on the inline start (storyboards don't zig-zag).
+ */
+
+/* Scene strip: the page's contents as numbered storyboard tabs, sticky under the header. */
+.strip {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 40;
+  background: rgb(0 0 0 / 0.9);
+  border-block: 1px solid var(--as-line);
+}
+.stripList {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  list-style: none;
+  margin-block: 0;
+  margin-inline: auto;
+  padding-block: 0;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.stripList li { flex: none; scroll-snap-align: start; }
+.stripLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--as-space-2);
+  min-block-size: 52px;
+  padding-inline: var(--as-space-4);
+  border-inline-end: 1px solid var(--as-line);
+  white-space: nowrap;
+  text-decoration: none;
+  font-weight: var(--as-w-subtitle);
+  font-size: var(--as-text-secondary);
+}
+.stripList li:first-child .stripLink { border-inline-start: 1px solid var(--as-line); }
+.stripNo {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 1.6rem;
+  block-size: 1.6rem;
+  border: 1.5px solid var(--as-line-strong);
+  font-size: var(--as-text-meta);
+  font-variant-numeric: tabular-nums;
+}
+.stripLink:hover { background: var(--as-mist); }
+.stripLink:hover .stripNo { background: var(--as-green-light); border-color: var(--as-green-light); color: var(--as-black); }
+
+/* One storyboard shot: panel + notes. */
+.shot { padding-block: var(--as-space-16); scroll-margin-block-start: 3.5rem; }
+.shotGrid { display: grid; gap: var(--as-space-8); align-items: start; }
+@media (min-width: 64rem) {
+  .shot { padding-block: var(--as-space-24); }
+  .shotGrid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--as-space-16); }
+  .panel { position: sticky; inset-block-start: 6rem; }
+}
+.panel {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 16 / 9;
+  border: 3px solid var(--as-ink);
+  border-radius: 4px;
+  background:
+    radial-gradient(120% 90% at 50% 120%, rgb(137 193 109 / 0.12), transparent 60%),
+    var(--as-surface);
+  color: rgb(255 255 255 / 0.85);
+  box-shadow: 10px 10px 0 -2px var(--as-canvas), 10px 10px 0 0 var(--as-line-strong);
+}
+:dir(rtl) .panel { box-shadow: -10px 10px 0 -2px var(--as-canvas), -10px 10px 0 0 var(--as-line-strong); }
+.panelNo {
+  position: absolute;
+  inset-block-start: -1px;
+  inset-inline-start: -1px;
+  display: grid;
+  place-items: center;
+  min-inline-size: 2.75rem;
+  block-size: 2.75rem;
+  padding-inline: var(--as-space-2);
+  background: var(--as-ink);
+  color: var(--as-canvas);
+  font-size: var(--as-text-lead);
+  font-weight: var(--as-w-title);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.sketch { display: block; inline-size: 100%; block-size: 100%; padding: 6% 6% 4%; }
+
+/* Notes on ruled storyboard lines. */
+.notes {
+  --rule: 2.25rem;
+  padding-block-start: var(--as-space-2);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 calc(var(--rule) - 1px), rgb(255 255 255 / 0.06) calc(var(--rule) - 1px) var(--rule));
+}
+.notes > * { margin-block-end: var(--as-space-6); }
+.notes > :last-child { margin-block-end: 0; }
+.heading { font-size: var(--as-text-h2); line-height: 1.05; letter-spacing: -0.02em; }
+:lang(ar) .heading { letter-spacing: 0; line-height: 1.3; }
+.big { font-size: clamp(1.25rem, 1rem + 0.9vw, 1.6rem); line-height: 1.5; font-weight: var(--as-w-text); max-inline-size: 36ch; }
+.label {
+  margin-block: var(--as-space-8) var(--as-space-2) !important;
+  font-size: var(--as-text-secondary);
+  font-weight: var(--as-w-subtitle);
+  color: var(--as-green-light);
+}
+.notes > .label:first-of-type { margin-block-start: 0 !important; }
+.quote { margin: 0 0 var(--as-space-4); padding: 0; border: 0; }
+.quote p {
+  margin: 0;
+  font-size: clamp(1.6rem, 1.1rem + 1.8vw, 2.5rem);
+  font-weight: var(--as-w-title);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  max-inline-size: 24ch;
+}
+:lang(ar) .quote p { letter-spacing: 0; line-height: 1.5; }
+.quote p::before { content: "\201C"; color: var(--as-yellow); margin-inline-end: 0.08em; }
+.quote p::after { content: "\201D"; color: var(--as-yellow); margin-inline-start: 0.08em; }
+:lang(ar) .quote p::before { content: "\201D"; }
+:lang(ar) .quote p::after { content: "\201C"; }
+/* Pending text, drawn in light pencil. */
+.pencil {
+  margin: 0;
+  padding: var(--as-space-3) var(--as-space-4);
+  border: 1.5px dashed var(--as-line-strong);
+  border-radius: 4px;
+  color: var(--as-ink-soft);
+  max-inline-size: 44ch;
+}
+/* The voting rule as a director's note: a strip of yellow tape. */
+.director {
+  position: relative;
+  max-inline-size: 46ch;
+  padding: var(--as-space-4) var(--as-space-6);
+  background: var(--as-yellow);
+  color: var(--as-black);
+  font-weight: var(--as-w-subtitle);
+  rotate: -1deg;
+}
+:dir(rtl) .director { rotate: 1deg; }
+
+/* Goals: a storyboard row of four thumbnails. */
+.goals {
+  padding-block: var(--as-space-16) var(--as-space-24);
+  background:
+    linear-gradient(to bottom, transparent, rgb(137 193 109 / 0.06) 30%, transparent),
+    var(--as-canvas);
+  border-block: 1px solid var(--as-line);
+  scroll-margin-block-start: 3.5rem;
+}
+.goalsTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--as-space-4);
+  font-size: var(--as-text-h2);
+  margin-block-end: var(--as-space-12);
+}
+.goalsTitle .panelNo { position: static; }
+.thumbs {
+  list-style: none;
+  margin: 0 0 var(--as-space-8);
+  padding: 0;
+  display: grid;
+  gap: var(--as-space-8) var(--as-space-6);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  counter-reset: thumb;
+}
+.thumb { counter-increment: thumb; }
+.thumbFrame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  border: 2px solid var(--as-ink);
+  border-radius: 3px;
+  background: var(--as-surface);
+  margin-block-end: var(--as-space-4);
+}
+.thumbFrame::after {
+  /* Camera move arrow sketched across the frame. */
+  content: "";
+  position: absolute;
+  inset-inline: 14%;
+  inset-block-end: 12%;
+  block-size: 2px;
+  background: repeating-linear-gradient(90deg, var(--as-line-strong) 0 6px, transparent 6px 12px);
+}
+.thumbIcon { inline-size: 96px; block-size: 96px; }
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .thumbIcon { transition: transform var(--motion-300) var(--ease-out); }
+  .thumb:hover .thumbIcon { transform: translateY(-8px) rotate(-6deg); }
+}
+.thumbText { margin: 0; font-weight: var(--as-w-text); line-height: 1.55; }
+.thumbText::before {
+  content: counter(thumb, decimal) ". ";
+  color: var(--as-green-light);
+  font-weight: var(--as-w-title);
+}
+:lang(ar) .thumbText::before { content: counter(thumb, arabic-indic) ". "; }
+
+@media (max-width: 47.99rem) {
+  .shot { padding-block: var(--as-space-12); }
+  .panel { box-shadow: 6px 6px 0 -2px var(--as-canvas), 6px 6px 0 0 var(--as-line-strong); }
+  :dir(rtl) .panel { box-shadow: -6px 6px 0 -2px var(--as-canvas), -6px 6px 0 0 var(--as-line-strong); }
+  /* Goals: a sideways storyboard strip you swipe through. */
+  .thumbs {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 78%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-block-end: var(--as-space-4);
+    margin-inline: calc(-1 * var(--as-space-4));
+    padding-inline: var(--as-space-4);
+    scroll-padding-inline: var(--as-space-4);
+    scrollbar-width: none;
+  }
+  .thumb { scroll-snap-align: start; }
+}

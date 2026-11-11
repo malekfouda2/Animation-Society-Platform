@@ -72,3 +72,7 @@
   color: rgb(255 255 255 / 0.6);
 }
 .base p { margin: 0; }
+@media (max-width: 47.99rem) {
+  .inner { grid-template-columns: 1fr 1fr; column-gap: var(--as-space-6); }
+  .inner > :first-child, .inner > :last-child { grid-column: 1 / -1; }
+}

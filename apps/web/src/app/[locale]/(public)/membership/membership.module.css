@@ -1,39 +1,233 @@
+/* Membership: the card office. Card colours are the guideline primaries with black ink (≥5.3:1). */
+
+/* Apply note as a torn ticket stub in the hero. */
 .applyNote {
   display: inline-block;
-  margin-block-start: var(--as-space-6);
-  padding: var(--as-space-2) var(--as-space-4);
+  margin-block-start: var(--as-space-8);
+  padding: var(--as-space-3) var(--as-space-6);
+  border: 1.5px dashed var(--as-green-light);
   border-radius: var(--as-radius-sm);
-  background: var(--as-surface);
+  color: var(--as-green-light);
   font-weight: var(--as-w-subtitle);
 }
-.journey { background: var(--as-cream); }
-.faq { display: grid; gap: var(--as-space-2); max-inline-size: 52rem; }
-.faqItem {
+
+.sectionTitle { font-size: var(--as-text-h2); margin-block-end: var(--as-space-12); }
+
+/* Why: one big statement, the brand ball as its full stop. */
+.why { padding-block: var(--as-space-16) var(--as-space-24); }
+.kicker { font-size: var(--as-text-lead); color: var(--as-green-light); margin-block-end: var(--as-space-4); }
+.statement {
+  font-size: clamp(1.75rem, 1.1rem + 2.6vw, 3.5rem);
+  font-weight: var(--as-w-title);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  max-inline-size: 26ch;
+  margin-block-end: var(--as-space-8);
+}
+:lang(ar) .statement { letter-spacing: 0; line-height: 1.45; }
+.statement::after {
+  content: "";
+  display: inline-block;
+  inline-size: 0.42em;
+  block-size: 0.42em;
+  margin-inline-start: 0.15em;
+  border-radius: 50%;
+  background: var(--as-gradient-ball);
+  vertical-align: baseline;
+}
+
+/* Types: card fronts with the backs peeking out underneath. */
+.types { padding-block: var(--as-space-16) var(--as-space-24); }
+.wallet {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--as-space-16) var(--as-space-12);
+}
+@media (min-width: 56rem) {
+  .wallet { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pair:nth-child(even) { margin-block-start: var(--as-space-16); }
+}
+.pair { --card-bg: var(--as-green); position: relative; display: grid; grid-template-columns: minmax(0, 1fr); min-inline-size: 0; }
+.pair[data-type="affiliate"] { --card-bg: var(--as-green-light); }
+.pair[data-type="honorary"] { --card-bg: var(--as-yellow); }
+.pair[data-type="distinguished"] { --card-bg: var(--as-red); }
+.front {
+  --cx: 100%;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: var(--as-space-2);
+  aspect-ratio: 1.586;
+  inline-size: 88%;
+  padding: var(--as-space-6);
+  border-radius: var(--as-radius-md);
+  color: var(--as-black);
+  background:
+    repeating-radial-gradient(circle at var(--cx) 0, transparent 0 18px, rgb(0 0 0 / 0.09) 18px 19.5px),
+    var(--card-bg);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.25) inset, 0 28px 50px -24px rgb(0 0 0 / 0.95);
+  rotate: -2deg;
+}
+:dir(rtl) .front { --cx: 0%; rotate: 2deg; }
+.society { font-size: var(--as-text-meta); font-weight: var(--as-w-subtitle); opacity: 0.8; }
+.chip {
+  align-self: center;
+  inline-size: 2.75rem;
+  block-size: 2rem;
+  border-radius: 6px;
+  background:
+    linear-gradient(90deg, transparent 32%, rgb(0 0 0 / 0.25) 32% 36%, transparent 36% 64%, rgb(0 0 0 / 0.25) 64% 68%, transparent 68%),
+    linear-gradient(0deg, transparent 45%, rgb(0 0 0 / 0.25) 45% 55%, transparent 55%),
+    linear-gradient(135deg, #f4e9a8, #c9b354);
+}
+.typeName { margin: 0; font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.25rem); font-weight: var(--as-w-title); line-height: 1.1; }
+.granted {
+  justify-self: start;
+  padding-block-start: var(--as-space-2);
+  border-block-start: 1px solid rgb(0 0 0 / 0.3);
+  font-size: var(--as-text-meta);
+  font-weight: var(--as-w-subtitle);
+}
+.back {
+  position: relative;
+  margin: -3.5rem 0 0;
+  margin-inline-start: 12%;
+  padding: 5rem var(--as-space-6) var(--as-space-6);
   border: 1px solid var(--as-line);
   border-radius: var(--as-radius-md);
   background: var(--as-surface);
+  display: grid;
+  gap: var(--as-space-4);
+  rotate: 1.5deg;
 }
+:dir(rtl) .back { rotate: -1.5deg; }
+.back::before {
+  /* The magnetic stripe, in the card's own colour. */
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 3.5rem;
+  block-size: 0.6rem;
+  background: var(--card-bg);
+  opacity: 0.85;
+}
+.back dt { font-size: var(--as-text-secondary); font-weight: var(--as-w-subtitle); color: var(--as-ink-soft); margin-block-end: var(--as-space-1); }
+.back dd { margin: 0; line-height: 1.55; }
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .front, .back { transition: rotate var(--motion-300) var(--ease-out), translate var(--motion-300) var(--ease-out); }
+  .pair:hover .front { rotate: 0deg; translate: 0 -0.5rem; }
+  .pair:hover .back { rotate: 0deg; }
+}
+@media (max-width: 47.99rem) {
+  .front { inline-size: 94%; padding: var(--as-space-4) var(--as-space-6); }
+  .back { margin-inline-start: 6%; padding: 4.5rem var(--as-space-4) var(--as-space-6); }
+}
+
+/* Plans and benefits: two blank tickets with punched notches and a perforated tear line. */
+.booth { padding-block: var(--as-space-12) var(--as-space-24); }
+.tickets { display: grid; gap: var(--as-space-8); }
+@media (min-width: 56rem) { .tickets { grid-template-columns: 1fr 1fr; } }
+.ticket {
+  --notch: 1.1rem;
+  --ink: var(--as-green-light);
+  position: relative;
+  padding: var(--as-space-8) var(--as-space-8) var(--as-space-8) calc(var(--as-space-8) + 4.5rem);
+  background: var(--as-surface);
+  border: 0;
+  border-radius: var(--as-radius-md);
+  -webkit-mask: radial-gradient(circle var(--notch) at 4.5rem 0, transparent 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at 4.5rem 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+  mask: radial-gradient(circle var(--notch) at 4.5rem 0, transparent 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at 4.5rem 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+}
+:dir(rtl) .ticket {
+  padding: var(--as-space-8) calc(var(--as-space-8) + 4.5rem) var(--as-space-8) var(--as-space-8);
+  -webkit-mask: radial-gradient(circle var(--notch) at calc(100% - 4.5rem) 0, transparent 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at calc(100% - 4.5rem) 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+  mask: radial-gradient(circle var(--notch) at calc(100% - 4.5rem) 0, transparent 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at calc(100% - 4.5rem) 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+}
+.ticket::before {
+  /* Stub: the colour band left of the tear line. */
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 4.5rem;
+  background: repeating-linear-gradient(45deg, var(--ink) 0 10px, transparent 10px 20px);
+  opacity: 0.35;
+}
+.ticket::after {
+  content: "";
+  position: absolute;
+  inset-block: var(--notch);
+  inset-inline-start: 4.5rem;
+  border-inline-start: 2px dashed var(--as-line-strong);
+}
+.ticketWarm { --ink: var(--as-yellow); }
+.ticketRole { font-size: var(--as-text-secondary); color: var(--ink); margin-block-end: var(--as-space-3); }
+.ticketTitle { font-size: var(--as-text-h3); font-weight: var(--as-w-title); line-height: 1.2; margin-block-end: var(--as-space-2); }
+.ticketBody { margin: 0; color: var(--as-ink-soft); }
+@media (max-width: 47.99rem) {
+  .ticket { padding: var(--as-space-6) var(--as-space-6) var(--as-space-6) calc(var(--as-space-6) + 3rem); }
+  :dir(rtl) .ticket { padding: var(--as-space-6) calc(var(--as-space-6) + 3rem) var(--as-space-6) var(--as-space-6); }
+  .ticket::before { inline-size: 3rem; }
+  .ticket::after { inset-inline-start: 3rem; }
+  .ticket { -webkit-mask: none; mask: none; }
+}
+
+/* Journey */
+.journey {
+  padding-block: var(--as-space-16) var(--as-space-24);
+  background: linear-gradient(to bottom, transparent, rgb(236 216 93 / 0.06) 40%, transparent);
+  border-block: 1px solid var(--as-line);
+}
+
+/* Questions: a ruled list; the brand ball drops into the answer when it opens. */
+.faqSection { padding-block: var(--as-space-24); }
+.faqGrid { display: grid; gap: var(--as-space-8); }
+@media (min-width: 64rem) { .faqGrid { grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: var(--as-space-16); } }
+.faq { border-block-start: 1px solid var(--as-line-strong); }
+.faqItem { border-block-end: 1px solid var(--as-line-strong); }
 .faqItem summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--as-space-4);
-  min-block-size: 56px;
-  padding: var(--as-space-3) var(--as-space-6);
+  gap: var(--as-space-6);
+  min-block-size: 4.5rem;
+  padding-block: var(--as-space-4);
   cursor: pointer;
+  font-size: clamp(1.1rem, 1rem + 0.5vw, 1.4rem);
   font-weight: var(--as-w-subtitle);
   list-style: none;
 }
 .faqItem summary::-webkit-details-marker { display: none; }
-.faqItem summary::after {
-  content: "";
+.faqItem summary:hover { color: var(--as-yellow); }
+.drop {
+  position: relative;
   flex: none;
-  inline-size: 14px;
-  block-size: 14px;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  border-radius: 50%;
+  border: 2px solid var(--as-line-strong);
+}
+.drop::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
   border-radius: 50%;
   background: var(--as-gradient-ball);
-  transition: transform var(--motion-200) var(--ease-out);
+  transform: translateY(-1.4rem) scale(0.4);
+  opacity: 0;
 }
-.faqItem[open] summary::after { transform: scale(1.4); }
-.faqItem p { margin: 0; padding: 0 var(--as-space-6) var(--as-space-6); color: var(--as-ink-soft); }
-.contact { margin-block-start: var(--as-space-8); }
+.faqItem[open] .drop { border-color: var(--as-yellow); }
+.faqItem[open] .drop::after { transform: none; opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .drop::after { transition: transform var(--motion-300) var(--ease-out), opacity var(--motion-200) var(--ease-out); }
+}
+.faqItem p { margin: 0; padding-block-end: var(--as-space-6); max-inline-size: 60ch; color: var(--as-ink-soft); font-size: var(--as-text-lead); }
+.contact { margin-block-start: var(--as-space-2); }
