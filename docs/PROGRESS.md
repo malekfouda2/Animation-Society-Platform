@@ -35,8 +35,11 @@ CI after the push:
 - The first GitHub run of the replica-set integration tests failed (run 43045937376).
 - The MongoDB start step had no failure exit, so it now fails on its own and writes the container log into the run's annotations.
 - That surfaced the cause (run 43046883544): the `ubuntu-latest` runner is now Ubuntu 26, and its Linux kernel 6.19+ makes MongoDB 8.0 refuse to start.
-- CI is now pinned to `ubuntu-24.04`.
-- **Deployment note:** the production server must also run a kernel MongoDB supports, or a MongoDB release that supports 6.19+. Check this when the host is chosen (Stage 7).
+- MongoDB's issue SERVER-121912 lists no fixed version.
+- Pinning `ubuntu-24.04` didn't help: those runners also have 6.19+ (run 43047604808).
+- `mongo:8.2.12` has no startup refusal, so CI now runs the integration tests on it. Run 43049660961 on `33bc0d5` passed every step, including 33 integration tests and the build.
+- Local development still uses MongoDB 8.0 (Docker Desktop's kernel is older), so CI and development now differ.
+- **Decision needed (Malek):** move development and production to 8.2 as well, and check the production host's kernel when it is chosen (Stage 7).
 
 Still open (deferred by Malek, to be raised again at each stage boundary):
 - Malek's design review, two rounds (D-A03): this is what closes Stage 2.
