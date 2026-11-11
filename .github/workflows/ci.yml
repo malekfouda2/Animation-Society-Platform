@@ -33,8 +33,16 @@ jobs:
         run: |
           docker run -d --name mongo -p 127.0.0.1:27017:27017 mongo:8.0 --replSet rs0 --bind_ip_all
           for i in $(seq 1 60); do
-            docker exec mongo mongosh --quiet --eval "try { rs.status().ok } catch (e) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27017'}]}).ok }; quit(db.hello().isWritablePrimary ? 0 : 1)" && break
+            if out=$(docker exec mongo mongosh --quiet --eval "try { rs.status().ok } catch (e) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27017'}]}).ok }; quit(db.hello().isWritablePrimary ? 0 : 1)" 2>&1); then
+              echo "MongoDB is PRIMARY after $i attempts"
+              exit 0
+            fi
             sleep 2
           done
+          # Fail here (not later in the tests) and leave the reason in the run's annotations.
+          state=$(docker ps -a --filter name=mongo --format '{{.Status}}')
+          logs=$(docker logs mongo 2>&1 | tail -n 15 | cut -c1-240 | sed ':a;N;$!ba;s/\n/%0A/g')
+          echo "::error title=MongoDB did not become PRIMARY::container: ${state}%0Alast check: ${out:0:300}%0A${logs}"
+          exit 1
       - run: npm run test:integration
       - run: npm run build
