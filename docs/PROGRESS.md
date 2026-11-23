@@ -26,7 +26,8 @@ Built:
 - **Reapply:** rejected applicants see the date they can reapply. After six calendar months they can reopen the application as a draft; the server enforces the wait, and the history stays.
 - **Card name:** required in Arabic and in English, each checked for the right letters. Staff search covers both.
 - **Supporting membership:** offered by request (`rules.byRequest`, editable on the plan). Approval requires the administrator to confirm the external meeting; the API enforces it and logs it. `seed-society-plans` moves an existing supporting plan to this flow, and was run in dev.
-- **Age wording:** "at least 18", matching the rule.
+- **Age:** at least 18 on every plan, including student (`seed-society-plans` updates an existing student plan, run in dev).
+- **Gateway:** Tap selected (D03). No integration built yet.
 
 Verification:
 - `npm run check`: exit 0 (contracts 17, API 25, web 12, build). The first run stopped on the Next.js security notice; the re-run completed.

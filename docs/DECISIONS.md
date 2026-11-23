@@ -8,7 +8,7 @@ Status as of 2 November 2026: no signed contract, settled amendments or provider
 | --- | --- | --- | --- |
 | D01 | Society Drive URL and inspection of logos, identity and card templates | Request link/local copy; original provisional art allowed; no fabricated brand approval | Final branded design and card implementation |
 | D02 | Membership types, prices, duration, eligibility and required fields | **Largely resolved 19 Nov 2026** from the bylaws and 2026 profile (see "Society documents" below). Open: supporting membership's online process, final application fields | Production seed and membership acceptance |
-| D03 | Gateway and merchant account capabilities | Provider adapter plus clearly marked development mock | Real sandbox integration |
+| D03 | Gateway and merchant account capabilities | **Tap selected by Malek, 23 Nov 2026.** Open: merchant account, sandbox keys, and confirming saved-card renewal on that account. Provider adapter plus clearly marked development mock until then | Real sandbox integration |
 | D04 | Manual versus recurring renewal | **Decided 23 Nov 2026: automatic renewal with an admin notice first** (see below). Depends on gateway support | Payment design freeze/live billing |
 | D05 | Early/expired renewal, review, grace and reminder rules | **No new review on renewal (23 Nov 2026).** Open: how long before renewal admins are notified, failed-payment grace. Test with synthetic values | Entitlement implementation acceptance |
 | D06 | Hosting, email, storage, backup locations and remote access from Egypt | Local services/synthetic data | Any real data processing |
@@ -129,7 +129,7 @@ Found in the documents and left for the Society (not changed):
 3. **Supporting membership:** the applicant sends a request, the Society meets them outside the site, and an administrator approves in the dashboard. The member then gets a payment link or pays from the member dashboard. Built up to approval, which requires the administrator to confirm the meeting (recorded in the activity log). **The payment link and checkout are Stage 4.**
 4. **NCNP form fields (Article 17):** flagged; Malek will answer later.
 5. **Card name:** collected in both Arabic and English.
-6. **Minimum age:** 18 for the plans with an age condition (participant, ordinary, supporting). The student plan keeps no age condition, because the question concerned Articles 9 and 17.
+6. **Minimum age:** 18 for every plan, including student (Malek's decision; the bylaws set no age for students).
 7. **Wording (D08):** the Arabic and English application and email wording is approved. Strings added on 23 Nov for the decisions above came after that approval: both name fields, reapply messages, the by-request note, the meeting confirmation, and the reapply sentence in the rejection email.
 8. **Retention (D09):** member photos and proof-of-study documents are always kept. No deletion job exists. Legal review is advisable before launch, because Saudi personal-data rules limit keeping data longer than needed.
 

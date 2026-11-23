@@ -57,7 +57,7 @@ export const MEMBERSHIP_TYPES: readonly MembershipType[] = [
     requirements: {
       heading: { ar: "متطلبات واضحة تضع رحلتك على المسار الصحيح", en: "Clear requirements that put you on the right track" },
       items: [
-        p("إثبات الدراسة", "وثيقة سارية تثبت صفة الطالب.", "Proof of study", "A valid document proving you are a student."),
+        p("إثبات الدراسة", "وثيقة سارية تثبت صفة الطالب، وألا يقل العمر عن 18 عامًا.", "Proof of study", "A valid document proving you are a student. Minimum age 18."),
         p("الاشتراك", "سداد الرسم السنوي وفق المواعيد المعتمدة.", "Subscription", "Pay the annual fee by the approved dates."),
         p("المشاركة", "دعم أهداف الجمعية وأنشطتها.", "Participation", "Support the Society's goals and activities."),
         p("الالتزام", "احترام القرارات وعدم الإضرار بالجمعية.", "Commitment", "Respect its decisions and do nothing to harm the Society."),

@@ -61,11 +61,11 @@ const SOCIETY_PLANS = [
     key: "student",
     name: { ar: "عضوية الطالب «المنتسب»", en: "Student (affiliate) membership" },
     summary: { ar: "ابدأ من مقعد الدراسة، وابنِ مهارتك وحضورك داخل مجتمع الرسوم المتحركة.", en: "Start from your seat in class, and build your skills and presence in the animation community." },
-    eligibility: { ar: "إثبات صفة طالب بوثيقة سارية. لا تمنح هذه العضوية حضور الجمعية العمومية أو التصويت أو الترشح.", en: "Proof of student status with a valid document. This membership does not give the right to attend the General Assembly, vote or stand for election." },
+    eligibility: { ar: "ألا يقل عمر المتقدم عن 18 عامًا، وإثبات صفة طالب بوثيقة سارية. لا تمنح هذه العضوية حضور الجمعية العمومية أو التصويت أو الترشح.", en: "Applicants must be at least 18, with proof of student status from a valid document. This membership does not give the right to attend the General Assembly, vote or stand for election." },
     priceMinor: 20_000,
     enabled: true,
     sortOrder: 1,
-    rules: { minAge: 0, studentProof: true, priorMembershipMonths: 0, generalAssembly: false },
+    rules: { minAge: 18, studentProof: true, priorMembershipMonths: 0, generalAssembly: false },
   },
   {
     key: "participant",
@@ -111,6 +111,16 @@ async function seedSocietyPlans(production: boolean) {
     const [doc] = await MembershipPlan.create([{ ...plan, currency: "SAR", durationMonths: 12, demo: false, version: 0, createdAt: at, updatedAt: at }]);
     await audit({ actorId: null, actorKind: "cli", action: "plan.created", targetType: "plan", targetId: String(doc?._id), reason: "Society plans from the bylaws and 2026 profile", meta: { key: plan.key, priceMinor: plan.priceMinor, currency: "SAR", enabled: plan.enabled } }, at);
     process.stdout.write(`added ${plan.key}${plan.enabled ? "" : " (switched off)"}\n`);
+  }
+  // A student plan seeded before the 18+ decision (Malek, 23 Nov 2026) moves to it, once. Text staff rewrote is kept.
+  const student = await MembershipPlan.findOne({ key: "student", "rules.minAge": { $lt: 18 } }).lean();
+  if (student) {
+    const seeded = SOCIETY_PLANS[0]?.eligibility;
+    const oldEn = "Proof of student status with a valid document.";
+    const set = { "rules.minAge": 18, updatedAt: at, ...(seeded && student.eligibility?.en.startsWith(oldEn) ? { eligibility: seeded } : {}) };
+    await MembershipPlan.updateOne({ _id: student._id }, { $set: set, $inc: { version: 1 } });
+    await audit({ actorId: null, actorKind: "cli", action: "plan.updated", targetType: "plan", targetId: String(student._id), reason: "student membership minimum age 18", meta: { key: "student", minAge: 18 } }, at);
+    process.stdout.write("student now requires age 18\n");
   }
   // A supporting plan seeded before the by-request flow existed moves to it, once.
   const supporting = await MembershipPlan.findOneAndUpdate({ key: "supporting", "rules.byRequest": { $ne: true } }, { $set: { "rules.byRequest": true, enabled: true, updatedAt: at }, $inc: { version: 1 } }, { returnDocument: "after" }).lean();
