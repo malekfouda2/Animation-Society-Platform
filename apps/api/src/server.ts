@@ -8,6 +8,7 @@ import { createMailer, localInboxTransport } from "./features/email/email.servic
 import { mongoContactStore, outboxContactMailer } from "./features/contact/contact.service.js";
 import { createContentService } from "./features/content/content.service.js";
 import { createMediaService } from "./features/media/media.service.js";
+import { createMembershipService } from "./features/membership/membership.service.js";
 import { resolve } from "node:path";
 import { createLogger } from "./logger.js";
 
@@ -55,6 +56,11 @@ async function main(): Promise<void> {
     },
     content: { service: createContentService({ media }), publicOrigin: env.PUBLIC_ORIGIN },
     media: { service: media, publicOrigin: env.PUBLIC_ORIGIN },
+    membership: {
+      service: createMembershipService({ mailer, publicOrigin: env.PUBLIC_ORIGIN, photos: media }),
+      media,
+      publicOrigin: env.PUBLIC_ORIGIN,
+    },
     // The local inbox exposes sign-in links: mock email only (enforced above), never in production.
     devInbox: env.NODE_ENV !== "production",
   });

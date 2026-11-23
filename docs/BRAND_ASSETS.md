@@ -145,3 +145,17 @@ Truncated at the source (the downloaded sizes match Drive's): 13 JPEGs, includin
 - Vision (English film; Arabic translated, draft) on the About page. The four goals from the English film, with the Arabic film's wording, on the homepage and About page. Mission pending.
 - Not applied yet: fees and registration details (answers to follow). The presentation-deck icons will not be used.
 
+
+## Recheck of the Drive, 19 November 2026
+
+| Item | What it is | Use |
+| --- | --- | --- |
+| `ملف_الجمعية_التعريفي_2026.pdf` (8.3 MB, 42 slides) | The Society's 2026 profile: vision, mission, founders' message, About, goals, board and General Assembly with portraits, initiatives, international participation, membership categories with fees and benefits, partners, contact | **Content authority** (Malek, 19 Nov). Applied; see docs/CONTENT_REVISION_PLAN.md |
+| `اللائحة الأساسية v.3.pdf` (38 pages, also in `Requirements For Payments/`) | Bylaws, licence 2189 | **Policy authority.** Membership articles applied; the PDF is offered for download |
+| `أدلة الحوكمة/` | About 50 governance folders, one PDF each | Public policies downloaded: privacy, code of conduct, beneficiaries, the NCNP ethics charter, and the "initiatives" report. Personal and internal records were left alone |
+| `Requirements For Payments/` | Bylaws, board-formation letter, licence-certificate details | Gateway onboarding (D03); not website content |
+| `DEMO/animation-society-demo.mp4` | Recording of this site | Not content |
+
+Images extracted from the profile (portraits of the 5 board members and 12 of the 14 Assembly members, and 12 partner logos) are in the git-ignored `brand-source/drive-2026-11/images/`, made by `scripts/brand/extract-profile-images.py`. Partner logos are the partners' trademarks, shown as the Society's own profile shows them.
+
+Damaged at the source (byte-identical on re-download; Drive's preview also fails): the conflict-of-interest, whistleblowing, document-retention and membership-request procedure PDFs.

@@ -54,7 +54,9 @@ export function CropDialog({ src, width, height, initial, dict, onApply, onClose
   useEffect(() => {
     const d = dialogRef.current;
     if (d && !d.open) d.showModal();
-    return () => { d?.close(); };
+    // No close() on cleanup: Strict Mode runs cleanup between its two mounts, and close() would fire the
+    // "close" event, call onClose and unmount the dialog the moment it opens. Unmounting an open
+    // modal removes it from the top layer anyway.
   }, []);
 
   /** Fraction-space aspect for the current shape (w / h). */

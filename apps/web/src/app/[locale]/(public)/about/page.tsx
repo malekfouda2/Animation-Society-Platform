@@ -33,6 +33,7 @@ export default async function AboutPage({ params }: { params: Params }) {
   const digits = new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en");
   const toc = [
     ["introduction", a.toc.intro],
+    ["founders", a.toc.founders],
     ["vision-mission", a.toc.visionMission],
     ["objectives", a.toc.objectives],
     ["board", a.toc.board],
@@ -64,8 +65,33 @@ export default async function AboutPage({ params }: { params: Params }) {
           </figure>
           <div className={styles.notes} data-enter="rise" style={{ ["--enter-i" as string]: 1 }}>
             <h2 id="intro-title" className={styles.heading}>{a.toc.intro}</h2>
-            <p className={styles.big}>{ABOUT.intro[locale]}</p>
+            <p className={styles.intro}>{ABOUT.intro[locale]}</p>
+            {ABOUT.purpose ? (
+              <>
+                <h3 className={styles.label}>{a.purpose}</h3>
+                <p>{ABOUT.purpose[locale]}</p>
+              </>
+            ) : null}
             <StatusNote status={ABOUT.status} dict={dict} />
+          </div>
+        </div>
+      </section>
+
+      <section id="founders" className={styles.shot} aria-labelledby="founders-title">
+        <div className={`container ${styles.shotGrid}`}>
+          <figure className={styles.panel} data-enter="sheet">
+            <span className={styles.panelNo} aria-hidden="true">{no("founders")}</span>
+            <Sketch name="bounce" className={styles.sketch} />
+          </figure>
+          <div className={styles.notes} data-enter="rise" style={{ ["--enter-i" as string]: 1 }}>
+            <h2 id="founders-title" className={styles.heading}>{a.toc.founders}</h2>
+            {ABOUT.founders ? (
+              <blockquote className={styles.letter}>
+                {ABOUT.founders[locale].map((para) => <p key={para}>{para}</p>)}
+              </blockquote>
+            ) : (
+              <p className={page.muted}>{dict.status.pending}</p>
+            )}
           </div>
         </div>
       </section>
@@ -89,7 +115,9 @@ export default async function AboutPage({ params }: { params: Params }) {
             )}
             <h3 className={styles.label}>{a.mission}</h3>
             {VISION_MISSION.mission ? (
-              <blockquote className={styles.quote}><p>{VISION_MISSION.mission[locale]}</p></blockquote>
+              <ul className={styles.missionList}>
+                {VISION_MISSION.mission[locale].map((point) => <li key={point}>{point}</li>)}
+              </ul>
             ) : (
               <p className={styles.pencil}>{a.missionPending}</p>
             )}
@@ -109,7 +137,7 @@ export default async function AboutPage({ params }: { params: Params }) {
                 key={o.key}
                 className={styles.thumb}
                 data-enter="deal"
-                style={{ ["--enter-i" as string]: i, ["--deal-r" as string]: `${(i - 1.5) * 4}deg` }}
+                style={{ ["--enter-i" as string]: i, ["--deal-r" as string]: `${(i - (OBJECTIVES.length - 1) / 2) * 4}deg` }}
               >
                 <span className={styles.thumbFrame} aria-hidden="true">
                   <BrandIcon name={o.icon} size={96} className={styles.thumbIcon} />
@@ -156,6 +184,14 @@ export default async function AboutPage({ params }: { params: Params }) {
             <h2 id="ga-title" className={styles.heading}>{a.toc.assembly}</h2>
             <p className={styles.big}>{GENERAL_ASSEMBLY.body[locale]}</p>
             {GENERAL_ASSEMBLY.votingNote[locale] ? <p className={styles.director}>{GENERAL_ASSEMBLY.votingNote[locale]}</p> : null}
+            {GENERAL_ASSEMBLY.members.length > 0 ? (
+              <>
+                <h3 className={styles.label}>
+                  {a.assemblyMembers}: {a.assemblyCount.replace("{n}", digits.format(GENERAL_ASSEMBLY.members.length))}
+                </h3>
+                <BoardList members={GENERAL_ASSEMBLY.members} locale={locale} compact />
+              </>
+            ) : null}
             <StatusNote status={GENERAL_ASSEMBLY.status} dict={dict} />
           </div>
         </div>

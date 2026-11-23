@@ -72,11 +72,11 @@
   .deck { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--as-space-6); }
 }
 @media (min-width: 64rem) {
-  .deck { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; padding: var(--as-space-12) var(--as-space-6); }
+  .deck { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; padding: var(--as-space-12) var(--as-space-6); }
   .card { margin-inline: -0.5rem; }
 }
 .card {
-  --tilt: calc((var(--k) - 1.5) * 3deg);
+  --tilt: calc((var(--k) - 2) * 3deg);
   --cx: 100%;
   position: relative;
   display: grid;
@@ -92,9 +92,10 @@
   box-shadow: 0 1px 0 rgb(255 255 255 / 0.25) inset, 0 24px 48px -24px rgb(0 0 0 / 0.9);
 }
 :dir(rtl) .card { --cx: 0%; }
-.card[data-type="affiliate"] { --card-bg: var(--as-green-light); }
-.card[data-type="honorary"] { --card-bg: var(--as-yellow); }
-.card[data-type="distinguished"] { --card-bg: var(--as-red); }
+.card[data-type="student"] { --card-bg: var(--as-green-light); }
+.card[data-type="participant"] { --card-bg: var(--as-yellow); }
+.card[data-type="supporting"] { --card-bg: var(--as-red); }
+.card[data-type="honorary"] { --card-bg: var(--as-white); }
 @media (min-width: 64rem) {
   .card { rotate: var(--tilt); translate: 0 calc(max(var(--k) - 1.5, 1.5 - var(--k)) * 0.9rem); }
   :dir(rtl) .card { rotate: calc(-1 * var(--tilt)); }

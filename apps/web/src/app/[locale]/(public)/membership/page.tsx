@@ -4,7 +4,10 @@ import { Journey } from "@/components/sections/Journey";
 import { PageHero } from "@/components/sections/PageHero";
 import page from "@/components/sections/page.module.css";
 import { StatusNote } from "@/components/ui/StatusNote";
-import { BENEFITS, FAQ, FAQ_META, MEMBERSHIP_INTRO, MEMBERSHIP_TYPES, MEMBERSHIP_TYPES_META, PLANS } from "@/content/membership";
+import { PlanPrice } from "@/components/membership/PlanPrice";
+import { FAQ, FAQ_META, MEMBERSHIP_INTRO, MEMBERSHIP_TYPES, MEMBERSHIP_TYPES_META, type Point } from "@/content/membership";
+import type { Locale } from "@as/contracts";
+import { publicPlans } from "@/lib/public-content";
 import { SOCIETY } from "@/content/society";
 import { getDictionary } from "@/i18n";
 import { resolveLocale } from "@/i18n/locale-params";
@@ -28,6 +31,8 @@ export default async function MembershipPage({ params }: { params: Params }) {
   const locale = await resolveLocale(params);
   const dict = getDictionary(locale);
   const m = dict.membershipPage;
+  const plans = await publicPlans();
+  const applyHref = `/${locale}/member/application`;
   return (
     <>
       <PageHero title={m.title} lead={m.lead} tone="green">
@@ -47,23 +52,26 @@ export default async function MembershipPage({ params }: { params: Params }) {
           <h2 id="types-title" className={styles.sectionTitle} data-enter="rise">{m.types}</h2>
           <ul className={styles.wallet}>
             {MEMBERSHIP_TYPES.map((t, i) => (
-              <li key={t.key} className={styles.pair} data-type={t.key} data-enter="deal" style={{ ["--enter-i" as string]: i % 2, ["--deal-r" as string]: `${i % 2 ? 6 : -6}deg` }}>
-                <div className={styles.front}>
-                  <span className={styles.society}>{SOCIETY.name[locale]}</span>
-                  <span className={styles.chip} aria-hidden="true" />
-                  <h3 className={styles.typeName}>{t.name[locale]}</h3>
-                  {t.granted ? <span className={styles.granted}>{m.granted}</span> : null}
+              <li key={t.key} className={styles.typeRow} id={`type-${t.key}`}>
+                <div className={styles.pair} data-type={t.key} data-enter="deal" style={{ ["--enter-i" as string]: i % 2, ["--deal-r" as string]: `${i % 2 ? 4 : -4}deg` }}>
+                  <div className={styles.front}>
+                    <span className={styles.society}>{SOCIETY.name[locale]}</span>
+                    <span className={styles.chip} aria-hidden="true" />
+                    <h3 className={styles.typeName}>{t.name[locale]}</h3>
+                    <p className={styles.typeFee}>{t.fee[locale]}</p>
+                    {t.granted ? <span className={styles.granted}>{m.granted}</span> : null}
+                  </div>
+                  <div className={styles.back}>
+                    <p className={styles.typeWho}>{t.who[locale]}</p>
+                    <p className={styles.typeFacts}>{t.facts[locale]}</p>
+                  </div>
                 </div>
-                <dl className={styles.back}>
-                  <div>
-                    <dt>{m.who}</dt>
-                    <dd>{t.who[locale]}</dd>
-                  </div>
-                  <div>
-                    <dt>{m.rights}</dt>
-                    <dd>{t.rights[locale]}</dd>
-                  </div>
-                </dl>
+                <div className={styles.typeDetail}>
+                  <PointGroup title={t.requirements.heading[locale]} label={m.requirements} items={t.requirements.items} locale={locale} />
+                  <PointGroup title={t.rights.heading[locale]} label={m.rights} items={t.rights.items} note={t.rights.note[locale]} locale={locale} />
+                  <PointGroup title={t.benefits.heading[locale]} label={m.benefits} items={t.benefits.items} note={t.benefits.note[locale]} locale={locale} />
+                  <p className={styles.typeSource}>{m.source}: {t.source[locale]}</p>
+                </div>
               </li>
             ))}
           </ul>
@@ -71,22 +79,30 @@ export default async function MembershipPage({ params }: { params: Params }) {
         </div>
       </section>
 
-      <section className={styles.booth} aria-label={`${m.plans}, ${m.benefits}`}>
+      <section className={styles.booth} aria-label={m.plans}>
         <div className={`container ${styles.tickets}`}>
-          {PLANS.items.length === 0 ? (
+          {plans === null || plans.length === 0 ? (
             <article className={styles.ticket} data-enter="slide" aria-labelledby="plans-title">
               <h2 id="plans-title" className={styles.ticketRole}>{m.plans}</h2>
-              <p className={styles.ticketTitle}>{m.plansEmpty.title}</p>
-              <p className={styles.ticketBody}>{m.plansEmpty.body}</p>
+              <p className={styles.ticketTitle}>{plans === null ? m.plansUnavailable.title : m.plansEmpty.title}</p>
+              <p className={styles.ticketBody}>{plans === null ? m.plansUnavailable.body : m.plansEmpty.body}</p>
             </article>
-          ) : null}
-          {BENEFITS.items.length === 0 ? (
-            <article className={`${styles.ticket} ${styles.ticketWarm}`} data-enter="slide" style={{ ["--enter-i" as string]: 1 }} aria-labelledby="benefits-title">
-              <h2 id="benefits-title" className={styles.ticketRole}>{m.benefits}</h2>
-              <p className={styles.ticketTitle}>{m.benefitsEmpty.title}</p>
-              <p className={styles.ticketBody}>{m.benefitsEmpty.body}</p>
-            </article>
-          ) : null}
+          ) : (
+            <section className={styles.planTickets} aria-labelledby="plans-title">
+              <h2 id="plans-title" className={styles.sectionTitle}>{m.plans}</h2>
+              {plans.map((plan, i) => (
+                <article key={plan.id} className={styles.ticket} data-enter="slide" style={{ ["--enter-i" as string]: i }} aria-labelledby={`plan-${plan.id}`}>
+                  {plan.demo ? <p className={styles.ticketRole}><span className={styles.demoStamp}>{dict.membership.demo}</span></p> : null}
+                  <h3 id={`plan-${plan.id}`} className={styles.ticketTitle}>{plan.name[locale]}</h3>
+                  <p className={styles.ticketPrice}><PlanPrice plan={plan} locale={locale} dict={dict.membership} /></p>
+                  {plan.eligibility[locale] ? <p className={styles.ticketBody}>{plan.eligibility[locale]}</p> : null}
+                  {plan.rules.byRequest ? <p className={styles.ticketBody}>{dict.membership.byRequest}</p> : null}
+                  {plan.demo ? <p className={styles.ticketBody}>{dict.membership.demoNote}</p> : null}
+                </article>
+              ))}
+              <p><Link href={applyHref} className="btn btn-primary">{m.applyCta}</Link></p>
+            </section>
+          )}
         </div>
       </section>
 
@@ -122,5 +138,24 @@ export default async function MembershipPage({ params }: { params: Params }) {
         </div>
       </section>
     </>
+  );
+}
+
+/** One group of a membership type's details: a labelled heading, its points, and the source's note. */
+function PointGroup({ title, label, items, note, locale }: { title: string; label: string; items: readonly Point[]; note?: string; locale: Locale }) {
+  return (
+    <section className={styles.group}>
+      <p className={styles.groupLabel}>{label}</p>
+      <h4 className={styles.groupTitle}>{title}</h4>
+      <dl className={styles.points}>
+        {items.map((pt) => (
+          <div key={pt.title.en}>
+            <dt>{pt.title[locale]}</dt>
+            <dd>{pt.body[locale]}</dd>
+          </div>
+        ))}
+      </dl>
+      {note ? <p className={styles.groupNote}>{note}</p> : null}
+    </section>
   );
 }

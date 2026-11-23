@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/sections/PageHero";
 import { StatusNote } from "@/components/ui/StatusNote";
+import { GOVERNANCE_DOCUMENTS } from "@/content/governance";
 import { getDictionary } from "@/i18n";
 import { resolveLocale } from "@/i18n/locale-params";
 import { pageMetadata } from "@/i18n/metadata";
@@ -30,6 +31,7 @@ export default async function PoliciesPage({ params }: { params: Params }) {
   const p = dict.policiesPage;
   const { POLICIES } = await siteSections();
   const anyPending = POLICIES.some((policy) => !policy.text);
+  const digits = new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en");
   return (
     <>
       <PageHero title={p.title} lead={p.lead} tone="mist" />
@@ -42,6 +44,9 @@ export default async function PoliciesPage({ params }: { params: Params }) {
                   <a href={`#${policy.slug}`} className={styles.tab}>{policy.title[locale]}</a>
                 </li>
               ))}
+              <li style={{ ["--k" as string]: POLICIES.length }}>
+                <a href="#governance" className={styles.tab}>{p.documents.title}</a>
+              </li>
             </ul>
             {anyPending ? (
               <div className={styles.ask}>
@@ -83,6 +88,23 @@ export default async function PoliciesPage({ params }: { params: Params }) {
                 )}
               </section>
             ))}
+            <section id="governance" className={styles.page} style={{ ["--k" as string]: POLICIES.length }} aria-labelledby="governance-title" data-enter="sheet">
+              <span className={styles.holes} aria-hidden="true"><i /><i /><i /></span>
+              <h2 id="governance-title" className={styles.pageTitle}>{p.documents.title}</h2>
+              <div className={styles.prose}>
+                <p>{p.documents.lead}</p>
+                <ul className={styles.docs}>
+                  {GOVERNANCE_DOCUMENTS.map((doc) => (
+                    <li key={doc.key}>
+                      <a href={doc.href} target="_blank" rel="noopener" lang="ar" hrefLang="ar" type="application/pdf">
+                        {doc.title[locale]}
+                      </a>
+                      <span className={styles.docMeta}>{p.documents.meta.replace("{n}", digits.format(doc.pages))}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
           </div>
         </div>
       </section>

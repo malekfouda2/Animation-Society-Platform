@@ -7,8 +7,8 @@ import {
   PROJECT_PROGRESS,
   APPROVALS,
   API_BASE_PATH,
+  ASSEMBLY_MAX,
   BOARD_MAX,
-  GOAL_KEYS,
   MEDIA_MAX_BYTES,
   MEDIA_TYPES,
   FULL_CROP,
@@ -38,6 +38,8 @@ import { MediaImage } from "@/components/ui/MediaImage";
 import type { ContentAdminDict } from "@/i18n/types";
 import { callApi, type ApiResult } from "@/lib/client-api";
 import styles from "./content.module.css";
+
+type PersonFields = Extract<SectionData, { section: "board" }>["members"][number];
 import { CropDialog } from "./CropDialog";
 import { MediaPickerDialog } from "./MediaLibrary";
 
@@ -465,22 +467,40 @@ export function ContentEditor({
       case "hero":
         return <>{bilingual({ name: "title", label: sf.heroTitle })}{bilingual({ name: "body", label: sf.heroBody, multiline: true })}</>;
       case "about":
-        return <>{bilingual({ name: "intro", label: sf.intro, multiline: true })}{bilingual({ name: "aims", label: sf.aims, hint: sf.aimsHint, multiline: true })}</>;
+        return (
+          <>
+            {bilingual({ name: "intro", label: sf.intro, multiline: true })}
+            {bilingual({ name: "purpose", label: sf.purpose, hint: sf.optionalPair, multiline: true })}
+            {bilingual({ name: "founders", label: sf.founders, hint: sf.foundersHint, multiline: true, long: true })}
+          </>
+        );
       case "vision":
         return <>{bilingual({ name: "vision", label: sf.vision, multiline: true })}{bilingual({ name: "mission", label: sf.mission, hint: sf.missionHint, multiline: true })}</>;
       case "goals":
         return (
-          <>
-            <p className={styles.pairHint}>{sf.goalsHint}</p>
-            {GOAL_KEYS.map((k) => <div key={k}>{bilingual({ name: k, label: sf.goals[k], multiline: true })}</div>)}
-          </>
+          bilingual({ name: "items", label: sf.goals, hint: sf.goalsHint, multiline: true, long: true })
         );
       case "assembly":
-        return <>{bilingual({ name: "body", label: sf.assemblyBody, multiline: true, long: true })}{bilingual({ name: "votingNote", label: sf.votingNote, hint: sf.votingNoteHint, multiline: true })}</>;
-      case "board":
         return (
+          <>
+            {bilingual({ name: "body", label: sf.assemblyBody, multiline: true, long: true })}
+            {bilingual({ name: "votingNote", label: sf.votingNote, hint: sf.votingNoteHint, multiline: true })}
+            {membersEditor(d.members, sf.assemblyMembersHint, ASSEMBLY_MAX)}
+          </>
+        );
+      case "board":
+        return membersEditor(d.members, sf.membersHint, BOARD_MAX);
+      default:
+        return bilingual({ name: "body", label: sf.policyBody, hint: sf.policyHint, multiline: true, long: true });
+    }
+  }
+
+  /** People in a section (board or General Assembly), edited in place. */
+  function membersEditor(members: readonly PersonFields[], hint: string, max: number): ReactNode {
+    const d = { members };
+    return (
           <div className={styles.members}>
-            <p className={styles.pairHint}>{sf.membersHint}</p>
+            <p className={styles.pairHint}>{hint}</p>
             {d.members.length === 0 ? <p className={styles.hint}>{sf.noMembers}</p> : null}
             <ol className={styles.memberList}>
               {d.members.map((m, i) => {
@@ -501,7 +521,7 @@ export function ContentEditor({
                 );
               })}
             </ol>
-            {d.members.length < BOARD_MAX ? (
+            {d.members.length < max ? (
               <button
                 type="button"
                 className="btn btn-secondary"
@@ -514,10 +534,7 @@ export function ContentEditor({
               </button>
             ) : null}
           </div>
-        );
-      default:
-        return bilingual({ name: "body", label: sf.policyBody, hint: sf.policyHint, multiline: true, long: true });
-    }
+    );
   }
 
   const f = dict.fields;

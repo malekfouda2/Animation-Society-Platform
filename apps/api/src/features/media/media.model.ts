@@ -16,10 +16,17 @@ const mediaAssetSchema = new Schema(
     /** Format as uploaded (png, jpeg or webp), for the record. */
     sourceFormat: { type: String, required: true },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    /**
+     * "content": staff uploads for public pages (public once a published entry uses them).
+     * "member_photo": an applicant's photo; private to its owner and administrators, never public.
+     * Records from before this field read as content.
+     */
+    purpose: { type: String, enum: ["content", "member_photo"], default: "content" },
     createdAt: { type: Date, required: true },
   },
   { collection: "mediaAssets", versionKey: false },
 );
 mediaAssetSchema.index({ createdAt: -1 });
+mediaAssetSchema.index({ purpose: 1, createdBy: 1 });
 
 export const MediaAsset = defineModel("MediaAsset", mediaAssetSchema);

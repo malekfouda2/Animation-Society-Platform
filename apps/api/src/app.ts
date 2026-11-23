@@ -12,6 +12,7 @@ import { contactRouter, type ContactDeps } from "./features/contact/contact.rout
 import { adminContentRouter, publicContentRouter, type ContentDeps } from "./features/content/content.routes.js";
 import { devInboxRouter } from "./features/email/email.routes.js";
 import { adminMediaRouter, mediaRouter, type MediaDeps } from "./features/media/media.routes.js";
+import { accountApplicationRouter, adminMembershipRouter, publicMembershipRouter, type MembershipDeps } from "./features/membership/membership.routes.js";
 import { healthRouter } from "./features/health/health.routes.js";
 import { errorHandler, notFoundHandler } from "./http/errors.js";
 
@@ -28,13 +29,15 @@ export interface AppDeps {
   content?: ContentDeps;
   /** Image uploads (staff) and image serving. Needs auth for uploads. */
   media?: MediaDeps;
+  /** Membership plans and applications. Needs auth for everything but the public plan list. */
+  membership?: MembershipDeps;
   /** Development-only local inbox route. Never enable in production (server.ts guards this). */
   devInbox?: boolean;
 }
 
 const REQUEST_ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
 
-export function createApp({ logger, databaseStatus, trustProxy = false, contact, auth, content, media, devInbox = false }: AppDeps): Express {
+export function createApp({ logger, databaseStatus, trustProxy = false, contact, auth, content, media, membership, devInbox = false }: AppDeps): Express {
   const app = express();
   app.disable("x-powered-by");
   app.set("trust proxy", trustProxy ? 1 : false);
@@ -62,7 +65,12 @@ export function createApp({ logger, databaseStatus, trustProxy = false, contact,
     app.use(API_BASE_PATH, adminRouter());
     if (content) app.use(API_BASE_PATH, adminContentRouter(content));
     if (media) app.use(API_BASE_PATH, adminMediaRouter(media));
+    if (membership) {
+      app.use(API_BASE_PATH, accountApplicationRouter(membership));
+      app.use(API_BASE_PATH, adminMembershipRouter(membership));
+    }
   }
+  if (membership) app.use(API_BASE_PATH, publicMembershipRouter(membership));
   if (media) app.use(API_BASE_PATH, mediaRouter(media));
   if (content) app.use(API_BASE_PATH, publicContentRouter(content));
   if (contact) app.use(API_BASE_PATH, contactRouter(contact));

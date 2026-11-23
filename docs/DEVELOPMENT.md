@@ -43,6 +43,24 @@ After copying `.env.example`, set `MFA_ENCRYPTION_KEY` in `apps/api/.env` (`open
 - Uploaded images are re-encoded to WebP (metadata stripped, longest side at most 2400 px) and stored in `MEDIA_DIR` (`apps/api/var/media` in development, git-ignored). They're served at `/api/v1/media/:id`: to anyone once a published entry uses them, otherwise to signed-in staff only. Staff see and clean up all uploads at `/en/admin/media`; `npm run media -w @as/api -- prune --dry-run` lists unused uploads older than 24 hours, and without `--dry-run` deletes them (`media:prod` in production; schedule it daily).
 - Contact-form messages are stored and, when `CONTACT_INBOX` is set, forwarded through the email outbox. In development `.env.example` sets a synthetic `society-inbox@example.test`, so they appear in the local inbox.
 
+### Membership in development
+
+- **Society plans** (from the bylaws and the 2026 profile, 19 Nov 2026): `npm run membership -w @as/api -- seed-society-plans` adds student (SAR 200), participant (SAR 400), ordinary (SAR 600) and supporting (SAR 600 plus a donation, added switched off). Each carries its bylaws rules (minimum age, proof of study, months of earlier membership, General Assembly). Outside production it also switches the demo plans off. It skips plans that already exist.
+- The older `seed-demo-plans` command still adds the two synthetic "demo" plans for testing; it refuses to run in production.
+- Fees follow the financial year (1 January to 31 December). Once an application is approved, the member sees the amount due for the months left, including the current month (`proratedFee` in `@as/contracts`), in Riyadh time.
+- Members apply at `/en/member/application`. Administrators review at `/en/admin/applications` and manage plans at `/en/admin/plans`; content editors get 403 on both.
+- Member photos are stored in `MEDIA_DIR` like content images but are private: only their owner and administrators can load them. They never appear in the staff media library, can't be placed on public pages, and aren't pruned.
+
+### Society content from the 2026 profile
+
+- `npm run content -w @as/api -- seed` publishes the starting sections, including the About, vision, goals, General Assembly and policy texts and the initiatives from the profile and bylaws (text only). It skips anything that exists.
+- `npm run content -w @as/api -- profile-2026 --images <folder> --by <admin email>` brings an existing database up to the profile: it replaces those sections, adds the initiatives, and uploads the board and General Assembly portraits and the 12 partner logos as the named administrator. Running it again uploads the images again; the old copies become unused and `media prune` removes them.
+- The images come from the profile PDF: `python3 scripts/brand/extract-profile-images.py brand-source/drive-2026-11/profile-2026.pdf brand-source/drive-2026-11/images` (needs PyMuPDF). Both folders are git-ignored.
+
+### Governance documents (not in the repository)
+
+The policies page links the Society's own PDFs from `apps/web/public/documents/` (`bylaws.pdf`, `privacy.pdf`, `code-of-conduct.pdf`, `beneficiaries.pdf`, `ethics-charter.pdf`, about 4 MB). Like the films they are git-ignored: copy them from `brand-source/drive-2026-11/` (bylaws) and `brand-source/drive-2026-11/governance/` on every checkout and server. The list is in `apps/web/src/content/governance.ts`.
+
 ### Introduction films (not in the repository)
 
 The homepage films and their posters (`apps/web/public/video/intro-{ar,en}.mp4` and `intro-{ar,en}-poster.webp`, about 34 MB) are git-ignored and must be copied in by hand on every checkout and server. Without them the video section's player and poster are empty. Re-create them from the Society Drive originals with the settings in docs/ARTWORK_REPLACEMENT.md ("Introduction films"). Production needs them deployed alongside the build or served from storage.

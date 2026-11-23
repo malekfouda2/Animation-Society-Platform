@@ -81,7 +81,10 @@ export interface Dictionary {
   about: {
     title: string;
     lead: string;
-    toc: { intro: string; visionMission: string; objectives: string; board: string; assembly: string };
+    toc: { intro: string; founders: string; visionMission: string; objectives: string; board: string; assembly: string };
+    purpose: string;
+    assemblyMembers: string;
+    assemblyCount: string;
     vision: string;
     mission: string;
     missionPending: string;
@@ -99,8 +102,11 @@ export interface Dictionary {
     granted: string;
     plans: string;
     plansEmpty: EmptyCopy;
+    plansUnavailable: EmptyCopy;
+    applyCta: string;
     benefits: string;
-    benefitsEmpty: EmptyCopy;
+    requirements: string;
+    source: string;
     journey: string;
     faq: string;
     applyNote: string;
@@ -145,13 +151,16 @@ export interface Dictionary {
     info: string;
     website: string;
     emailPending: string;
+    links: string;
     devNote: string;
   };
-  policiesPage: { title: string; lead: string; pending: EmptyCopy };
+  policiesPage: { title: string; lead: string; pending: EmptyCopy; documents: { title: string; lead: string; meta: string } };
   auth: AuthDict;
+  membership: MembershipDict;
   member: {
     title: string;
-    nav: { account: string };
+    nav: { account: string; application: string };
+    status: { title: string; none: string; open: string; start: string };
     signedInAs: string;
     comingNext: string;
     profile: { title: string; save: string; saving: string; saved: string; language: string };
@@ -159,7 +168,7 @@ export interface Dictionary {
   };
   admin: {
     title: string;
-    nav: { overview: string; security: string; audit: string; posts: string; projects: string; partners: string; sections: string; media: string };
+    nav: { overview: string; security: string; audit: string; posts: string; projects: string; partners: string; sections: string; media: string; applications: string; plans: string };
     roles: { admin: string; editor: string; member: string };
     welcome: string;
     roleLine: string;
@@ -297,11 +306,11 @@ export interface ContentAdminDict {
   sectionTable: { section: string; where: string; notCreated: string; create: string };
   sectionFields: {
     heroTitle: string; heroBody: string;
-    intro: string; aims: string; aimsHint: string;
+    intro: string; purpose: string; founders: string; foundersHint: string; optionalPair: string;
     vision: string; mission: string; missionHint: string;
-    goals: Record<"content" | "festivals" | "exchange" | "sponsorship", string>; goalsHint: string;
+    goals: string; goalsHint: string;
     assemblyBody: string; votingNote: string; votingNoteHint: string;
-    members: string; membersHint: string; memberName: string; memberRole: string; portrait: string;
+    members: string; membersHint: string; assemblyMembersHint: string; memberName: string; memberRole: string; portrait: string;
     addMember: string; removeMember: string; memberN: string; noMembers: string;
     policyBody: string; policyHint: string;
   };
@@ -326,5 +335,103 @@ export interface ContentAdminDict {
     use: string; close: string; more: string; loading: string; failed: string;
     delete: string; deleting: string; confirmDelete: string; confirmBody: string; keep: string; deleted: string; inUse: string; added: string;
     pruneNote: string;
+  };
+}
+
+type AppState = "draft" | "submitted" | "needs_changes" | "approved" | "rejected";
+type AppAction = "submitted" | "resubmitted" | "changes_requested" | "approved" | "rejected" | "reapplied";
+
+/** Membership plans, the member's application and staff review (Stage 3). */
+export interface MembershipDict {
+  states: Record<AppState, string>;
+  specializations: Record<"2d" | "3d" | "stop-motion" | "hybrid" | "other", string>;
+  actions: Record<AppAction, string>;
+  demo: string;
+  demoNote: string;
+  months: string;
+  priceFor: string;
+  byRequest: string;
+  errors: Record<
+    "required" | "too_long" | "phone" | "plan" | "plan_unavailable" | "photo" | "media_type" | "media_unreadable" | "media_small" | "media_too_large"
+    | "price" | "duration" | "slug" | "slug_taken" | "conflict" | "locked" | "rate_limited" | "session_ended" | "forbidden" | "network" | "failed"
+    | "date" | "age" | "student_proof" | "prior_membership" | "month" | "name_ar" | "name_en" | "meeting",
+    string
+  >;
+  optional: string;
+  /** The applicant's form and status (member area). */
+  apply: {
+    title: string;
+    lead: string;
+    steps: readonly [string, string, string, string];
+    stepsLabel: string;
+    plan: string;
+    noPlans: { title: string; body: string };
+    you: string;
+    fullName: string; fullNameHint: string; fullNameEn: string; fullNameEnHint: string;
+    reapply: string; reapplying: string; reapplyOn: string; reapplyNow: string;
+    phone: string; phoneHint: string;
+    city: string;
+    specialization: string; choose: string;
+    photo: string; photoHint: string; upload: string; replace: string; uploading: string; photoAlt: string; noPhoto: string; noImage: string;
+    birthDate: string; birthDateHint: string;
+    memberSince: string; memberSinceHint: string;
+    studentProof: string; studentProofHint: string; studentProofAlt: string;
+    generalAssembly: string;
+    due: string;
+    save: string; saving: string; saved: string;
+    submit: string; resubmit: string; submitting: string; submitLead: string;
+    unsaved: string;
+    status: Record<AppState, { title: string; body: string }>;
+    staffMessage: string;
+    rejectReason: string;
+    submittedPlan: string;
+    answers: string;
+    history: string;
+    contact: string;
+    startTitle: string; startBody: string; start: string;
+  };
+  admin: {
+    nav: { applications: string; plans: string };
+    list: {
+      title: string; lead: string;
+      search: string; searchHint: string; searchButton: string; clear: string;
+      plan: string; anyPlan: string; filters: string;
+      tabs: Record<"all" | AppState, string>;
+      name: string; email: string; city: string; planCol: string; status: string; submitted: string; updated: string; open: string;
+      unnamed: string;
+      empty: { title: string; body: string };
+      noMatch: { title: string; body: string };
+      page: string; previous: string; next: string; total: string;
+    };
+    detail: {
+      back: string;
+      submittedOn: string; createdOn: string; account: string;
+      answers: string; photo: string; noPhoto: string;
+      birthDate: string; age: string; memberSince: string; studentProof: string; noProof: string; checkNote: string;
+      submittedPlan: string; draftPlan: string; noPlan: string;
+      history: string; noHistory: string; by: string; applicant: string; server: string;
+      decide: string; decideLead: string;
+      approve: string; approving: string; approveLead: string; meetingConfirm: string; meetingHint: string;
+      requestChanges: string; requesting: string; messageLabel: string; messageHint: string; sendRequest: string;
+      reject: string; rejecting: string; reasonLabel: string; reasonHint: string; confirmReject: string;
+      cancel: string;
+      waiting: Record<"draft" | "needs_changes", string>;
+      decided: Record<"approved" | "rejected", string>;
+      done: Record<"approved" | "changes" | "rejected", string>;
+    };
+    plans: {
+      title: string; lead: string; create: string; newTitle: string; editTitle: string; back: string;
+      name: string; price: string; duration: string; status: string; enabled: string; disabled: string;
+      empty: { title: string; body: string };
+      key: string; keyHint: string; keyLocked: string;
+      planName: string; summary: string; eligibility: string; eligibilityHint: string;
+      priceLabel: string; priceHint: string; durationLabel: string; durationHint: string;
+      offer: string; offerHint: string; order: string; orderHint: string;
+      rules: string; rulesHint: string; minAge: string; minAgeHint: string; studentProof: string; priorMonths: string; priorMonthsHint: string; generalAssembly: string; byRequest: string; byRequestHint: string;
+      rulesSummary: { minAge: string; studentProof: string; priorMonths: string; generalAssembly: string; none: string };
+      save: string; saving: string; saved: string; created: string;
+      snapshotNote: string;
+      demoLocked: string;
+    };
   };
 }

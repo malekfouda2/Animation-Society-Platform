@@ -44,12 +44,14 @@ export default async function ProjectDetail({ params }: { params: Params }) {
             <span className={styles.board}>
               <h1 className={styles.detailTitle}>{item.title[locale]}</h1>
               <span className={styles.cells}>
-                <span className={styles.cell}>
-                  <span className={styles.cellLabel}>{p.field}</span>
-                  <span className={styles.cellValue}>
-                    {field ? <Link href={`/${locale}/fields#${field.slug}`}>{field.name[locale]}</Link> : item.field}
+                {item.field ? (
+                  <span className={styles.cell}>
+                    <span className={styles.cellLabel}>{p.field}</span>
+                    <span className={styles.cellValue}>
+                      {field ? <Link href={`/${locale}/fields#${field.slug}`}>{field.name[locale]}</Link> : item.field}
+                    </span>
                   </span>
-                </span>
+                ) : null}
                 <span className={styles.cell}>
                   <span className={styles.cellLabel}>{p.progress}</span>
                   <span className={styles.cellValue}>

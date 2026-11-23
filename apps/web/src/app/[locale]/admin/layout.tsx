@@ -21,6 +21,12 @@ export default async function AdminLayout({ children, params }: { children: Reac
   const items = staff
     ? [
         { label: dict.admin.nav.overview, href: `/${locale}/admin` },
+        ...(user.role === "admin"
+          ? [
+              { label: dict.admin.nav.applications, href: `/${locale}/admin/applications` },
+              { label: dict.admin.nav.plans, href: `/${locale}/admin/plans` },
+            ]
+          : []),
         { label: dict.admin.nav.posts, href: `/${locale}/admin/content/posts`, section: true },
         { label: dict.admin.nav.projects, href: `/${locale}/admin/content/projects`, section: true },
         { label: dict.admin.nav.partners, href: `/${locale}/admin/content/partners`, section: true },

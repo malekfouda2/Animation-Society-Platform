@@ -10,6 +10,10 @@ export type EmailTemplate =
   | { template: "reset_password"; vars: { name: string; link: string } }
   | { template: "staff_invite"; vars: { name: string; link: string; role: "admin" | "editor" } }
   | { template: "password_changed"; vars: { name: string; resetLink: string } }
+  | { template: "application_received"; vars: { name: string; link: string; resubmitted: boolean } }
+  | { template: "application_changes"; vars: { name: string; link: string; message: string } }
+  | { template: "application_approved"; vars: { name: string; link: string } }
+  | { template: "application_rejected"; vars: { name: string; link: string; reason: string } }
   | { template: "contact_received"; vars: { name: string; email: string; subject: string; message: string; locale: Locale } };
 
 export type TemplateName = EmailTemplate["template"];
@@ -47,6 +51,23 @@ function render(locale: Locale, t: EmailTemplate): Render {
       return ar
         ? { subject: "تم تغيير كلمة المرور", body: `مرحبًا ${t.vars.name}،\n\nتم تغيير كلمة مرور حسابك وتسجيل الخروج من الأجهزة الأخرى.\nإن لم تكن أنت، أعد تعيينها فورًا: ${t.vars.resetLink}` }
         : { subject: "Your password was changed", body: `Hello ${t.vars.name},\n\nYour account password was changed and other devices were signed out.\nIf this wasn't you, reset it now: ${t.vars.resetLink}` };
+    case "application_received":
+      return ar
+        ? { subject: t.vars.resubmitted ? "وصلنا طلبك المعدّل" : "وصلنا طلب العضوية", body: `مرحبًا ${t.vars.name}،\n\n${t.vars.resubmitted ? "وصلنا طلبك بعد التعديل، وعاد إلى المراجعة." : "وصلنا طلب عضويتك وهو الآن قيد المراجعة."} سنراسلك عند صدور القرار أو إن احتجنا إلى تعديل.\n\nتابع حالة طلبك: ${t.vars.link}\n\nلا يُطلب منك أي دفع قبل قبول الطلب.` }
+        : { subject: t.vars.resubmitted ? "We received your updated application" : "We received your membership application", body: `Hello ${t.vars.name},\n\n${t.vars.resubmitted ? "Your updated application is back under review." : "Your membership application is now under review."} We'll email you when there's a decision, or if anything needs changing.\n\nFollow your application: ${t.vars.link}\n\nYou won't be asked to pay before your application is approved.` };
+    case "application_changes":
+      // The staff message is quoted as data on its own lines.
+      return ar
+        ? { subject: "طلب عضويتك يحتاج إلى تعديل", body: `مرحبًا ${t.vars.name}،\n\nراجع فريق الجمعية طلبك ويحتاج إلى بعض التعديلات:\n\n${t.vars.message}\n\nعدّل طلبك وأعد إرساله من هنا: ${t.vars.link}` }
+        : { subject: "Your membership application needs changes", body: `Hello ${t.vars.name},\n\nThe Society's team reviewed your application and needs a few changes:\n\n${t.vars.message}\n\nUpdate and resubmit it here: ${t.vars.link}` };
+    case "application_approved":
+      return ar
+        ? { subject: "تم قبول طلب عضويتك", body: `مرحبًا ${t.vars.name}،\n\nيسعدنا إبلاغك بقبول طلب عضويتك. تُفعَّل العضوية بعد إتمام الدفع وتأكيده، وسنخبرك حين تُفتح صفحة الدفع.\n\nتفاصيل طلبك: ${t.vars.link}` }
+        : { subject: "Your membership application is approved", body: `Hello ${t.vars.name},\n\nWe're glad to tell you your membership application is approved. Your membership starts once payment is made and confirmed; we'll let you know when payment opens.\n\nYour application: ${t.vars.link}` };
+    case "application_rejected":
+      return ar
+        ? { subject: "قرار طلب العضوية", body: `مرحبًا ${t.vars.name}،\n\nراجع فريق الجمعية طلبك، ونأسف لإبلاغك بعدم قبوله.\n\nالسبب:\n${t.vars.reason}\n\nيمكنك التقديم مجددًا بعد ستة أشهر من تاريخ هذا القرار.\n\nتفاصيل طلبك: ${t.vars.link}\nللاستفسار، تواصل معنا عبر صفحة التواصل في الموقع.` }
+        : { subject: "Decision on your membership application", body: `Hello ${t.vars.name},\n\nThe Society's team reviewed your application and is unable to accept it.\n\nReason:\n${t.vars.reason}\n\nYou can apply again six months after this decision.\n\nYour application: ${t.vars.link}\nFor questions, use the contact page on the website.` };
     case "contact_received": {
       // The sender's text is quoted as data; the subject line carries no user text beyond the
       // validated single-line subject.

@@ -71,7 +71,8 @@
 }
 .logoCel { display: grid; place-items: center; align-content: center; gap: var(--as-space-3); padding: var(--as-space-8); color: var(--as-ink); text-decoration: none; text-align: center; transition: border-color var(--motion-200) var(--ease-out), transform var(--motion-200) var(--ease-out); }
 .logoCel:hover { border-color: var(--as-yellow); transform: translateY(-4px) rotate(-1deg); }
-.logo { display: block; max-inline-size: 70%; max-block-size: 4.5rem; block-size: auto; inline-size: auto; object-fit: contain; }
+/* A fixed box the logo fits inside, so small logos (the profile's are 100–350 px wide) fill the cel. */
+.logo { display: block; inline-size: 78%; block-size: 5.5rem; object-fit: contain; }
 .nameplate { font-size: var(--as-text-h3); font-weight: var(--as-w-title); line-height: 1.2; overflow-wrap: anywhere; }
 .visit { color: var(--as-ink-soft); font-size: var(--as-text-secondary); text-decoration: underline; text-underline-offset: 0.25em; }
 .logoCel:focus-visible { outline: 3px solid var(--as-yellow); outline-offset: 4px; }

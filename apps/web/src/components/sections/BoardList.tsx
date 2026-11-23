@@ -3,6 +3,9 @@ import { MediaImage } from "@/components/ui/MediaImage";
 import type { Localized } from "@/content/types";
 import styles from "./board.module.css";
 
+/** First letter of the name itself, skipping a title such as "د." or "Dr.". */
+const initial = (name: string) => name.trim().replace(/^(?:د|أ|Dr|Mr|Mrs|Ms)\.\s*/u, "").charAt(0);
+
 /** Board of Directors as a cast list: portrait (when supplied), name and role. */
 export function BoardList({ members, locale, compact }: { members: readonly { name: Localized; role: Localized; portrait: MediaRef }[]; locale: Locale; compact?: boolean }) {
   return (
@@ -12,7 +15,7 @@ export function BoardList({ members, locale, compact }: { members: readonly { na
           {m.portrait.id ? (
             <MediaImage media={m.portrait} locale={locale} className={styles.portrait} sizes="96px" />
           ) : (
-            <span className={styles.initial} aria-hidden="true">{m.name[locale].trim().charAt(0)}</span>
+            <span className={styles.initial} aria-hidden="true">{initial(m.name[locale])}</span>
           )}
           <span className={styles.name}>{m.name[locale]}</span>
           <span className={styles.role}>{m.role[locale]}</span>

@@ -25,7 +25,9 @@ describe("auth secrets", () => {
     expect(sealed).not.toContain("JBSWY3DP");
     expect(box.open(sealed)).toBe("JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP");
     const parts = sealed.split(".");
-    const flipped = [...parts.slice(0, 3), `A${(parts[3] ?? "").slice(1)}`].join(".");
+    // Replace the first character with a different one (the ciphertext is random, so it may already be "A").
+    const last = parts[3] ?? "";
+    const flipped = [...parts.slice(0, 3), `${last.startsWith("A") ? "B" : "A"}${last.slice(1)}`].join(".");
     expect(() => box.open(flipped)).toThrow();
     expect(() => createSecretBox(Buffer.alloc(32, 2).toString("base64")).open(sealed)).toThrow();
   });

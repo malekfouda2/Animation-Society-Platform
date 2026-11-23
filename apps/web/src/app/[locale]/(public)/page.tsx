@@ -43,7 +43,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const dict = getDictionary(locale);
   const h = dict.home;
   // Published content from the API; if it can't be reached the sections show their empty state.
-  const [projects, partnerList, postList, { ABOUT, BOARD, GENERAL_ASSEMBLY, HERO, OBJECTIVES, OBJECTIVES_META }] = await Promise.all([
+  const [projects, partnerList, postList, { ABOUT, BOARD, GENERAL_ASSEMBLY, HERO, OBJECTIVES, OBJECTIVES_META, VISION_MISSION }] = await Promise.all([
     publishedList("project"),
     publishedList("partner"),
     publishedList("post"),
@@ -147,7 +147,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               ))}
             </p>
             <ul className={styles.aims}>
-              {ABOUT.aims[locale].map((aim) => (
+              {(VISION_MISSION.mission?.[locale] ?? []).map((aim) => (
                 <li key={aim}>
                   <span className={styles.ghostPrev} aria-hidden="true">{aim}</span>
                   <span className={styles.ghostNext} aria-hidden="true">{aim}</span>
@@ -286,7 +286,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   <span className={styles.posterTitle}>{featured.data.title[locale]}</span>
                   <span className={styles.posterSummary}>{featured.data.summary[locale]}</span>
                   <span className={styles.billing}>
-                    <span>{dict.projectsPage.field}: {fieldName(featured.data.field)}</span>
+                    {featured.data.field ? <span>{dict.projectsPage.field}: {fieldName(featured.data.field)}</span> : null}
                     <span>{dict.projectsPage.progress}: {featured.data.progressLabel[locale]}</span>
                   </span>
                   <span className={styles.posterMore}>{dict.actions.viewDetails}</span>
@@ -358,7 +358,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 <ul className={styles.creditList}>
                   {partners.map(({ slug, data }) => (
                     <li key={slug}>
-                      <a href={data.url} rel="noopener noreferrer" target="_blank" className={styles.creditName}>{data.title[locale]}</a>
+                      {data.url ? (
+                        <a href={data.url} rel="noopener noreferrer" target="_blank" className={styles.creditName}>{data.title[locale]}</a>
+                      ) : (
+                        <span className={styles.creditName}>{data.title[locale]}</span>
+                      )}
                     </li>
                   ))}
                 </ul>

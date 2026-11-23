@@ -24,6 +24,7 @@ export default async function MemberLayout({ children, params }: { children: Rea
       navLabel={dict.a11y.memberNav}
       items={[
         { label: dict.member.nav.account, href: `/${locale}/member` },
+        ...(user.role === "member" ? [{ label: dict.member.nav.application, href: `/${locale}/member/application` }] : []),
         ...(user.role === "member" ? [] : [{ label: dict.admin.title, href: `/${locale}/admin` }]),
       ]}
       account={

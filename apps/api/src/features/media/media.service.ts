@@ -19,6 +19,9 @@ const FORMAT_OF: Record<(typeof MEDIA_TYPES)[number], string> = { "image/png": "
 /** Uploads younger than this are never pruned: they may belong to a draft that hasn't been saved yet. */
 export const PRUNE_GRACE_MS = 24 * 60 * 60 * 1000;
 const PAGE = 60;
+/** Content images: everything except member photos (older records have no purpose field). */
+const CONTENT = { purpose: { $ne: "member_photo" } } as const;
+export type MediaPurpose = "content" | "member_photo";
 
 function invalid(reason: "media_type" | "media_unreadable" | "media_small"): never {
   throw new HttpError("validation_failed", "This file can't be used as an image", { file: [reason] });
@@ -35,7 +38,9 @@ export function createMediaService({ dir, now = () => new Date() }: { dir: strin
      * the camera orientation, scales it down if needed and re-encodes it as WebP. Re-encoding drops
      * all metadata (camera, location) and anything hidden in the original file.
      */
-    async upload(auth: AuthenticatedSession, body: Buffer, contentType: string) {
+    async upload(auth: AuthenticatedSession, body: Buffer, contentType: string, purpose: MediaPurpose = "content") {
+      // Member photos only need card size; content images keep more detail.
+      const maxSide = purpose === "member_photo" ? 1200 : MAX_SIDE;
       const declared = MEDIA_TYPES.find((t) => contentType.toLowerCase().startsWith(t));
       if (!declared || body.length === 0) invalid("media_type");
       let meta: Metadata;
@@ -52,7 +57,7 @@ export function createMediaService({ dir, now = () => new Date() }: { dir: strin
       try {
         out = await sharp(body, { limitInputPixels: MAX_INPUT_PIXELS, failOn: "error" })
           .rotate()
-          .resize({ width: MAX_SIDE, height: MAX_SIDE, fit: "inside", withoutEnlargement: true })
+          .resize({ width: maxSide, height: maxSide, fit: "inside", withoutEnlargement: true })
           .webp({ quality: 82 })
           .toBuffer({ resolveWithObject: true });
       } catch {
@@ -76,9 +81,10 @@ export function createMediaService({ dir, now = () => new Date() }: { dir: strin
           sha256: createHash("sha256").update(out.data).digest("hex"),
           sourceFormat: meta.format,
           createdBy: auth.userId,
+          purpose,
           createdAt: at,
         });
-        await audit({ actorId: auth.userId, actorKind: "user", action: "media.uploaded", targetType: "media", targetId: String(id), meta: { width: out.info.width, height: out.info.height, bytes: out.data.length } }, at);
+        await audit({ actorId: auth.userId, actorKind: "user", action: purpose === "member_photo" ? "media.member_photo_uploaded" : "media.uploaded", targetType: "media", targetId: String(id), meta: { width: out.info.width, height: out.info.height, bytes: out.data.length } }, at);
       } catch (err) {
         await rm(pathOf(String(id)), { force: true });
         throw err;
@@ -102,7 +108,7 @@ export function createMediaService({ dir, now = () => new Date() }: { dir: strin
     /** The staff library, newest first, optionally only images nothing uses. */
     async list({ unused = false, before }: { unused?: boolean; before?: string }): Promise<{ items: MediaItem[]; next: string | null }> {
       const counts = await this.usage();
-      const filter: Record<string, unknown> = {};
+      const filter: Record<string, unknown> = { ...CONTENT };
       if (before && mongoose.isValidObjectId(before)) filter["_id"] = { $lt: new mongoose.Types.ObjectId(before) };
       if (unused) filter["_id"] = { ...(filter["_id"] as object | undefined), $nin: [...counts.keys()].map((id) => new mongoose.Types.ObjectId(id)) };
       const docs = await MediaAsset.find(filter).sort({ _id: -1 }).limit(PAGE + 1).lean();
@@ -114,9 +120,16 @@ export function createMediaService({ dir, now = () => new Date() }: { dir: strin
     },
 
     /** Deletes an image nothing refers to (record first, then the file). Images in use are kept. */
+    /** A member photo uploaded by this account, or null. */
+    async ownPhoto(userId: string, id: string): Promise<{ id: string; width: number; height: number } | null> {
+      if (!mongoose.isValidObjectId(id)) return null;
+      const asset = await MediaAsset.findOne({ _id: id, purpose: "member_photo", createdBy: userId }, { width: 1, height: 1 }).lean();
+      return asset ? { id: String(asset._id), width: asset.width, height: asset.height } : null;
+    },
+
     async remove(actor: { userId: string | null; kind: "user" | "cli" }, id: string): Promise<void> {
       if (!mongoose.isValidObjectId(id)) throw new HttpError("not_found", "Image not found");
-      const asset = await MediaAsset.findById(id).lean();
+      const asset = await MediaAsset.findOne({ _id: id, ...CONTENT }).lean();
       if (!asset) throw new HttpError("not_found", "Image not found");
       if ((await this.usage()).has(id)) throw new HttpError("conflict", "This image is still used; remove it from those entries first");
       await MediaAsset.deleteOne({ _id: id });
@@ -128,14 +141,18 @@ export function createMediaService({ dir, now = () => new Date() }: { dir: strin
     async pruneCandidates(olderThanMs = PRUNE_GRACE_MS): Promise<string[]> {
       const counts = await this.usage();
       const cutoff = new Date(now().getTime() - olderThanMs);
-      const old = await MediaAsset.find({ createdAt: { $lt: cutoff } }, { _id: 1 }).lean();
+      // Member photos are kept with their applications (retention: DECISIONS D09).
+      const old = await MediaAsset.find({ createdAt: { $lt: cutoff }, ...CONTENT }, { _id: 1 }).lean();
       return old.map((d) => String(d._id)).filter((id) => !counts.has(id));
     },
 
-    /** IDs from the list that don't name an uploaded image. */
+    /**
+     * IDs from the list that don't name an uploaded content image. A member photo counts as missing,
+     * so it can never be placed on a public page.
+     */
     async missing(ids: string[]): Promise<string[]> {
       if (ids.length === 0) return [];
-      const found = await MediaAsset.find({ _id: { $in: ids } }, { _id: 1 }).lean();
+      const found = await MediaAsset.find({ _id: { $in: ids }, ...CONTENT }, { _id: 1 }).lean();
       const have = new Set(found.map((f) => String(f._id)));
       return ids.filter((id) => !have.has(id));
     },
@@ -146,8 +163,14 @@ export function createMediaService({ dir, now = () => new Date() }: { dir: strin
      */
     async access(id: string, auth: AuthenticatedSession | undefined): Promise<{ width: number; height: number; public: boolean } | null> {
       if (!mongoose.isValidObjectId(id)) return null;
-      const asset = await MediaAsset.findById(id, { width: 1, height: 1 }).lean();
+      const asset = await MediaAsset.findById(id, { width: 1, height: 1, purpose: 1, createdBy: 1 }).lean();
       if (!asset) return null;
+      if (asset.purpose === "member_photo") {
+        // Its owner, and administrators who review applications. Never editors or visitors.
+        const owner = auth !== undefined && String(asset.createdBy) === auth.userId && !auth.staff;
+        const admin = auth?.role === "admin" && auth.mfaVerified;
+        return owner || admin ? { width: asset.width, height: asset.height, public: false } : null;
+      }
       const used = await ContentEntry.exists({
         publishedAt: { $type: "date" },
         $or: [{ "published.image.id": id }, { "published.logo.id": id }, { "published.members.portrait.id": id }],

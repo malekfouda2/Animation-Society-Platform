@@ -14,7 +14,8 @@ export function kindParam(kinds: string): ContentKind {
 
 export function editorOptions(locale: Locale): EditorOptions {
   return {
-    fields: FIELDS.map((f) => ({ value: f.slug, label: f.name[locale] })),
+    // "" = an initiative not tied to one technique.
+    fields: [{ value: "", label: locale === "ar" ? "لا يرتبط بمجال محدد" : "Not tied to one field" }, ...FIELDS.map((f) => ({ value: f.slug, label: f.name[locale] }))],
     covers: (Object.keys(ARTWORK) as ArtworkKey[])
       .filter((k) => ARTWORK[k].fit === "cover")
       .map((k) => ({ key: k, src: ARTWORK[k].src })),

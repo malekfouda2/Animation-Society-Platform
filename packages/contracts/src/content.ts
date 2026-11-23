@@ -103,7 +103,8 @@ export const projectDraftSchema = z
     title: localized(LIMITS.title),
     summary: localized(LIMITS.summary),
     body: localized(LIMITS.body),
-    field: z.enum(PROJECT_FIELDS),
+    /** The animation technique, or "" for an initiative that isn't tied to one. */
+    field: z.union([z.literal(""), z.enum(PROJECT_FIELDS)]),
     progress: z.enum(PROJECT_PROGRESS),
     progressLabel: localized(LIMITS.short),
     /** Key of an illustrative cover in the site's artwork manifest (the site falls back if unknown). */
@@ -130,36 +131,28 @@ export const partnerDraftSchema = z
  */
 export const POLICY_KEYS = ["terms", "privacy", "membership", "payment-refund", "card-use"] as const;
 export type PolicyKey = (typeof POLICY_KEYS)[number];
-export const GOAL_KEYS = ["content", "festivals", "exchange", "sponsorship"] as const;
 export const SECTION_KEYS = ["hero", "about", "vision", "goals", "assembly", "board", ...POLICY_KEYS.map((k) => `policy-${k}` as const)] as const;
 export type SectionKey = (typeof SECTION_KEYS)[number];
 export const BOARD_MAX = 30;
+/** General Assembly members shown on the About page. */
+export const ASSEMBLY_MAX = 120;
 
 const approval = z.enum(APPROVALS);
+const personSchema = z.object({ name: localized(120), role: localized(120), portrait: mediaField }).strict();
 const policySchema = <K extends SectionKey>(key: K) =>
   z.object({ section: z.literal(key), approval, body: localized(LIMITS.body) }).strict();
 
 export const sectionDraftSchema = z.discriminatedUnion("section", [
   z.object({ section: z.literal("hero"), approval, title: localized(LIMITS.title), body: localized(LIMITS.summary) }).strict(),
-  /** `aims` holds one aim per line. */
-  z.object({ section: z.literal("about"), approval, intro: localized(2000), aims: localized(1000) }).strict(),
-  z.object({ section: z.literal("vision"), approval, vision: localized(LIMITS.summary), mission: localized(LIMITS.summary) }).strict(),
-  z.object({
-    section: z.literal("goals"),
-    approval,
-    content: localized(LIMITS.summary),
-    festivals: localized(LIMITS.summary),
-    exchange: localized(LIMITS.summary),
-    sponsorship: localized(LIMITS.summary),
-  }).strict(),
-  z.object({ section: z.literal("assembly"), approval, body: localized(2000), votingNote: localized(LIMITS.summary) }).strict(),
-  z.object({
-    section: z.literal("board"),
-    approval,
-    members: z
-      .array(z.object({ name: localized(120), role: localized(120), portrait: mediaField }).strict())
-      .max(BOARD_MAX, "too_many"),
-  }).strict(),
+  /** About the Society, the purpose it was founded for, and the founders' message (paragraphs). */
+  z.object({ section: z.literal("about"), approval, intro: localized(2000), purpose: localized(2000), founders: localized(LIMITS.body) }).strict(),
+  /** `mission` holds one point per line. */
+  z.object({ section: z.literal("vision"), approval, vision: localized(LIMITS.summary), mission: localized(2000) }).strict(),
+  /** `items` holds one goal per line, in order. */
+  z.object({ section: z.literal("goals"), approval, items: localized(2000) }).strict(),
+  /** The role is optional for General Assembly members. */
+  z.object({ section: z.literal("assembly"), approval, body: localized(2000), votingNote: localized(LIMITS.summary), members: z.array(personSchema).max(ASSEMBLY_MAX, "too_many").default(() => []) }).strict(),
+  z.object({ section: z.literal("board"), approval, members: z.array(personSchema).max(BOARD_MAX, "too_many") }).strict(),
   policySchema("policy-terms"),
   policySchema("policy-privacy"),
   policySchema("policy-membership"),
@@ -205,10 +198,10 @@ export function emptySection(key: SectionKey): SectionData {
   const base = { approval: "approved" as const };
   switch (key) {
     case "hero": return { ...base, section: key, title: b, body: b };
-    case "about": return { ...base, section: key, intro: b, aims: b };
+    case "about": return { ...base, section: key, intro: b, purpose: b, founders: b };
     case "vision": return { ...base, section: key, vision: b, mission: b };
-    case "goals": return { ...base, section: key, content: b, festivals: b, exchange: b, sponsorship: b };
-    case "assembly": return { ...base, section: key, body: b, votingNote: b };
+    case "goals": return { ...base, section: key, items: b };
+    case "assembly": return { ...base, section: key, body: b, votingNote: b, members: [] };
     case "board": return { ...base, section: key, members: [] };
     default: return { ...base, section: key, body: b };
   }
@@ -239,10 +232,13 @@ export function publishIssues(kind: ContentKind, data: ContentData): Record<stri
     const d = data as SectionData;
     switch (d.section) {
       case "hero": pair("title", d.title); pair("body", d.body); break;
-      case "about": pair("intro", d.intro); pair("aims", d.aims); break;
+      case "about": pair("intro", d.intro); both("purpose", d.purpose); both("founders", d.founders); break;
       case "vision": pair("vision", d.vision); both("mission", d.mission); break;
-      case "goals": for (const k of GOAL_KEYS) pair(k, d[k]); break;
-      case "assembly": pair("body", d.body); both("votingNote", d.votingNote); break;
+      case "goals": pair("items", d.items); break;
+      case "assembly":
+        pair("body", d.body); both("votingNote", d.votingNote);
+        d.members.forEach((m, i) => { pair(`members.${i}.name`, m.name); both(`members.${i}.role`, m.role); media(`members.${i}.portrait`, m.portrait); });
+        break;
       case "board":
         d.members.forEach((m, i) => { pair(`members.${i}.name`, m.name); pair(`members.${i}.role`, m.role); media(`members.${i}.portrait`, m.portrait); });
         break;
@@ -266,7 +262,7 @@ export function publishIssues(kind: ContentKind, data: ContentData): Record<stri
     pair("progressLabel", d.progressLabel);
     media("image", d.image);
   } else {
-    need("url", (data as PartnerData).url);
+    // The website link is optional: the Society's own partner list gives names and logos only.
     media("logo", (data as PartnerData).logo);
   }
   return issues;

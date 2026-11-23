@@ -58,10 +58,12 @@ export default async function ProjectsPage({ params }: { params: Params }) {
                         <span className={styles.title}>{item.title[locale]}</span>
                         <span className={styles.summary}>{item.summary[locale]}</span>
                         <span className={styles.cells}>
-                          <span className={styles.cell}>
-                            <span className={styles.cellLabel}>{p.field}</span>
-                            <span className={styles.cellValue}>{fieldName(item.field)}</span>
-                          </span>
+                          {item.field ? (
+                            <span className={styles.cell}>
+                              <span className={styles.cellLabel}>{p.field}</span>
+                              <span className={styles.cellValue}>{fieldName(item.field)}</span>
+                            </span>
+                          ) : null}
                           <span className={styles.cell}>
                             <span className={styles.cellLabel}>{p.progress}</span>
                             <span className={styles.cellValue}>

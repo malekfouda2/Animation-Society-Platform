@@ -53,15 +53,27 @@ export default async function PartnersPage({ params }: { params: Params }) {
               {partners.map(({ slug, data: partner }, i) => (
                 <li key={slug} data-enter="deal" style={{ ["--enter-i" as string]: i % 4 }}>
                   {/* The logo is painted on the cel; without one, the name is lettered on it. */}
-                  <a href={partner.url} rel="noopener noreferrer" target="_blank" className={`${styles.cel} ${styles.logoCel}`}>
-                    <span className={styles.pegs} aria-hidden="true"><i /><i /><i /></span>
-                    {partner.logo.id ? (
-                      <MediaImage media={partner.logo} locale={locale} className={styles.logo} fit="contain" />
+                  {(() => {
+                    const face = (
+                      <>
+                        <span className={styles.pegs} aria-hidden="true"><i /><i /><i /></span>
+                        {partner.logo.id ? (
+                          <MediaImage media={partner.logo} locale={locale} className={styles.logo} fit="contain" />
+                        ) : (
+                          <span className={styles.nameplate}>{partner.title[locale]}</span>
+                        )}
+                      </>
+                    );
+                    // A partner without a website is shown, not linked.
+                    return partner.url ? (
+                      <a href={partner.url} rel="noopener noreferrer" target="_blank" className={`${styles.cel} ${styles.logoCel}`}>
+                        {face}
+                        <span className={styles.visit}>{p.visit}</span>
+                      </a>
                     ) : (
-                      <span className={styles.nameplate}>{partner.title[locale]}</span>
-                    )}
-                    <span className={styles.visit}>{p.visit}</span>
-                  </a>
+                      <div className={`${styles.cel} ${styles.logoCel}`}>{face}</div>
+                    );
+                  })()}
                 </li>
               ))}
             </ul>

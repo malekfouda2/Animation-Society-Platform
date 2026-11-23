@@ -4,7 +4,8 @@ import { emptyDraft, kindFromPath, paragraphs, partnerDraftSchema, postDraftSche
 describe("content contracts", () => {
   it("requires both languages before publishing", () => {
     const draft = { ...emptyDraft("partner"), title: { ar: "شريك", en: "" } };
-    expect(publishIssues("partner", draft)).toEqual({ "title.en": ["required"], url: ["required"] });
+    // The website link is optional (the Society's partner list gives names and logos only).
+    expect(publishIssues("partner", draft)).toEqual({ "title.en": ["required"] });
     const post = { ...emptyDraft("post"), location: { ar: "الرياض", en: " " } };
     expect(publishIssues("post", post)).toMatchObject({ "location.en": ["required"], date: ["required"] });
   });

@@ -60,6 +60,7 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
         </nav>
       </div>
       <div className={`container ${styles.base}`}>
+        <p>{SOCIETY.registration[locale]}</p>
         <p>{dict.footer.note}</p>
       </div>
     </footer>

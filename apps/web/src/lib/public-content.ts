@@ -1,5 +1,6 @@
 import "server-only";
-import { API_BASE_PATH, CONTENT_PATHS, DRAFT_SCHEMAS, type ContentKind, type PublicEntry } from "@as/contracts";
+import { API_BASE_PATH, CONTENT_PATHS, DRAFT_SCHEMAS, publicPlanSchema, type ContentKind, type PublicEntry, type PublicPlan } from "@as/contracts";
+import { z } from "zod";
 import { loadWebEnv } from "@/config/env";
 import { ARTWORK, type ArtworkKey } from "@/config/artwork";
 
@@ -50,4 +51,16 @@ export function coverKey(key: string): ArtworkKey {
 /** The status note shown under an entry: approved content carries none. */
 export function approvalNote(approval: "approved" | "supplied" | "draft"): "supplied" | "draft" | null {
   return approval === "approved" ? null : approval;
+}
+
+/** Membership plans offered to applicants (public, no cookies). Null when the API can't be reached. */
+export async function publicPlans(): Promise<PublicPlan[] | null> {
+  try {
+    const res = await fetch(`${loadWebEnv().API_INTERNAL_ORIGIN}${API_BASE_PATH}/membership/plans`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const parsed = z.object({ items: z.array(publicPlanSchema) }).safeParse(await res.json());
+    return parsed.success ? parsed.data.items : null;
+  } catch {
+    return null;
+  }
 }

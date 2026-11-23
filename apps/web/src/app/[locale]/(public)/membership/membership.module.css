@@ -44,22 +44,25 @@
   padding: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--as-space-16) var(--as-space-12);
+  gap: var(--as-space-24);
 }
-@media (min-width: 56rem) {
-  .wallet { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .pair:nth-child(even) { margin-block-start: var(--as-space-16); }
+/* Each type: its card on one side, its requirements, rights and benefits beside it. */
+.typeRow { display: grid; gap: var(--as-space-12); align-items: start; scroll-margin-block-start: var(--as-space-24); }
+@media (min-width: 60rem) {
+  .typeRow { grid-template-columns: minmax(0, 26rem) minmax(0, 1fr); gap: var(--as-space-16); }
+  .typeRow .pair { position: sticky; inset-block-start: var(--as-space-24); }
 }
 .pair { --card-bg: var(--as-green); position: relative; display: grid; grid-template-columns: minmax(0, 1fr); min-inline-size: 0; }
-.pair[data-type="affiliate"] { --card-bg: var(--as-green-light); }
-.pair[data-type="honorary"] { --card-bg: var(--as-yellow); }
-.pair[data-type="distinguished"] { --card-bg: var(--as-red); }
+.pair[data-type="student"] { --card-bg: var(--as-green-light); }
+.pair[data-type="participant"] { --card-bg: var(--as-yellow); }
+.pair[data-type="supporting"] { --card-bg: var(--as-red); }
+.pair[data-type="honorary"] { --card-bg: var(--as-white); }
 .front {
   --cx: 100%;
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-rows: auto 1fr auto auto;
+  grid-template-rows: auto 1fr auto auto auto;
   gap: var(--as-space-2);
   aspect-ratio: 1.586;
   inline-size: 88%;
@@ -84,7 +87,23 @@
     linear-gradient(0deg, transparent 45%, rgb(0 0 0 / 0.25) 45% 55%, transparent 55%),
     linear-gradient(135deg, #f4e9a8, #c9b354);
 }
-.typeName { margin: 0; font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.25rem); font-weight: var(--as-w-title); line-height: 1.1; }
+.typeName { margin: 0; font-size: clamp(1.35rem, 1rem + 1.2vw, 1.9rem); font-weight: var(--as-w-title); line-height: 1.15; }
+.typeFee { margin: 0; font-weight: var(--as-w-subtitle); }
+.typeWho { margin: 0; font-size: var(--as-text-lead); line-height: 1.5; }
+.typeFacts { margin: 0; font-size: var(--as-text-secondary); color: var(--as-ink-soft); }
+
+/* Details beside the card: three groups, each a heading with short labelled points. */
+.typeDetail { display: grid; gap: var(--as-space-12); min-inline-size: 0; }
+.group { display: grid; gap: var(--as-space-3); }
+.groupLabel { margin: 0; font-size: var(--as-text-secondary); font-weight: var(--as-w-subtitle); color: var(--as-green-light); }
+.groupTitle { margin: 0; font-size: var(--as-text-h3, 1.5rem); line-height: 1.3; }
+.points { margin: 0; display: grid; gap: var(--as-space-3); }
+@media (min-width: 40rem) { .points { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--as-space-4) var(--as-space-8); } }
+.points > div { padding-block-start: var(--as-space-3); border-block-start: 1px solid var(--as-line); }
+.points dt { font-weight: var(--as-w-subtitle); margin-block-end: var(--as-space-1); }
+.points dd { margin: 0; line-height: 1.6; color: var(--as-ink-soft); }
+.groupNote { margin: 0; padding: var(--as-space-3) var(--as-space-4); border-inline-start: 3px solid var(--as-yellow); background: rgb(255 255 255 / 0.04); font-size: var(--as-text-secondary); line-height: 1.6; }
+.typeSource { margin: 0; font-size: var(--as-text-meta); color: var(--as-ink-soft); }
 .granted {
   justify-self: start;
   padding-block-start: var(--as-space-2);
@@ -130,7 +149,7 @@
 /* Plans and benefits: two blank tickets with punched notches and a perforated tear line. */
 .booth { padding-block: var(--as-space-12) var(--as-space-24); }
 .tickets { display: grid; gap: var(--as-space-8); }
-@media (min-width: 56rem) { .tickets { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 56rem) { .tickets { grid-template-columns: 1fr 1fr; align-items: start; } }
 .ticket {
   --notch: 1.1rem;
   --ink: var(--as-green-light);
@@ -172,6 +191,7 @@
 .ticketRole { font-size: var(--as-text-secondary); color: var(--ink); margin-block-end: var(--as-space-3); }
 .ticketTitle { font-size: var(--as-text-h3); font-weight: var(--as-w-title); line-height: 1.2; margin-block-end: var(--as-space-2); }
 .ticketBody { margin: 0; color: var(--as-ink-soft); }
+.ticketBody + .ticketBody { margin-block-start: var(--as-space-2); }
 @media (max-width: 47.99rem) {
   .ticket { padding: var(--as-space-6) var(--as-space-6) var(--as-space-6) calc(var(--as-space-6) + 3rem); }
   :dir(rtl) .ticket { padding: var(--as-space-6) calc(var(--as-space-6) + 3rem) var(--as-space-6) var(--as-space-6); }
@@ -179,6 +199,22 @@
   .ticket::after { inset-inline-start: 3rem; }
   .ticket { -webkit-mask: none; mask: none; }
 }
+
+/* Offered plans: one admission ticket each; the price is the ticket's face value. */
+.planTickets { display: grid; gap: var(--as-space-6); align-content: start; }
+.planTickets > h2 { margin: 0; }
+.ticketPrice { margin: 0 0 var(--as-space-3); font-size: var(--as-text-lead); font-weight: var(--as-w-subtitle); color: var(--as-ink); }
+/* Demo plans carry a box-office "sample" stamp, tilted like a hand-applied rubber stamp. */
+.demoStamp {
+  display: inline-block;
+  padding: 0.1em 0.6em;
+  border: 2px solid var(--as-yellow);
+  border-radius: 4px;
+  color: var(--as-yellow);
+  font-weight: var(--as-w-title);
+  transform: rotate(-4deg);
+}
+:dir(rtl) .demoStamp { transform: rotate(4deg); }
 
 /* Journey */
 .journey {

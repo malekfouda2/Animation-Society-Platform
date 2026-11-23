@@ -1,7 +1,7 @@
 # Project progress
 
 Status: Stage 1 done. Design checkpoint redone as a full "night studio" redesign after Malek named mbvision-kw.com as the design reference (5 Nov 2026); homepage sections below the hero redesigned individually on 8 Nov 2026. Awaiting Malek's design review.
-Current stage: Stage 2 (identity and publishing). Tasks 1–3, the media follow-up and the artwork replacement check (D-A05) done (10–11 Nov 2026) and committed on 11 Nov 2026 without the introduction films. Engineering exit criteria met in development; Stage 2 closes after Malek's design review (D-A03).
+Current stage: Stage 3 (applications and review). Built with demo plans on 15 Nov 2026; on 19 Nov 2026 the whole site was revisited against the Society's bylaws and 2026 profile, which replaced the demo plans with the Society's own (see "Site revisit" below). Malek's Stage 3 decisions were applied on 23 Nov 2026; only the NCNP form fields remain open. Stage 2's engineering is done, but Stage 2 itself closes only after Malek's design review (D-A03). Stage 3 is committed on branch `stage-3-applications` (not pushed or merged to `main`).
 Approved kickoff date: not supplied.
 Signed contract: not supplied.
 
@@ -14,6 +14,150 @@ Signed contract: not supplied.
 - Society Drive supplied and inventoried (docs/BRAND_ASSETS.md); guideline logo, palette, Cairo and RNS Sanz, Visual Elements and icons applied (3–4 November).
 - frontend-design and VectorLab UI/UX skills installed and used for all interface work since 4 November.
 - Public site: 12 homepage sections and inner pages, contact form slice, night-studio redesign, per-section homepage designs, scroll performance pass and section entrances (4–8 November).
+- Stage 2 engineering: accounts, publishing, media (10–11 November).
+- Stage 3 with demo plans: plans, applications, review workflow (15 November).
+- Site revisited against the Society's bylaws and 2026 profile: content, people, initiatives, partners, membership rules and policies (19 November).
+
+## Stage 3 decisions applied, 23 November 2026
+
+Malek answered the open Stage 3 questions (DECISIONS "Membership decisions from Malek"). Committed on branch `stage-3-applications`.
+
+Built:
+- **Reapply:** rejected applicants see the date they can reapply. After six calendar months they can reopen the application as a draft; the server enforces the wait, and the history stays.
+- **Card name:** required in Arabic and in English, each checked for the right letters. Staff search covers both.
+- **Supporting membership:** offered by request (`rules.byRequest`, editable on the plan). Approval requires the administrator to confirm the external meeting; the API enforces it and logs it. `seed-society-plans` moves an existing supporting plan to this flow, and was run in dev.
+- **Age wording:** "at least 18", matching the rule.
+
+Verification:
+- `npm run check`: exit 0 (contracts 17, API 25, web 12, build). The first run stopped on the Next.js security notice; the re-run completed.
+- `npm run test:integration`: 40/40, including the meeting confirmation and the six-month reapply rule.
+- Browser (Chrome, dev servers, synthetic accounts and photos removed afterwards): 22 checks passed across the supporting request, admin approval, plan editor, rejection, reapply and public page, in Arabic and English, with no sideways scrolling at 390 px on the screens measured.
+- Defect found by the browser run and fixed: the admin application page failed because its schema required a field the API doesn't send there.
+- After that run, name alignment (`bdi`) and the age hint wording changed. These passed lint, typecheck and build but were not re-viewed in the browser.
+
+Not built (Stage 4): automatic renewal, the admin pre-renewal notice, the supporting payment link and checkout.
+
+## Site revisit against the bylaws and 2026 profile, 19 November 2026
+
+Asked for: recheck the Drive, apply the bylaws (اللائحة الأساسية v.3) as the policies "without improvising", and take content, membership names, prices and policies from the 2026 profile (ملف_الجمعية_التعريفي_2026). Plan and findings: docs/CONTENT_REVISION_PLAN.md. Decisions and conflicts found: DECISIONS "Society documents applied". Not committed.
+
+Malek's answers before building: pro-rate by remaining months; remove discounts and library access from every category; publish the board and the General Assembly with portraits; English drafted by the developer and marked pending.
+
+Sources:
+- New in the Drive: the two PDFs, `أدلة الحوكمة` (about 50 governance folders), `Requirements For Payments` (gateway onboarding documents) and `DEMO` (a site recording). Downloaded with approval to the git-ignored `brand-source/drive-2026-11/`:
+  - the two PDFs;
+  - nine governance PDFs, of which four are damaged in the Drive itself.
+- Not downloaded: contracts, name lists, candidates, investments, financial statements, the 24.6 MB annual report.
+- The bylaws' and policies' PDF text layers are scrambled (broken ligatures and font maps). Quoted text was typed and checked against page images.
+
+Built:
+- **Page sections**:
+  - About gains the purpose and the founders' message;
+  - goals become a list of five;
+  - the mission is a list of points;
+  - the General Assembly gets a member list with portraits.
+  The contracts, editor, About page and homepage all follow.
+- **Content import:** `npm run content -w @as/api -- profile-2026` publishes from `apps/api/src/cli/society-profile-2026.ts`. Run in dev, it published:
+  - About, vision, goals and the General Assembly (14, with portraits);
+  - the board (5, with portraits);
+  - five initiatives;
+  - 12 partners with logos;
+  - the membership, payment-and-refund and website privacy policies.
+  The portraits and logos come from `scripts/brand/extract-profile-images.py`.
+- **Membership page:** five categories, each with its card, requirements, rights and benefits copied from the profile, plus the bylaws source. The FAQ is answered from the bylaws with article numbers. The home deck also shows the five categories.
+- **Plans:** `seed-society-plans`:
+  - student SAR 200, participant SAR 400 and ordinary SAR 600 are on;
+  - supporting is added switched off;
+  - the demo plans are switched off.
+  Plans carry rules (minimum age, proof of study, months of earlier membership, General Assembly), and the admin plan editor edits them.
+- **Application:**
+  - date of birth, a private proof-of-study image and an earlier-membership month appear only for the plans that need them;
+  - the server enforces the rules, and admin review shows the new answers;
+  - once approved, the member sees the pro-rated amount due and the 31 December end date.
+- **Policies page:**
+  - bylaws text for membership, payment and refund;
+  - the Society's website privacy policy;
+  - a "Governance documents" list of the Society's PDFs (git-ignored `apps/web/public/documents/`).
+- **Contact and footer:** the Society email (info@animation.org.sa), the Linktree, and the official registration line.
+- **Optional fields:** partner links and project fields are optional, since the profile gives none.
+
+Verification:
+- `npm run check`: exit 0 (contracts 15 tests, API 25, web 12, build). The first web build stopped on a Next.js security notice (see Known limits); the re-run completed.
+- `npm run test:integration`: 38/38. New test: a plan's rules are enforced by the API (age, proof, earlier membership, someone else's upload refused), and the amount due is pro-rated after approval.
+- Contract tests cover the age edge cases, Riyadh midnight on 31 December, and pro-rating.
+- Browser (Chrome for Testing, dev servers): 28 public screens in Arabic and English at 1280 and 390 px, none scrolling sideways.
+  - Defects fixed: the long About paragraph was set in display size; the five goals wrapped 4 + 1; members without a photo showed the "Dr." initial; partner logos rendered tiny.
+  - Member form tested with a throwaway account (deleted afterwards): each plan shows exactly its own extra fields in both languages, and an under-18 date is refused with focus on the field.
+
+Known limits:
+- The admin plan editor and review detail were not re-checked in the browser (the admin account's second factor is Malek's). Their API paths are covered by the integration test.
+- Running `profile-2026` twice in dev left 28 unused copies of the images (the first run failed after uploading). `media prune` would remove them along with the other unused uploads; I did not run it.
+- **Next.js 16.4.4 security notice:** `next build` reported that this version has a known vulnerability and recommends upgrading. Not acted on; needs Malek's go-ahead.
+- Terms of use and card-use policies remain pending; the four damaged governance PDFs need re-uploading.
+
+## Stage 3: applications and review with demo plans, 15 November 2026
+
+Asked for: "start stage 3 with demo plans". Not committed yet.
+
+Skills used: frontend-design 1.1.1 and VectorLab page-patterns. Patterns: member application = Pattern 3 Form (page); administrator application list = Pattern 1 List; application review = Pattern 2 Detail; plans = Pattern 1 List with a Pattern 3 Form editor.
+
+Built:
+- **Contracts** (`packages/contracts/src/membership.ts`):
+  - plan schemas (price in halalas, duration in months, enabled, `demo`);
+  - application answers, with `submitIssues`;
+  - review schemas;
+  - member, administrator and list views;
+  - `formatPrice`.
+- **API** (`apps/api/src/features/membership/`):
+  - Collections: `membershipPlans`, `applications` (one per account, unique on `userId`), `applicationEvents` (append-only history).
+  - Every transition is version-checked and conditional on the current state, inside one transaction with its history event, activity-log entry and email. The email is delivered after commit and deduplicated by event.
+  - Routes:
+    - Public: `GET /membership/plans`.
+    - Member only: `GET`/`PUT /account/application`, `POST /account/application/submit`, `POST /account/photo`.
+    - Administrator only: `/admin/applications` (status, plan, search and page; counts), `/:id`, `request-changes`, `approve`, `reject`, and `/admin/plans` CRUD (no delete).
+  - `checkoutEligibility(userId)`: the gate Stage 4 must use.
+  - Media now has a `member_photo` purpose. Member photos are private to their owner and administrators, kept out of the library, prune and public pages, and their longest side is 1200 px.
+  - Four new email templates in both languages (received or resubmitted, changes requested, approved, rejected). The approval email says payment isn't open yet.
+  - CLI: `npm run membership -w @as/api -- seed-demo-plans` (refused in production).
+- **Web:**
+  - Member: `/member/application` has the four-step progress strip, status panel with the staff message, plan choice, answers and a private photo upload. It validates on blur and on submit, focuses the first problem, warns on unsaved changes, shows a read-only summary once sent, and shows the history. The member home shows the application status.
+  - Administrator: `/admin/applications` has status tabs with counts, a search and plan filter, a framed table and pagination. `/admin/applications/[id]` shows the answers, photo, plan snapshot, history with actor, and a decision panel: approve; ask for changes with a message; reject with a reason behind a named confirmation. `/admin/plans`, `/admin/plans/new` and `/admin/plans/[id]` cover plan settings.
+  - Public `/membership`: offered plans now come from the API as admission tickets. Demo plans carry a "Demo plan" stamp and note. The hero note says applications are open for testing with demo plans.
+  - Navigation: "Membership application" for members; "Applications" and "Membership plans" for administrators only.
+- **Unrelated fix:** `apps/api/test/secrets.test.ts` failed about 1 run in 64. It "flipped" the first ciphertext character to "A", which is a no-op when that character is already "A". It now always changes the character; passed 12 of 12 repeat runs.
+- **Dev data:** the two demo plans are seeded in `animation_society_dev`. The synthetic journey accounts were removed from the database.
+- **Not cleaned up:** two synthetic photo files (`6af96e93…2257.webp`, `6af96eff…2270.webp`, solid green test images, 948 bytes each) remain in `apps/api/var/media`. That folder is git-ignored and they have no database records. My delete command was blocked by the permission classifier. `media prune` won't remove them because it works from records, so delete them by hand.
+
+Checks (actually run):
+- `npm run check`: exit 0 (contracts 13, API 25, web 12 tests, build).
+- `npm run test:integration`: 37/37, three consecutive runs. The new `membership.int.test.ts` covers the following:
+  - Plan permissions: anonymous 401; member and editor 403; no Origin 403.
+  - Plan creation: staff can't create a `demo` plan; duplicate keys are refused; only enabled plans are public; a stale plan save gets 409.
+  - Member photo privacy across owner, administrator, other member, editor and anonymous visitor. Photos are excluded from the library and can't be used in content.
+  - The full review cycle with history, emails and the activity log.
+  - Concurrent approvals (one 200, two 409).
+  - Price snapshot behaviour.
+  - Rejection, and the checkout gate.
+- Browser (Chrome for Testing via playwright-core in the scratchpad, dev servers, synthetic accounts):
+  - Steps, in English at 1280: register → confirm → sign in → empty submit (focus goes to the plan choice) → fill in and upload a photo → save → submit. Then a CLI-invited administrator sets a password, enrols the authenticator, opens the queue and asks for changes (an empty message is blocked). The member corrects and resubmits, and the administrator approves.
+  - Emails seen in the local inbox: receipt, change request, approval.
+  - Then checked in Arabic and at 390 px: member application, public plans, administrator queue, plan editor and application detail. All 23 screens had correct lang/dir and no horizontal overflow.
+  - Defects found and fixed:
+    - "SAR 10 . 00": tabular numerals widened the decimal point.
+    - The Arabic timeline overlapped its markers because of physical padding.
+    - The benefits ticket stretched to the height of the plan column.
+- Fixed 16 Nov 2026 (reported by Malek): in the dev server, "Choose from library" and "Crop" in the content editor opened and closed in the same instant. Cause: React Strict Mode runs effect cleanup between its two dev mounts, and the cleanup called `dialog.close()`, which fired `onClose` and unmounted the dialog. Production builds do not double-run effects, so the Stage 2 production-build check missed it. Cleanup removed from `CropDialog.tsx` and `MediaLibrary.tsx`. Verified in Chrome against the dev server with a throwaway admin (since deleted): picker opens, picking closes it, crop opens, Escape closes it. Web lint and typecheck pass.
+
+Known limits:
+- Everything runs on demo plans. Real plans, prices, durations and fields wait on D02.
+- No checkout. Approval only makes `canPay` true; Stage 4 builds payment on `checkoutEligibility`.
+- Rejected applicants can't reapply (decision needed).
+- Search uses an unanchored, case-insensitive regex over at most the applications collection. That's fine at the expected volume; add a text index if it grows.
+- Member photos have no retention or deletion rule (D09). Replaced photos are kept.
+- Arabic and English wording is a developer draft (D08).
+- Checked in Chrome only.
+
+Next: Malek's design review (closes Stage 2), D02 answers (Stage 3 out of demo mode), then Stage 4 (payments), which also needs D03 (gateway).
 
 ## Stage 2 close-out: artwork replacement check and commit, 11 November 2026
 

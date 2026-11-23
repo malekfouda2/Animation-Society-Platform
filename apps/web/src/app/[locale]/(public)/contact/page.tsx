@@ -54,6 +54,10 @@ export default async function ContactPage({ params }: { params: Params }) {
                   )}
                 </dd>
               </div>
+              <div>
+                <dt>{c.links}</dt>
+                <dd><a href={SOCIETY.links} className={styles.big} dir="ltr" rel="noopener noreferrer" target="_blank">linktr.ee/animksa</a></dd>
+              </div>
             </dl>
           </aside>
         </div>

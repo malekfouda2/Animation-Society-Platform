@@ -5,7 +5,7 @@ export type ApiResult<T> =
   | { ok: false; status: number; code: ErrorCode | "network"; fields: Record<string, string[]> };
 
 /** Browser call to the same-origin API. The session cookie travels automatically (HttpOnly). */
-export async function callApi<T = unknown>(method: "GET" | "POST" | "PATCH" | "DELETE", path: string, body?: unknown): Promise<ApiResult<T>> {
+export async function callApi<T = unknown>(method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE", path: string, body?: unknown): Promise<ApiResult<T>> {
   try {
     const res = await fetch(`${API_BASE_PATH}${path}`, {
       method,

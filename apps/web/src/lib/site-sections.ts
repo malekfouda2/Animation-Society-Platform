@@ -1,5 +1,5 @@
 import "server-only";
-import { GOAL_KEYS, POLICY_KEYS, type PolicyKey, type SectionData, type SectionKey, type SectionOf } from "@as/contracts";
+import { POLICY_KEYS, type PolicyKey, type SectionData, type SectionKey, type SectionOf } from "@as/contracts";
 import { cache } from "react";
 import type { IconName } from "@/config/artwork";
 import { POLICY_TITLES } from "@/content/policies";
@@ -20,8 +20,16 @@ const lines = (v: { ar: string; en: string }): Localized<readonly string[]> => (
 });
 const present = (v: { ar: string; en: string }): Localized | null => (v.ar.trim() || v.en.trim() ? v : null);
 
-/** Goal icons stay with the design (the text is editable, the four goals and their icons are fixed). */
-const GOAL_ICONS: Record<(typeof GOAL_KEYS)[number], IconName> = { content: "pen", festivals: "filmReel", exchange: "community", sponsorship: "partnerships" };
+/**
+ * Goal icons stay with the design and follow the order of the Society's five goals (profile 2026):
+ * content and consultations, development opportunities, the festival, training content, sponsorship.
+ * Extra goals reuse the set in order.
+ */
+const GOAL_ICONS: readonly IconName[] = ["pen", "growth", "filmReel", "skills", "partnerships"];
+const paragraphs = (v: { ar: string; en: string }): Localized<readonly string[]> => ({
+  ar: v.ar.split(/\n\s*\n/).map((l) => l.trim()).filter(Boolean),
+  en: v.en.split(/\n\s*\n/).map((l) => l.trim()).filter(Boolean),
+});
 
 /**
  * Published page sections, shaped for the pages. Fetched once per request (React cache). A section
@@ -45,14 +53,31 @@ export const siteSections = cache(async () => {
       title: hero?.title ?? { ar: getDictionary("ar").meta.siteName, en: getDictionary("en").meta.siteName },
       body: hero?.body ?? { ar: getDictionary("ar").meta.description, en: getDictionary("en").meta.description },
     },
-    ABOUT: { status: noteOf(about), intro: about?.intro ?? pendingText, aims: about ? lines(about.aims) : { ar: [], en: [] } },
-    VISION_MISSION: { status: noteOf(vision), vision: vision ? present(vision.vision) : null, mission: vision ? present(vision.mission) : null },
-    OBJECTIVES: goals ? GOAL_KEYS.map((key) => ({ key, icon: GOAL_ICONS[key], title: goals[key] })) : [],
+    ABOUT: {
+      status: noteOf(about),
+      intro: about?.intro ?? pendingText,
+      purpose: about ? present(about.purpose) : null,
+      founders: about && present(about.founders) ? paragraphs(about.founders) : null,
+    },
+    VISION_MISSION: {
+      status: noteOf(vision),
+      vision: vision ? present(vision.vision) : null,
+      /** The mission is a list of points, one per line. */
+      mission: vision && present(vision.mission) ? lines(vision.mission) : null,
+    },
+    OBJECTIVES: goals
+      ? (() => {
+          const ar = lines(goals.items).ar;
+          const en = lines(goals.items).en;
+          return ar.map((t, i) => ({ key: String(i), icon: GOAL_ICONS[i % GOAL_ICONS.length] ?? "flag", title: { ar: t, en: en[i] ?? "" } }));
+        })()
+      : [],
     OBJECTIVES_META: { status: noteOf(goals) },
     GENERAL_ASSEMBLY: {
       status: noteOf(assembly),
       body: assembly?.body ?? pendingText,
       votingNote: assembly?.votingNote ?? { ar: "", en: "" },
+      members: assembly?.members ?? [],
     },
     BOARD: {
       status: noteOf(board),

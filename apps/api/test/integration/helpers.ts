@@ -13,6 +13,7 @@ import { createContentService } from "../../src/features/content/content.service
 import { Email } from "../../src/features/email/email.model.js";
 import { createMediaService } from "../../src/features/media/media.service.js";
 import { createMailer, localInboxTransport } from "../../src/features/email/email.service.js";
+import { createMembershipService } from "../../src/features/membership/membership.service.js";
 
 export const ORIGIN = "http://localhost:3100";
 export const SOCIETY_INBOX = "society-inbox@example.test";
@@ -59,6 +60,7 @@ export function buildApp(clock: { now: () => Date }) {
     auth: { service, cookies: { secure: false }, publicOrigin: ORIGIN, rateLimitScale: 100 },
     content: { service: createContentService({ now: clock.now, media }), publicOrigin: ORIGIN },
     media: { service: media, publicOrigin: ORIGIN },
+    membership: { service: createMembershipService({ mailer, publicOrigin: ORIGIN, photos: media, now: clock.now }), media, publicOrigin: ORIGIN },
     contact: {
       store: mongoContactStore(ContactMessage),
       mailer: outboxContactMailer(mailer, SOCIETY_INBOX, () => undefined),

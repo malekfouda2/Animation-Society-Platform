@@ -19,7 +19,9 @@
     "content": "tsx --env-file-if-exists=.env src/cli/content.ts",
     "content:prod": "node --env-file-if-exists=.env dist/cli/content.js",
     "media": "tsx --env-file-if-exists=.env src/cli/media.ts",
-    "media:prod": "node --env-file-if-exists=.env dist/cli/media.js"
+    "media:prod": "node --env-file-if-exists=.env dist/cli/media.js",
+    "membership": "tsx --env-file-if-exists=.env src/cli/membership.ts",
+    "membership:prod": "node --env-file-if-exists=.env dist/cli/membership.js"
   },
   "dependencies": {
     "@as/contracts": "0.0.0",
