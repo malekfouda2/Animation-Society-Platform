@@ -20,7 +20,7 @@ Full detail in docs/DEVELOPMENT.md. Node 24, npm workspaces, run from repo root:
 - `npm run test:integration`: API tests against the real replica set.
 - Single test: `npm test -w @as/api -- test/health.test.ts` or `-- -t "name"`.
 
-`@as/contracts` compiles to `dist/`, and root scripts build it first. If you run a workspace script directly, run `npm run build:contracts` first. Pinned versions: TypeScript 6.0.3 (typescript-eslint 8.72 does not support 7.x), ESLint 10.13.0 (no eslint-config-next; see DECISIONS), minimatch forced to 11.0.4 via overrides, Next 16.4.4, React 19.3.1, Express 5.3.0, Mongoose 9.11.4, zod 4.6.7, Vitest 5.1.0.
+`@as/contracts` compiles to `dist/`, and root scripts build it first. If you run a workspace script directly, run `npm run build:contracts` first. Pinned versions: TypeScript 6.0.3 (typescript-eslint 8.72 does not support 7.x), ESLint 10.13.0 (no eslint-config-next; see DECISIONS), minimatch forced to 11.0.4 via overrides, Next 16.4.6, React 19.3.1, Express 5.3.0, Mongoose 9.11.4, zod 4.6.7, Vitest 5.1.0.
 
 ## Planned architecture (docs/ARCHITECTURE.md)
 

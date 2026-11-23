@@ -27,7 +27,10 @@ Built:
 - **Card name:** required in Arabic and in English, each checked for the right letters. Staff search covers both.
 - **Supporting membership:** offered by request (`rules.byRequest`, editable on the plan). Approval requires the administrator to confirm the external meeting; the API enforces it and logs it. `seed-society-plans` moves an existing supporting plan to this flow, and was run in dev.
 - **Age:** at least 18 on every plan, including student (`seed-society-plans` updates an existing student plan, run in dev).
-- **Gateway:** Tap selected (D03). No integration built yet.
+- **Gateway:** Tap selected (D03). No integration built yet; merchant account and sandbox keys not supplied.
+- **Next.js:** upgraded from 16.4.4 to 16.4.6 to clear the npm audit failure that stopped CI on `main` (run 45176033171).
+- **Supporting donation:** flagged; Malek brings the Society's decision.
+- **Stage 4:** not started. Malek asked to see its contents before it begins.
 
 Verification:
 - `npm run check`: exit 0 (contracts 17, API 25, web 12, build). The first run stopped on the Next.js security notice; the re-run completed.

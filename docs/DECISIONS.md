@@ -140,5 +140,5 @@ Developer assumptions (reversible):
 ### Decisions still needed for membership (updated 23 November 2026)
 
 - The NCNP form's fields (Article 17).
-- Confirmation that the supporting donation stays outside the site's checkout.
+- **Supporting donation (flagged 23 Nov 2026):** Malek will bring the Society's decision after meeting them. Options: (A) bank transfer recorded by an administrator, recommended because the bank record shows the sender's own account; (B) payment through Tap. Until then nothing about the donation is built, and the public note saying it is arranged directly with the Society remains a developer assumption.
 
